@@ -7,7 +7,6 @@ import {
     ArrowRight, Wallet, Flame, Users, Leaf, Map, Search, Filter
 } from 'lucide-react';
 import avatar from '../assets/images/9.jpg';
-
 const BADGES = [
     { id: 1, name: 'Eco Beginner', desc: 'Completed your first 5 eco tasks', icon: SproutIcon, earned: true, color: '#2d5a27' },
     { id: 2, name: 'Water Saver', desc: 'Saved 500L of water through drip irrigation', icon: DropletIcon, earned: true, color: '#3b82f6' },
@@ -26,12 +25,10 @@ const HISTORY = [
     { id: 3, action: 'Community Water Challenge Participation', points: 100, date: '2 days ago' },
     { id: 4, action: 'Helpful Answer in Forum', points: 20, date: '3 days ago' }
 ];
-
 // Helper icons since they weren't in the main import for simplicity
 function SproutIcon(props) { return <Leaf {...props} /> }
 function DropletIcon(props) { return <Zap {...props} /> } // Using Zap as placeholder for water logic
 function GlobeIcon(props) { return <Trophy {...props} /> }
-
 const RewardsPage = () => {
     const [points, setPoints] = useState(1250);
     const [vouchers, setVouchers] = useState(VOUCHERS);
@@ -55,7 +52,6 @@ const RewardsPage = () => {
                     <div className="summary-val"><Award size={24} color="#d4af37" /> 5 / 20</div>
                     <div className="summary-sub">Top 5% in your region 🔝</div>
                 </div>
-
                 <div className="summary-card">
                     <div className="summary-label">Available Vouchers</div>
                     <div className="summary-val"><Ticket size={24} color="#2d5a27" /> {vouchers.length}</div>

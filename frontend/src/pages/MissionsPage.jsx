@@ -6,7 +6,6 @@ import {
     Search, Filter, ChevronRight, Upload, MapPin, Brain,
     Sprout, Zap, Globe, Flame
 } from "lucide-react";
-
 const SOLO_TASKS = [
     {
         id: 1, title: 'Apply Drip Irrigation Today', category: 'Daily', duration: '30 mins',
@@ -27,7 +26,6 @@ const SOLO_TASKS = [
         tags: ['Soil Fixer', 'Long Term']
     }
 ];
-
 const COMMUNITY_TASKS = [
     {
         id: 'c1', title: 'District Water Challenge', scope: 'Warangal District', daysLeft: 5,
@@ -40,7 +38,6 @@ const COMMUNITY_TASKS = [
         reward: 'Unique Hive-Mind Badge', status: 'open'
     }
 ];
-
 const MissionsPage = () => {
     const [activeTab, setActiveTab] = useState('solo');
     const [durationFilter, setDurationFilter] = useState('All');
@@ -48,7 +45,6 @@ const MissionsPage = () => {
     const [communityTasks, setCommunityTasks] = useState(COMMUNITY_TASKS);
     const [reward, setReward] = useState(null);
     const [uploadingTask, setUploadingTask] = useState(null);
-
     const showReward = (task) => {
         setReward({ xp: task.xp, badge: task.badges || 'Task Completed!' });
         setTimeout(() => setReward(null), 3000);
@@ -71,7 +67,6 @@ const MissionsPage = () => {
             </div>
         </div>
     );
-
     return (
         <div className="leaderboard-page">
             
@@ -144,7 +139,6 @@ const MissionsPage = () => {
                     ))}
                 </div>
             </div>
-
             {/* ── TASKS GRID ── */}
             <div className="tasks-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(400px, 1fr))', gap: 25 }}>
                 {activeTasks.filter(t => t.status !== 'completed').map((task, i) => (
@@ -186,7 +180,6 @@ const MissionsPage = () => {
                     </motion.div>
                 ))}
             </div>
-
             {/* ── REWARD TOAST ── */}
             <AnimatePresence>
                 {reward && (

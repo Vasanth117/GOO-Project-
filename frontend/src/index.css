@@ -5265,9 +5265,68 @@ ul, ol { list-style: none; }
   border: 1.5px solid var(--color-border);
   border-radius: var(--radius-xl);
   padding: var(--space-6);
-  display: flex; flex-direction: column; gap: var(--space-3);
-  cursor: pointer;
-  transition: all var(--duration-base) var(--ease-standard);
+  display: flex;
+}
+.leaflet-map-target {
+  width: 100%; height: 100%; z-index: 10;
+  background: #fdfdfd;
+}
+
+/* ── MAP OVERLAYS (RELATIVE TO CANVAS) ── */
+.map-canvas-container { flex: 1; height: 100%; position: relative; overflow: hidden; }
+
+.map-interface-top {
+  position: absolute; top: 20px; left: 20px; z-index: 1000;
+  pointer-events: none;
+}
+.map-search-pill {
+  width: 380px; background: #fff; padding: 12px 24px; border-radius: 50px;
+  box-shadow: 0 15px 40px rgba(0,0,0,0.1); border: 1.5px solid rgba(0,0,0,0.05);
+  display: flex; align-items: center; gap: 12px; pointer-events: auto;
+}
+.map-search-pill input { border: none; outline: none; font-size: 0.88rem; font-weight: 800; flex: 1; color: #1a1c19; }
+.search-stats { border-left: 1px solid #eee; padding-left: 12px; display: flex; align-items: center; gap: 6px; font-size: 0.68rem; font-weight: 950; color: #888; }
+
+.map-toolbar-right {
+  position: absolute; right: 20px; top: 20px;
+  display: flex; flex-direction: row; gap: 10px; z-index: 1000;
+}
+.toolbar-btn {
+  padding: 10px 18px; background: #fff; border-radius: 14px;
+  display: flex; align-items: center; justify-content: center;
+  border: none; box-shadow: 0 10px 25px rgba(0,0,0,0.08); cursor: pointer;
+  transition: all 0.2s; gap: 8px; border: 1.5px solid #eee;
+}
+.toolbar-btn span { font-size: 0.72rem; font-weight: 950; color: #1a1c19; text-transform: uppercase; }
+.toolbar-btn:hover { background: #1a1c19; border-color: #1a1c19; }
+.toolbar-btn:hover span, .toolbar-btn:hover svg { color: #fff; }
+.toolbar-btn.active { border-color: var(--color-primary); color: var(--color-primary); }
+.toolbar-btn.ghost { border-color: #ff3b30; color: #ff3b30; }
+
+/* ── MARKERS ── */
+.elite-marker-wrap {
+  display: flex; align-items: center; gap: 8px;
+  background: #fff; border-radius: 40px; padding: 4px 16px 4px 4px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.15); border: 1px solid #eee;
+  transform-origin: bottom center; transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+.marker-avatar { width: 34px; height: 34px; border-radius: 50%; overflow: hidden; border: 2.2px solid #fff; }
+.marker-avatar img { width: 100%; height: 100%; object-fit: cover; }
+.marker-label { display: flex; flex-direction: column; }
+.label-heading { font-size: 0.52rem; font-weight: 900; color: #aaa; text-transform: uppercase; letter-spacing: 0.5px; }
+.label-name { font-size: 0.8rem; font-weight: 1000; color: #1a1c19; line-height: 1; }
+.elite-marker-wrap.online { border-left: 3.5px solid #4ade80; }
+.elite-marker-wrap:hover { transform: scale(1.1) translateY(-10px); z-index: 1000 !important; }
+
+.me-dot { width: 12px; height: 12px; background: #4ade80; border: 3px solid #fff; border-radius: 50%; box-shadow: 0 0 15px rgba(74, 222, 128, 0.5); }
+.me-pulse { position: absolute; inset: -12px; background: rgba(74, 222, 128, 0.2); border-radius: 50%; animation: mePulse 2s infinite; }
+@keyframes mePulse { 0% { transform: scale(0.5); opacity: 1; } 100% { transform: scale(2.5); opacity: 0; } }
+
+.map-profile-overlay {
+  position: absolute; bottom: 25px; left: 25px; right: 25px;
+  background: rgba(255,255,255,0.98); backdrop-filter: blur(20px);
+  padding: 24px; border-radius: 30px; z-index: 2000;
+  box-shadow: 0 35px 80px rgba(0,0,0,0.18); border: 1.5px solid rgba(0,0,0,0.03);
 }
 .help-card:hover { box-shadow: var(--shadow-md); border-color: rgba(45,90,39,0.2); transform: translateY(-3px); }
 .help-card h4 { font-size: 0.9rem; font-weight: 900; color: var(--color-text-1); }
@@ -5292,6 +5351,449 @@ ul, ol { list-style: none; }
   width: 8px; height: 8px;
   border-radius: 50%;
   background: #22c55e;
+}
+
+/* ───────────────────────────────────────────────
+   18. FULL-PAGE GPS MAP CAMERA (ELITE UI)
+   ─────────────────────────────────────────────── */
+.full-camera-page {
+  position: fixed; inset: 0; background: #111;
+  z-index: 10000; display: flex; flex-direction: column;
+  font-family: var(--font-body); color: #fff;
+}
+
+.camera-top-nav {
+  height: 80px; display: flex; align-items: center; justify-content: space-between;
+  padding: 0 24px; background: linear-gradient(180deg, rgba(0,0,0,0.6) 0%, transparent 100%);
+  position: absolute; top: 0; left: 0; right: 0; z-index: 50;
+}
+
+.ct-left, .ct-center { display: flex; align-items: center; gap: 24px; }
+.ct-btn {
+  background: rgba(255,255,255,0.15); border: 1px solid rgba(255,255,255,0.1);
+  color: #fff; cursor: pointer; width: 44px; height: 44px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  backdrop-filter: blur(8px); transition: all 0.2s;
+}
+.ct-btn:hover { background: rgba(255,255,255,0.25); transform: scale(1.1); }
+.ct-btn.close { color: #ff3b30; border-color: rgba(255,59,48,0.2); }
+.ct-badge {
+  background: #ff3b30; color: #fff; border-radius: 50%; width: 18px; height: 18px;
+  font-size: 0.65rem; font-weight: 900; display: flex; align-items: center; justify-content: center;
+  position: absolute; top: 18px; left: 54px; border: 2px solid #000;
+}
+
+.camera-viewport-full {
+  flex: 1; position: relative; overflow: hidden; display: flex; align-items: center; justify-content: center;
+  background: #000;
+}
+
+.v-stream { width: 100%; height: 100%; object-fit: cover; }
+
+/* Interactive Grid Overlay */
+.camera-grid-lines { position: absolute; inset: 0; pointer-events: none; opacity: 0.15; }
+.g-line { position: absolute; background: #fff; }
+.g-line.h1 { top: 33.33%; width: 100%; height: 1px; }
+.g-line.h2 { top: 66.66%; width: 100%; height: 1px; }
+.g-line.v1 { left: 33.33%; height: 100%; width: 1px; }
+.g-line.v2 { left: 66.66%; height: 100%; width: 1px; }
+
+/* GPS Detail Overlays (Stunning Luxe Style) */
+.live-location-box {
+  position: absolute; bottom: 40px; left: 24px; right: 24px;
+  display: flex; gap: 20px; align-items: flex-end;
+  pointer-events: none;
+}
+
+.mini-map-sim {
+  width: 130px; height: 130px; background: #fff; border-radius: 16px;
+  border: 3px solid #fff; overflow: hidden; position: relative;
+  background-image:
+    linear-gradient(rgba(0,0,0,0.05) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0,0,0,0.05) 1px, transparent 1px);
+  background-size: 20px 20px;
+  box-shadow: 0 10px 40px rgba(0,0,0,0.5);
+  animation: mapPulse 3s infinite;
+}
+@keyframes mapPulse { 0% { border-color: #fff; } 50% { border-color: #4ade80; } 100% { border-color: #fff; } }
+
+.mini-map-sim .marker {
+  position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+  width: 14px; height: 14px; background: #ff3b30; border-radius: 50%;
+  border: 2px solid #fff; box-shadow: 0 0 10px rgba(255,59,48,0.5);
+}
+
+.location-details-luxe {
+  flex: 1;
+  background: rgba(20, 22, 19, 0.85); backdrop-filter: blur(16px);
+  padding: 20px 24px; border-radius: 20px; color: #fff;
+  border: 1px solid rgba(255,255,255,0.1);
+  box-shadow: 0 10px 40px rgba(0,0,0,0.4);
+}
+.location-details-luxe h3 {
+  font-family: var(--font-display); font-size: 1.15rem; font-weight: 950;
+  margin-bottom: 6px; color: #fff; letter-spacing: -0.01em;
+}
+.location-details-luxe p {
+  font-size: 0.82rem; color: rgba(255,255,255,0.6);
+  margin: 3px 0; font-weight: 700; font-family: 'Space Mono', monospace;
+}
+.gps-label {
+  font-size: 0.65rem; color: #4ade80; font-weight: 950;
+  text-transform: uppercase; letter-spacing: 2px; margin-top: 12px;
+  display: flex; align-items: center; gap: 6px;
+}
+.gps-label::before { content: ""; width: 6px; height: 6px; background: #4ade80; border-radius: 50%; animation: blink 1s infinite; }
+@keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0.3; } }
+
+/* Universal Bottom Controls */
+.camera-bottom-nav {
+  background: #000; padding: 30px 0 50px; display: flex; flex-direction: column; gap: 24px;
+  position: relative; z-index: 60;
+}
+
+.cb-row-modes { display: flex; justify-content: center; gap: 40px; margin-bottom: 15px; }
+.mode-btn {
+  background: none; border: none; font-size: 0.85rem; font-weight: 950;
+  color: rgba(255,255,255,0.4); cursor: pointer; transition: all 0.2s;
+  letter-spacing: 1.5px;
+}
+.mode-btn.active { color: #fff; transform: scale(1.1); font-weight: 950; }
+.mode-btn.active::after {
+  content: ""; position: absolute; bottom: -10px; left: 50%; transform: translateX(-50%);
+  width: 5px; height: 5px; background: #facd14; border-radius: 50%;
+  box-shadow: 0 0 10px #facd14;
+}
+
+.cb-main-row { display: flex; align-items: center; justify-content: space-around; padding: 0 20px; }
+.cb-item {
+  display: flex; flex-direction: column; align-items: center; gap: 8px;
+  color: #fff; opacity: 0.8; transition: all 0.2s; cursor: pointer;
+}
+.cb-item:hover { opacity: 1; transform: translateY(-2px); }
+.cb-item span { font-size: 0.65rem; font-weight: 850; text-transform: uppercase; letter-spacing: 0.5px; }
+
+.shutter-luxe {
+  width: 84px; height: 84px; border-radius: 50%; background: #fff; border: 5px solid #fff;
+  display: flex; align-items: center; justify-content: center; cursor: pointer;
+  box-shadow: 0 0 0 4px rgba(255,255,255,0.2); transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+.shutter-luxe .s-inner {
+  width: 64px; height: 64px; border-radius: 50%; border: 4px solid #000;
+  transition: all 0.3s ease; background: transparent;
+}
+.shutter-luxe:hover { transform: scale(1.05); }
+.shutter-luxe:active { transform: scale(0.9); }
+
+.shutter-luxe.recording { border-color: #ff3b30; box-shadow: 0 0 20px rgba(255,59,48,0.5); }
+.shutter-luxe.recording .s-inner { background: #ff3b30; border-radius: 12px; width: 34px; height: 34px; border-color: #ff3b30; }
+
+.post-capture-flow { display: flex; gap: 20px; padding: 0 30px; width: 100%; }
+.btn-discard {
+  flex: 1; padding: 18px; background: rgba(255,59,48,0.1); border: 1.5px solid #ff3b30;
+  border-radius: 16px; color: #ff3b30; font-weight: 900;
+  display: flex; align-items: center; justify-content: center; gap: 10px; cursor: pointer;
+}
+.btn-save-auth {
+  flex: 2; padding: 18px; background: #4ade80; border: none; border-radius: 16px;
+  color: #fff; font-weight: 950; display: flex; align-items: center; justify-content: center;
+  gap: 10px; cursor: pointer; box-shadow: 0 15px 35px rgba(74, 222, 128, 0.3);
+  text-transform: uppercase; letter-spacing: 1px;
+}
+
+/* ───────────────────────────────────────────────
+   19. ELITE SNAP MAP ENGINE (GIS + HEATMAPS)
+   ─────────────────────────────────────────────── */
+.field-map-layout {
+  height: calc(100vh - 76px); position: relative;
+  background: var(--color-surface-2); display: flex; overflow: hidden;
+}
+
+.leaflet-map-target {
+  flex: 1; height: 100%; z-index: 10;
+  filter: saturate(0.8) contrast(1.1); /* Minimalist professional map filter */
+}
+
+/* ── ELITE HEATMAP SPOTS (MATCH SAMPLE IMAGE) ── */
+.heatmap-spot-pulse {
+  fill: url(#heatmapGradient);
+  filter: blur(15px);
+  animation: heatPulse 4s infinite alternate ease-in-out;
+  pointer-events: none;
+}
+@keyframes heatPulse {
+  0% { fill: rgba(255, 0, 0, 0.4); r: 250; }
+  100% { fill: rgba(255, 140, 0, 0.6); r: 350; }
+}
+
+/* ── NYFW STYLE MARKERS (MATCH SAMPLE IMAGE) ── */
+.elite-marker-wrap {
+  display: flex; align-items: center; gap: 8px;
+  background: #fff; border-radius: 40px; padding: 4px 16px 4px 4px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+  border: 1px solid rgba(0,0,0,0.05);
+  transform-origin: bottom left;
+  transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.marker-avatar {
+  width: 36px; height: 36px; border-radius: 50%; overflow: hidden;
+  border: 2px solid #fff; box-shadow: 0 0 10px rgba(0,0,0,0.1);
+}
+.marker-avatar img { width: 100%; height: 100%; object-fit: cover; }
+
+.marker-label { display: flex; flex-direction: column; gap: 0px; }
+.label-heading { font-size: 0.55rem; font-weight: 900; color: #aaa; text-transform: uppercase; letter-spacing: 1px; }
+.label-name { font-size: 0.82rem; font-weight: 950; color: #1a1c19; line-height: 1; }
+
+.elite-marker-wrap.online { border-left: 3px solid #4ade80; }
+.elite-marker-wrap:hover { transform: scale(1.1) translateY(-10px); z-index: 1000 !important; }
+
+/* ── PERSONAL PULSE ── */
+.me-dot { width: 14px; height: 14px; background: #4ade80; border: 3px solid #fff; border-radius: 50%; box-shadow: 0 0 15px rgba(74, 222, 128, 0.5); }
+.me-pulse { position: absolute; inset: -15px; background: rgba(74, 222, 128, 0.2); border-radius: 50%; animation: mePulse 2s infinite; }
+@keyframes mePulse { 0% { transform: scale(0.5); opacity: 1; } 100% { transform: scale(2); opacity: 0; } }
+
+/* ── TOP SEARCH ── */
+.map-interface-top {
+  position: absolute; top: 20px; left: 340px; right: 20px; z-index: 1000;
+  pointer-events: none;
+}
+.map-search-pill {
+  width: 480px; background: #fff; padding: 12px 24px; border-radius: 50px;
+  box-shadow: 0 15px 40px rgba(0,0,0,0.1); border: 1px solid rgba(0,0,0,0.05);
+  display: flex; align-items: center; gap: 15px; pointer-events: auto;
+}
+.map-search-pill input { border: none; outline: none; font-size: 0.9rem; font-weight: 800; flex: 1; color: #1a1c19; }
+
+/* ── SIDEBAR: EXPLORE NEIGHBORS (MAP LEFT) ── */
+.map-left-discover {
+  width: 340px; height: 100%; background: #fff; z-index: 1000;
+  box-shadow: 15px 0 40px rgba(0,0,0,0.04); display: flex; flex-direction: column;
+  flex-shrink: 0; border-right: 1px solid #efefef;
+}
+.discover-header { padding: 30px 24px 20px; }
+.discover-header h3 { font-size: 1.25rem; font-weight: 1000; color: #1a1c19; }
+.discover-header p { font-size: 0.78rem; color: #888; margin-top: 4px; font-weight: 700; }
+
+.discover-scroll { flex: 1; overflow-y: auto; padding: 0 16px; }
+.discover-card {
+  display: flex; align-items: center; gap: 15px; padding: 18px;
+  border-radius: 24px; cursor: pointer; transition: all 0.2s; margin-bottom: 8px;
+  border: 1.5px solid transparent;
+}
+.discover-card:hover { background: #f8fcf8; border-color: #eee; }
+.discover-card.active { background: var(--color-primary-soft); border-color: rgba(45,90,39,0.1); }
+
+.d-avatar-wrap { position: relative; width: 54px; height: 54px; flex-shrink: 0; }
+.d-avatar-wrap img { width: 100%; height: 100%; border-radius: 18px; object-fit: cover; }
+.d-status { position: absolute; bottom: -2px; right: -2px; width: 14px; height: 14px; border: 3px solid #fff; border-radius: 50%; }
+.d-status.online { background: #4ade80; }
+.d-status.idle { background: #facd14; }
+.d-status.offline { background: #ccc; }
+
+.d-info { flex: 1; min-width: 0; }
+.d-info strong { display: block; font-size: 0.95rem; font-weight: 950; color: #1a1c19; }
+.d-info span { 
+  font-size: 0.75rem; color: #666; font-weight: 800; display: block; margin-top: 2px;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+
+.map-footer-discovery { padding: 24px; background: #fafafa; border-top: 1px solid #f0f0f0; }
+.map-footer-discovery p { font-size: 0.72rem; font-weight: 950; color: #1a1c19; margin: 10px 0 5px; }
+.goal-bar { height: 6px; background: #eee; border-radius: 10px; overflow: hidden; }
+.goal-fill { height: 100%; background: linear-gradient(90deg, #d4af37, #facd14); }
+
+/* ── MAP OVERLAYS (STAY INSIDE CANVAS) ── */
+.map-canvas-container { flex: 1; height: 100%; position: relative; overflow: hidden; z-index: 10; }
+
+.map-interface-top {
+  position: absolute; top: 20px; left: 20px; z-index: 1000;
+  pointer-events: none;
+}
+.map-toolbar-right {
+  position: absolute; right: 20px; top: 20px;
+  display: flex; flex-direction: row; gap: 10px; z-index: 1000;
+}
+.toolbar-btn {
+  padding: 10px 18px; background: #fff; border-radius: 15px;
+  display: flex; align-items: center; justify-content: center;
+  border: 1.5px solid #efefef; box-shadow: 0 10px 25px rgba(0,0,0,0.08); cursor: pointer;
+  transition: all 0.2s; gap: 8px;
+}
+.toolbar-btn span { font-size: 0.7rem; font-weight: 950; color: #1a1c19; text-transform: uppercase; }
+.toolbar-btn:hover { background: #1a1c19; color: #fff; border-color: #1a1c19; }
+.toolbar-btn:hover span, .toolbar-btn:hover svg { color: #fff; }
+
+/* ── PROFILE OVERLAY ── */
+.map-profile-overlay {
+  position: absolute; bottom: 25px; left: 25px; right: 25px;
+  background: rgba(255,255,255,0.98); backdrop-filter: blur(25px);
+  padding: 30px; border-radius: 35px; z-index: 2000;
+  box-shadow: 0 35px 80px rgba(0,0,0,0.18); border: 1.5px solid rgba(0,0,0,0.03);
+}
+.po-close { position: absolute; top: 15px; right: 20px; background: none; border: none; cursor: pointer; color: #ccc; }
+.po-content { display: flex; gap: 30px; }
+.po-left { position: relative; }
+.po-left img { width: 120px; height: 120px; border-radius: 28px; object-fit: cover; box-shadow: 0 10px 25px rgba(0,0,0,0.1); }
+.po-badges { display: flex; gap: 6px; margin-top: 10px; justify-content: center; }
+.m-badge { background: #1a1c19; color: #fff; font-size: 0.58rem; padding: 4px 10px; border-radius: 6px; font-weight: 950; text-transform: uppercase; }
+
+.po-right { flex: 1; min-width: 0; }
+.po-meta h4 { font-size: 1.5rem; font-weight: 1000; color: #1a1c19; line-height: 1.1; }
+.po-meta p { font-size: 0.9rem; color: #888; font-weight: 800; margin-top: 4px; }
+.po-meta span { color: #4ade80; }
+
+.po-stats { display: flex; gap: 45px; margin: 22px 0; }
+.pos-item strong { display: block; font-size: 1.25rem; font-weight: 1000; color: var(--color-primary); }
+.pos-item span { font-size: 0.68rem; font-weight: 950; color: #aaa; text-transform: uppercase; }
+
+.po-actions { display: flex; gap: 15px; }
+.btn-m-chat, .btn-m-follow { 
+  padding: 12px 28px; border-radius: 16px; font-size: 0.88rem; font-weight: 950;
+  display: flex; align-items: center; gap: 10px; cursor: pointer; transition: all 0.2s; border: none;
+}
+.btn-m-chat { background: #1a1c19; color: #fff; }
+.btn-m-follow { background: var(--color-primary); color: #fff; box-shadow: 0 8px 20px rgba(45,90,39,0.2); }
+
+/* ───────────────────────────────────────────────
+   20. DIRECT MESSAGES (INSTAGRAM STYLE)
+   ─────────────────────────────────────────────── */
+.messages-layout {
+  height: calc(100vh - 76px); display: flex;
+  background: #fff; border-top: 1px solid #efefef;
+}
+
+/* ── SIDEBAR ── */
+.messages-sidebar {
+  width: 350px; height: 100%; border-right: 1px solid #efefef;
+  display: flex; flex-direction: column; background: #fff;
+}
+.ms-header { padding: 25px 20px 10px; }
+.ms-title-row { display: flex; align-items: center; justify-content: space-between; }
+.ms-title-row h3 { font-size: 1.1rem; font-weight: 1000; color: #1a1c19; }
+.btn-icon-ms { background: none; border: none; cursor: pointer; color: #1a1c19; padding: 5px; }
+
+.ms-search-box { padding: 10px 20px 20px; }
+.ms-search-inner { 
+  background: #efefef; border-radius: 10px; padding: 10px 15px;
+  display: flex; align-items: center; gap: 10px;
+}
+.ms-search-inner input { 
+  background: none; border: none; outline: none; flex: 1; 
+  font-size: 0.82rem; font-weight: 700; color: #1a1c19;
+}
+
+.ms-list { flex: 1; overflow-y: auto; }
+.ms-card {
+  display: flex; align-items: center; gap: 15px; padding: 12px 20px;
+  cursor: pointer; transition: all 0.2s;
+}
+.ms-card:hover { background: #fafafa; }
+.ms-card.active { background: #f2f2f2; }
+
+.ms-avatar-wrap { position: relative; width: 56px; height: 56px; }
+.ms-avatar-wrap img { width: 100%; height: 100%; border-radius: 50%; object-fit: cover; }
+.ms-status-dot { 
+  position: absolute; bottom: 2px; right: 2px; width: 14px; height: 14px;
+  background: #4ade80; border: 3px solid #fff; border-radius: 50%;
+}
+
+.ms-info { flex: 1; min-width: 0; }
+.ms-name-row { display: flex; align-items: center; justify-content: space-between; margin-bottom: 2px; }
+.ms-name-row strong { font-size: 0.88rem; font-weight: 950; color: #1a1c19; }
+.ms-name-row span { font-size: 0.72rem; color: #888; font-weight: 700; }
+
+.ms-msg-row { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+.ms-msg-row p { 
+  font-size: 0.8rem; color: #888; font-weight: 700;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis; flex: 1;
+}
+.ms-msg-row p.unread { color: #1a1c19; font-weight: 1000; }
+.ms-unread-badge { 
+  background: #3897f0; color: #fff; font-size: 0.65rem; font-weight: 1000;
+  width: 18px; height: 18px; border-radius: 50%; display: flex; align-items: center; justify-content: center;
+}
+
+/* ── CHAT VIEW ── */
+.messages-chat-view { flex: 1; height: 100%; background: #fff; }
+.chat-container { display: flex; flex-direction: column; height: 100%; }
+
+.chat-header {
+  padding: 15px 25px; border-bottom: 1px solid #efefef;
+  display: flex; align-items: center; justify-content: space-between;
+}
+.chat-user-info { display: flex; align-items: center; gap: 12px; cursor: pointer; }
+.cv-avatar-wrap { position: relative; width: 34px; height: 34px; }
+.cv-avatar-wrap img { width: 100%; height: 100%; border-radius: 50%; }
+.cv-status { position: absolute; bottom: -1px; right: -1px; width: 10px; height: 10px; background: #4ade80; border: 2px solid #fff; border-radius: 50%; }
+
+.cv-details h4 { font-size: 0.95rem; font-weight: 950; color: #1a1c19; line-height: 1.1; }
+.cv-details span { font-size: 0.68rem; color: #888; font-weight: 800; }
+
+.chat-actions { display: flex; gap: 15px; }
+.btn-chat-tool { background: none; border: none; color: #1a1c19; cursor: pointer; transition: opacity 0.2s; }
+.btn-chat-tool:hover { opacity: 0.6; }
+
+/* CHAT HISTORY */
+.chat-history { 
+  flex: 1; overflow-y: auto; padding: 25px;
+  display: flex; flex-direction: column; gap: 8px;
+}
+.chat-date-separator { 
+  align-self: center; font-size: 0.75rem; color: #888; font-weight: 950;
+  margin: 20px 0; text-transform: uppercase; letter-spacing: 0.5px;
+}
+
+.msg-bubble-wrap { display: flex; flex-direction: column; max-width: 60%; }
+.msg-bubble-wrap.me { align-self: flex-end; }
+.msg-bubble-wrap.them { align-self: flex-start; }
+
+.msg-bubble { 
+  padding: 12px 18px; border-radius: 24px; font-size: 0.88rem; line-height: 1.4;
+  font-weight: 800; position: relative;
+}
+.me .msg-bubble { background: #3897f0; color: #fff; }
+.them .msg-bubble { background: #fff; color: #1a1c19; border: 1px solid #efefef; }
+
+.msg-meta { 
+  margin-top: 4px; font-size: 0.68rem; color: #aaa; font-weight: 800; 
+  display: flex; align-items: center; gap: 4px;
+}
+.me .msg-meta { align-self: flex-end; }
+.them .msg-meta { align-self: flex-start; }
+
+/* INPUT AREA */
+.chat-input-area { padding: 20px 25px 25px; background: #fff; }
+.chat-input-inner {
+  border: 1px solid #dbdbdb; border-radius: 30px; padding: 8px 15px 8px 20px;
+  display: flex; align-items: center; gap: 12px;
+}
+.chat-input-inner input { 
+  flex: 1; border: none; outline: none; font-size: 0.88rem; font-weight: 800; 
+  color: #1a1c19; padding: 10px 0;
+}
+.chat-input-tools { display: flex; gap: 12px; }
+.btn-ms-alt { background: none; border: none; color: #1a1c19; cursor: pointer; }
+.btn-send-msg { 
+  color: #3897f0; font-weight: 1000; font-size: 0.9rem; background: none; 
+  border: none; cursor: pointer; padding: 0 5px;
+}
+
+/* EMPTY STATE */
+.empty-chat-state {
+  height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center;
+  padding: 40px; text-align: center;
+}
+.empty-circle { 
+  width: 96px; height: 96px; border-radius: 50%; border: 2px solid #1a1c19;
+  display: flex; align-items: center; justify-content: center; margin-bottom: 20px;
+}
+.empty-chat-state h2 { font-size: 1.4rem; font-weight: 1000; color: #1a1c19; margin-bottom: 10px; }
+.empty-chat-state p { font-size: 0.88rem; color: #888; font-weight: 850; max-width: 280px; margin-bottom: 24px; }
+.btn-primary-ms { 
+  background: #3897f0; color: #fff; border: none; padding: 10px 24px;
+  border-radius: 8px; font-size: 0.88rem; font-weight: 1000; cursor: pointer;
 }
 
 /* ── END FINAL GOO CSS ── */

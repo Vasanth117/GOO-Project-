@@ -6,10 +6,11 @@ import {
     Home, Leaf, Trophy, ShoppingBag, Users, Map, Brain,
     Bell, MessageCircle, Search, Settings, LogOut, Award,
     Heart, MessageSquare, Globe, Target, LayoutDashboard,
-    Bot, Image, ShoppingCart, User, Gift, Ticket
+    Bot, Image, ShoppingCart, User, Gift, Ticket, Camera
 } from 'lucide-react';
 import logo from '../assets/images/logo.png';
 import avatar from '../assets/images/9.jpg';
+// Removed CameraModal import as we are using a full page now
 
 const NAV_ITEMS = [
     { icon: Home,        label: 'Feed',        path: '/dashboard' },
@@ -19,6 +20,7 @@ const NAV_ITEMS = [
     { icon: Brain,       label: 'AI Advisor',  path: '/ai'        },
     { icon: Users,       label: 'Community',   path: '/community' },
     { icon: ShoppingBag, label: 'Marketplace', path: '/marketplace' },
+    { icon: MessageCircle, label: 'Messages',  path: '/messages'    },
     { icon: Settings,    label: 'Settings',    path: '/settings'  },
 ];
 
@@ -31,6 +33,7 @@ const TOPBAR_TITLES = {
     '/map':         { icon: Map,             title: 'Field Map',           sub: 'Visualize and plan your farmland' },
     '/community':   { icon: Users,           title: 'Community',           sub: 'Connect with farmers across India' },
     '/marketplace': { icon: ShoppingCart,    title: 'Marketplace',         sub: 'Buy & sell farming products' },
+    '/messages':    { icon: MessageCircle,   title: 'Direct Messages',     sub: 'Private conversations with farmers' },
     '/settings':    { icon: Settings,        title: 'Settings',            sub: 'Manage your account & preferences' },
     '/profile':     { icon: User,            title: 'Your Profile',        sub: 'Manage your farming identity' },
 };
@@ -186,9 +189,14 @@ const DashboardLayout = () => {
                             <Map size={20} color="#2d5a27" />
                         </motion.button>
 
-                        <motion.button className="topbar-icon-btn" whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.9 }}>
-                            <MessageCircle size={20} />
-                            <span className="topbar-badge">3</span>
+                        <motion.button 
+                            className="topbar-icon-btn camera-trigger" 
+                            whileHover={{ scale: 1.1, background: '#f0f7f0' }} 
+                            whileTap={{ scale: 0.9 }}
+                            onClick={() => navigate('/camera')}
+                            title="Field Capture"
+                        >
+                            <Camera size={20} color="#2d5a27" />
                         </motion.button>
 
                         <motion.button

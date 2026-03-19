@@ -11,6 +11,9 @@ import RewardsPage from './pages/RewardsPage'
 import ProfilePage from './pages/ProfilePage'
 import SettingsPage from './pages/SettingsPage'
 import MarketplacePage from './pages/MarketplacePage'
+import MessagesPage from './pages/MessagesPage'
+import CameraPage from './pages/CameraPage'
+import FieldMapPage from './pages/FieldMapPage'
 import DashboardLayout from './components/DashboardLayout'
 import { PublicRoute } from './components/ProtectedRoute'
 import { Construction } from 'lucide-react'
@@ -30,12 +33,16 @@ function App() {
         <Route path="/rewards"     element={<RewardsPage />} />
         
         <Route path="/ai"          element={<AIPage />} />
-        <Route path="/map"         element={<ComingSoon title="Field Map" />} />
+        <Route path="/map"         element={<FieldMapPage />} />
         <Route path="/community"   element={<CommunityPage />} />
         <Route path="/marketplace" element={<MarketplacePage />} />
+        <Route path="/messages"    element={<MessagesPage />} />
         <Route path="/settings"    element={<SettingsPage />} />
         <Route path="/profile"     element={<ProfilePage />} />
       </Route>
+
+      {/* 📸 FULL PAGE CAMERA (No Sidebar/Topbar) */}
+      <Route path="/camera" element={<CameraPage />} />
     </Routes>
   )
 }
