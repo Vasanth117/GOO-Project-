@@ -14,6 +14,7 @@ class Post(Document):
     likes_count: int = 0
     comments_count: int = 0
     is_verified_post: bool = False  # True if proof was AI-verified
+    impact: Optional[dict] = None  # { "water": "200L", "chemical": "100g", "method": "Organic" }
     created_at: datetime = Field(default_factory=datetime.utcnow)
     updated_at: datetime = Field(default_factory=datetime.utcnow)
 

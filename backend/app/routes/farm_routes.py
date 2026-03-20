@@ -48,3 +48,14 @@ async def weekly_checkin(
 ):
     result = await farm_controller.weekly_checkin(current_user, data)
     return success_response(result, "Check-in recorded")
+
+
+@router.get("/nearby", summary="Get nearby farmers for Map")
+async def get_nearby_farms(
+    lat: float = 0.0,
+    lng: float = 0.0,
+    radius_km: float = 100.0,
+    current_user: User = Depends(get_current_user),
+):
+    result = await farm_controller.get_nearby_farms(lat, lng, radius_km)
+    return success_response(result)

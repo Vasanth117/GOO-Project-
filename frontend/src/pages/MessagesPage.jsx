@@ -2,46 +2,47 @@ import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
     Search, Edit, Info, Phone, Video, Image, Heart, 
-    Smile, Send, MoreVertical, ChevronLeft, Check, CheckCheck 
+    Smile, Send, MoreVertical, ChevronLeft, Check, CheckCheck, Loader2
 } from 'lucide-react';
 import avatar1 from '../assets/images/9.jpg';
 
-// Simulated Chat Data
-const CHATS = [
-    { 
-        id: 1, name: 'Amit Patel', lastMsg: 'The organic fertilizer is arriving at 10 AM.', 
-        time: '2m', active: true, unread: 2, avatar: avatar1, status: 'online' 
-    },
-    { 
-        id: 2, name: 'Priya Sharma', lastMsg: 'Sent you a photo', 
-        time: '14m', active: false, unread: 0, avatar: avatar1, status: 'away' 
-    },
-    { 
-        id: 3, name: 'Suresh Kumar', lastMsg: 'Can you check the soil moisture levels?', 
-        time: '1h', active: false, unread: 0, avatar: avatar1, status: 'offline' 
-    },
-    { 
-        id: 4, name: 'Rajesh G.', lastMsg: 'Let’s meet at the sector 7 pump tomorrow.', 
-        time: 'Yesterday', active: false, unread: 0, avatar: avatar1, status: 'online' 
-    },
-    { 
-        id: 5, name: 'Kiran Rao', lastMsg: 'Your harvest looks amazing! 🌿', 
-        time: 'Yesterday', active: false, unread: 0, avatar: avatar1, status: 'offline' 
-    },
-];
-
-const INITIAL_MESSAGES = [
-    { id: 101, sender: 'them', text: 'Hey there! How is the harvest going?', time: '10:45 AM' },
-    { id: 102, sender: 'me', text: 'It is going great! Just finished the western sector.', time: '10:46 AM' },
-    { id: 103, sender: 'them', text: 'Awesome. Did you notice the sudden drop in moisture levels?', time: '10:47 AM' },
-    { id: 104, sender: 'me', text: 'Yes, setting up the drip irrigation now.', time: '10:48 AM' },
-];
+import { apiService } from '../services/apiService';
 
 const MessagesPage = () => {
-    const [selectedChat, setSelectedChat] = useState(CHATS[0]);
-    const [messages, setMessages] = useState(INITIAL_MESSAGES);
+    const [chats, setChats] = useState([]);
+    const [selectedChat, setSelectedChat] = useState(null);
+    const [messages, setMessages] = useState([]);
     const [newMessage, setNewMessage] = useState('');
+    const [loading, setLoading] = useState(true);
     const chatEndRef = useRef(null);
+
+    useEffect(() => {
+        const load = async () => {
+            try {
+                const data = await apiService.getChats();
+                setChats(data || []);
+                if (data && data.length > 0) setSelectedChat(data[0]);
+            } catch (err) {
+                console.error(err);
+            } finally {
+                setLoading(false);
+            }
+        };
+        load();
+    }, []);
+
+    useEffect(() => {
+        if (!selectedChat) return;
+        const fetchMessages = async () => {
+            try {
+                const data = await apiService.getMessageHistory(selectedChat.id);
+                setMessages(data || []);
+            } catch (err) {
+                console.error(err);
+            }
+        };
+        fetchMessages();
+    }, [selectedChat]);
 
     const scrollToBottom = () => {
         chatEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -51,31 +52,22 @@ const MessagesPage = () => {
         scrollToBottom();
     }, [messages]);
 
-    const handleSendMessage = (e) => {
+    const handleSendMessage = async (e) => {
         e.preventDefault();
-        if (!newMessage.trim()) return;
+        if (!newMessage.trim() || !selectedChat) return;
 
-        const msg = {
-            id: Date.now(),
-            sender: 'me',
-            text: newMessage,
-            time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
-        };
-
-        setMessages([...messages, msg]);
+        const content = newMessage;
         setNewMessage('');
 
-        // Simulate reply
-        setTimeout(() => {
-            const reply = {
-                id: Date.now() + 1,
-                sender: 'them',
-                text: 'Got it! I will check the pump status in sector 7 too.',
-                time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
-            };
-            setMessages(prev => [...prev, reply]);
-        }, 1500);
+        try {
+            await apiService.sendMessage(selectedChat.id, content);
+            setMessages(prev => [...prev, { id: Date.now(), sender: 'me', text: content, time: 'Now' }]);
+        } catch (err) {
+            console.error(err);
+        }
     };
+
+    if (loading) return <div className="loading-full"><Loader2 className="spinner" /></div>;
 
     return (
         <div className="messages-layout">
@@ -96,23 +88,23 @@ const MessagesPage = () => {
                 </div>
 
                 <div className="ms-list">
-                    {CHATS.map(chat => (
+                    {chats.map(chat => (
                         <div 
                             key={chat.id} 
-                            className={`ms-card ${selectedChat.id === chat.id ? 'active' : ''}`}
+                            className={`ms-card ${selectedChat?.id === chat.id ? 'active' : ''}`}
                             onClick={() => setSelectedChat(chat)}
                         >
                             <div className="ms-avatar-wrap">
-                                <img src={chat.avatar} alt="a" />
+                                <img src={chat.avatar || avatar1} alt="a" />
                                 {chat.status === 'online' && <div className="ms-status-dot" />}
                             </div>
                             <div className="ms-info">
                                 <div className="ms-name-row">
-                                    <strong>{chat.name}</strong>
-                                    <span>{chat.time}</span>
+                                    <strong>{chat.name || 'Anonymous User'}</strong>
+                                    <span>{chat.time || ''}</span>
                                 </div>
                                 <div className="ms-msg-row">
-                                    <p className={chat.unread > 0 ? 'unread' : ''}>{chat.lastMsg}</p>
+                                    <p className={chat.unread > 0 ? 'unread' : ''}>{chat.lastMsg || 'No messages yet'}</p>
                                     {chat.unread > 0 && <div className="ms-unread-badge">{chat.unread}</div>}
                                 </div>
                             </div>

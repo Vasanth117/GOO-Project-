@@ -15,7 +15,7 @@ import MessagesPage from './pages/MessagesPage'
 import CameraPage from './pages/CameraPage'
 import FieldMapPage from './pages/FieldMapPage'
 import DashboardLayout from './components/DashboardLayout'
-import { PublicRoute } from './components/ProtectedRoute'
+import { PublicRoute, PrivateRoute } from './components/ProtectedRoute'
 import { Construction } from 'lucide-react'
 
 function App() {
@@ -26,7 +26,7 @@ function App() {
         <PublicRoute><AuthPage /></PublicRoute>
       } />
 
-      <Route element={<DashboardLayout />}>
+      <Route element={<PrivateRoute><DashboardLayout /></PrivateRoute>}>
         <Route path="/dashboard"   element={<Dashboard />} />
         <Route path="/missions"    element={<MissionsPage />} />
         <Route path="/leaderboard" element={<LeaderboardPage />} />

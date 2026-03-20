@@ -16,10 +16,34 @@ async def get_my_score(current_user: User = Depends(require_farmer)):
     if not farm:
         not_found("Farm profile")
 
-    tier = get_score_tier(farm.sustainability_score)
+    tier_data = get_score_tier(farm.sustainability_score)
     return success_response({
         "score": farm.sustainability_score,
-        "tier": tier,
+        "tier": tier_data,
+    })
+
+
+@router.get("/stats", summary="Get summary statistics for dashboard")
+async def get_stats(current_user: User = Depends(require_farmer)):
+    farm = await FarmProfile.find_one(FarmProfile.farmer_id == str(current_user.id))
+    streak = await Streak.find_one(Streak.farmer_id == str(current_user.id))
+    
+    # We use sustainability_score as XP for now
+    xp = farm.sustainability_score if farm else 0
+    s_score = farm.sustainability_score if farm else 0
+    tier_data = get_score_tier(s_score)
+
+    # Badges count
+    badges_count = await FarmerBadge.find(FarmerBadge.farmer_id == str(current_user.id)).count()
+
+    return success_response({
+        "xp": xp,
+        "sustainability_score": s_score,
+        "tier": tier_data,
+        "current_streak": streak.current_streak if streak else 0,
+        "longest_streak": streak.longest_streak if streak else 0,
+        "badges_count": badges_count,
+        "rank": "Top 10%" # Mock rank for now
     })
 
 

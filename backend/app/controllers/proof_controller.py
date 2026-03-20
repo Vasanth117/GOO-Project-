@@ -275,6 +275,30 @@ async def review_proof(
             approved_by=str(reviewer.id),
         )
 
+        # 7.5 Create social post for achievement
+        try:
+            from app.controllers import social_controller
+            from app.models.mission import Mission
+            from app.models.post import Post
+            
+            mission_template = await Mission.get(mp.mission_id)
+            mission_title = mission_template.title if mission_template else "a farming mission"
+            
+            await social_controller.create_post(
+                user=await User.get(proof.farmer_id),
+                content=f"Mission Accomplished! 🌟 Just completed: {mission_title}. Doing my part for the planet!",
+                tags=["Achievement", "Organic", "Sustainable"],
+                mission_progress_id=str(mp.id),
+                image=None
+            )
+            # Link proof image to the post
+            post = await Post.find_one(Post.mission_progress_id == str(mp.id))
+            if post:
+                post.image_url = proof.file_url
+                await post.save()
+        except Exception as e:
+            logger.error(f"Failed to create accomplishment post: {e}")
+
         # Award community verification bonus score
         await update_score(
             farmer_id=proof.farmer_id,

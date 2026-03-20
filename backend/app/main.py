@@ -27,6 +27,9 @@ from app.routes import marketplace_routes, reward_routes
 # ─── Phase 6 Routes ──────────────────────────────────────────
 from app.routes import admin_routes
 
+# ─── User Profile Routes ─────────────────────────────────────
+from app.routes import user_routes
+
 # ─── Seeders ─────────────────────────────────────────────────
 from app.services.badge_service import seed_badge_definitions
 from app.services.mission_seeder import seed_missions
@@ -54,6 +57,7 @@ async def lifespan(app: FastAPI):
     # Create upload directories
     os.makedirs(os.path.join(settings.UPLOAD_DIR, "proofs"), exist_ok=True)
     os.makedirs(os.path.join(settings.UPLOAD_DIR, "posts"), exist_ok=True)
+    os.makedirs(os.path.join(settings.UPLOAD_DIR, "avatars"), exist_ok=True)
 
     # Start background scheduler
     start_scheduler()
@@ -105,13 +109,30 @@ app.mount("/uploads", StaticFiles(directory=settings.UPLOAD_DIR), name="uploads"
 
 
 # ─── GLOBAL EXCEPTION HANDLER ─────────────────────────────────
+from starlette.exceptions import HTTPException as StarletteHTTPException
+import traceback
+
 @app.exception_handler(Exception)
 async def global_exception_handler(request: Request, exc: Exception):
-    logger.error(f"Unhandled error on {request.url}: {exc}", exc_info=True)
-    return JSONResponse(
-        status_code=500,
-        content={"success": False, "message": "Internal server error"},
+    status_code = getattr(exc, "status_code", 500)
+    detail = getattr(exc, "detail", str(exc))
+    
+    # Log the full error on backend
+    logger.error(f"Unhandled error on {request.url}: {detail}", exc_info=True)
+    
+    resp = JSONResponse(
+        status_code=status_code,
+        content={
+            "status": "error",
+            "message": "Internal server error",
+            "detail": detail,
+            "traceback": traceback.format_exc() if settings.DEBUG else None
+        }
     )
+    # Manual CORS for errors
+    resp.headers["Access-Control-Allow-Origin"] = "http://localhost:3000"
+    resp.headers["Access-Control-Allow-Credentials"] = "true"
+    return resp
 
 
 # ─── ROUTERS ──────────────────────────────────────────────────
@@ -141,6 +162,9 @@ app.include_router(reward_routes.router, prefix=API_PREFIX)
 
 # Phase 6
 app.include_router(admin_routes.router, prefix=API_PREFIX)
+
+# User Profile
+app.include_router(user_routes.router, prefix=API_PREFIX)
 
 
 @app.get(API_PREFIX, tags=["Health"])

@@ -1,4 +1,5 @@
-from fastapi import APIRouter, Depends, Query
+from fastapi import APIRouter, Depends, Query, File, UploadFile, Form
+from typing import Optional, List
 from app.schemas.social_schema import CreatePostRequest, CreateCommentRequest
 from app.controllers import social_controller
 from app.middleware.auth_middleware import get_current_user
@@ -14,20 +15,33 @@ router = APIRouter(prefix="/social", tags=["Social Feed"])
 async def get_feed(
     page: int = Query(default=1, ge=1),
     limit: int = Query(default=20, ge=1, le=50),
+    post_type: Optional[str] = Query(default=None),
     current_user: User = Depends(get_current_user),
 ):
-    result = await social_controller.get_feed(current_user, page=page, limit=limit)
+    result = await social_controller.get_feed(current_user, page=page, limit=limit, post_type=post_type)
     return success_response(result)
 
 
 # ─── POSTS ───────────────────────────────────────────────────
 
-@router.post("/posts", summary="Create a new post")
+# ... existing imports ...
+
+@router.post("/posts", summary="Create a new post with optional image")
 async def create_post(
-    data: CreatePostRequest,
+    content: str = Form(...),
+    tags: Optional[str] = Form(None), # comma-separated
+    mission_progress_id: Optional[str] = Form(None),
+    image: Optional[UploadFile] = File(None),
     current_user: User = Depends(get_current_user),
 ):
-    result = await social_controller.create_post(current_user, data)
+    tag_list = [t.strip() for t in tags.split(",")] if tags else []
+    result = await social_controller.create_post(
+        user=current_user,
+        content=content,
+        tags=tag_list,
+        mission_progress_id=mission_progress_id,
+        image=image
+    )
     return success_response(result, "Post created")
 
 

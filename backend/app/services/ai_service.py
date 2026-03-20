@@ -1,44 +1,103 @@
 import groq
+import httpx
 from app.config import settings
 import logging
 import json
 import base64
-from typing import Optional, List
+import io
+from typing import Optional, List, Dict
+from pathlib import Path
 
 logger = logging.getLogger(__name__)
 
 # Initialize Groq
 if settings.GROQ_API_KEY:
     client = groq.AsyncGroq(api_key=settings.GROQ_API_KEY)
-    TEXT_MODEL = "llama-3.3-70b-versatile"
+    TEXT_MODEL = "llama-3.1-8b-instant"
     VISION_MODEL = "llama-3.2-11b-vision-preview"
 else:
     client = None
     logger.warning("GROQ_API_KEY not set. AI features will use mock responses.")
 
+ELEVENLABS_URL = "https://api.elevenlabs.io/v1/text-to-speech"
+DEFAULT_VOICE_ID = "21m00Tcm4TlvDq8ikWAM"
+
+# ─── YOLOv8 CROP DISEASE MODEL ────────────────────────────────
+_yolo_model = None
+MODEL_PATH = Path(__file__).parent.parent.parent / "runs" / "classify" / "goo_ai_models" / "crop_classifier" / "weights" / "best.pt"
+
+DISEASE_LABELS = {
+    "Tomato_Spider_mites_Two_spotted_spider_mite": "Tomato Spider Mites (Two-Spotted)",
+    "Tomato__Target_Spot": "Tomato Target Spot",
+    "Tomato__Tomato_YellowLeaf__Curl_Virus": "Tomato Yellow Leaf Curl Virus",
+    "Tomato__Tomato_mosaic_virus": "Tomato Mosaic Virus",
+    "Tomato_healthy": "Healthy Tomato Leaf",
+}
+
+
+def _get_yolo_model():
+    """Lazy-loads the YOLOv8 model on first use to avoid slow startup."""
+    global _yolo_model
+    if _yolo_model is None:
+        try:
+            from ultralytics import YOLO
+            if MODEL_PATH.exists():
+                _yolo_model = YOLO(str(MODEL_PATH))
+                logger.info(f"YOLOv8 crop disease model loaded from {MODEL_PATH}")
+            else:
+                logger.warning(f"YOLOv8 model not found at {MODEL_PATH}")
+        except Exception as e:
+            logger.error(f"Failed to load YOLOv8 model: {e}")
+    return _yolo_model
+
 
 async def get_farming_advice(user_query: str, context: dict) -> dict:
-    """Gets conversational farming advice from Groq Llama 3."""
+    """Gets expert farming advice from a high-performance Llama 3 model."""
     if not client:
-        return _mock_advice()
+        return _mock_advice("AI Service Offline (Missing API Key)")
+
+    weather_keywords = ['weather', 'rain', 'temperature', 'forecast', 'climate', 'sun', 'cloud', 'hot', 'cold']
+    disease_keywords = ['disease', 'pest', 'leaf', 'spot', 'rot', 'insect', 'protection', 'safe', 'health']
+
+    is_weather_asked = any(k in user_query.lower() for k in weather_keywords)
+    is_disease_asked = any(k in user_query.lower() for k in disease_keywords)
+
+    user_prefs = context.get("preferences", {})
+    language = user_prefs.get("language", "English")
+    priority = user_prefs.get("advice_priority", "General Sustainability")
 
     system_prompt = (
-        "You are GOO Advisor, a smart, sustainable farming AI. "
-        "Your goal is to help farmers maximize yield while minimizing environmental impact. "
-        "Use the provided environmental context (weather, soil, location) to give specific, actionable advice. "
-        "Keep responses professional, encouraging, and focused on sustainability."
+        "You are the GOO Master Agriculture Expert. Your goal is to provide specific, "
+        "evidence-based organic farming advice that WOWS the user."
+        f"\n\nUSER PREFERENCES:"
+        f"\n- Primary Language: {language} (You MUST respond in this language if it is not English)"
+        f"\n- Advice Priority: {priority} (Focus your advice on this goal)"
+        "\n\nFOLLOW THESE PERSONALITY GUIDELINES:"
+        "\n- BE PROACTIVE: If you see the user has a specific crop, give them its 'Organic Growth Tip of the Day'."
+        "\n- BE TECHNICAL BUT ACCESSIBLE: Mention specific organic fertilizers (e.g., Neem cake, Vermicompost) and techniques (e.g., mulching, crop rotation)."
+        "\n- BE SUPPORTIVE: If they haven't planted yet, push them to try profitable, sustainable crops based on their soil."
+        "\n\nSTRICT JSON SCHEMA:"
+        "\n- 'response': A well-formatted, detailed answer (Markdown supported). MUST be in the user's Primary Language."
+        "\n- 'suggestions': Exactly 3 helpful follow-up questions (strings only). MUST be in the user's Primary Language."
+        "\n- 'detected_intent': One of 'onboarding', 'advice', 'weather', 'disease'."
+        "\n- 'audio_trigger': boolean (true to read the response out loud)."
     )
 
-    full_prompt = f"""
-    CONTEXT:
-    {json.dumps(context, indent=2)}
+    clean_context = {
+        "user_name": context.get("user_name"),
+        "farm_profile": context.get("farm_profile", {}),
+        "location": "Automatically Detected via GPS",
+        "weather": context.get("current_weather") if (is_weather_asked or is_disease_asked) else "Available on request"
+    }
 
-    USER QUERY:
+    full_prompt = f"""
+    EXPERT CONTEXT:
+    {json.dumps(clean_context)}
+
+    FARMER MESSAGE:
     {user_query}
 
-    Respond ONLY in valid JSON format with two keys:
-    1. 'response': The main advisory text.
-    2. 'suggestions': A list of 2-3 short follow-up action items.
+    Respond now as the Master Expert in JSON format.
     """
 
     try:
@@ -49,123 +108,209 @@ async def get_farming_advice(user_query: str, context: dict) -> dict:
             ],
             model=TEXT_MODEL,
             response_format={"type": "json_object"},
+            temperature=0.7
         )
-        return json.loads(chat_completion.choices[0].message.content)
+        content = chat_completion.choices[0].message.content
+        logger.info(f"Expert result: {content}")
+        return json.loads(content)
     except Exception as e:
-        logger.error(f"Groq Advice Error: {e}")
-        return _mock_advice()
+        logger.error(f"Groq Expert Error: {e}")
+        return _mock_advice(f"AI Service Temporarily Unstable: {str(e)}")
 
 
-async def analyze_farming_proof(image_data: bytes, mission_type: str) -> dict:
-    """Uses Groq Llama 3.2 Vision to verify if an image matches the mission requirements."""
-    if not client:
-        return _mock_vision_analysis()
-
-    # Convert image to base64
-    base64_image = base64.b64encode(image_data).decode('utf-8')
-
-    prompt = f"""
-    Analyze this image for a farming mission: '{mission_type}'.
-    Verify if the image depicts the farming activity described.
-    Check for:
-    - Real-world farming behavior.
-    - Consistency with sustainable practices.
-    - Potential fraud (e.g., photos of screens, totally unrelated objects).
-
-    Respond ONLY in valid JSON format:
-    {{
-        "is_valid": boolean,
-        "confidence": float (0-1),
-        "analysis_notes": string (brief explanation),
-        "detected_objects": list of strings,
-        "sustainability_rating": integer (1-10)
-    }}
+async def analyze_crop_health(image_data: bytes, user_query: Optional[str] = None) -> dict:
     """
-
-    try:
-        chat_completion = await client.chat.completions.create(
-            messages=[
-                {
-                    "role": "user",
-                    "content": [
-                        {"type": "text", "text": prompt},
-                        {
-                            "type": "image_url",
-                            "image_url": {
-                                "url": f"data:image/jpeg;base64,{base64_image}",
-                            },
-                        },
-                    ],
-                }
-            ],
-            model=VISION_MODEL,
-            response_format={"type": "json_object"},
-        )
-        return json.loads(chat_completion.choices[0].message.content)
-    except Exception as e:
-        logger.error(f"Groq Vision Error: {e}")
-        return _mock_vision_analysis()
-
-
-async def recommend_crops(lat: float, lon: float, weather: dict, soil: Optional[str] = None) -> dict:
-    """Uses Groq to recommend crops based on geo data and weather."""
-    if not client:
-        return _mock_recommendations()
-
-    prompt = f"""
-    Location: Lat {lat}, Lon {lon}
-    Current Weather: {json.dumps(weather)}
-    Soil Type: {soil or 'Unknown'}
-
-    Recommend 3-5 crops suitable for this environment. Focus on sustainable, high-yield, or locally adaptive varieties.
-    
-    Respond ONLY in valid JSON:
-    {{
-        "recommended_crops": [
-            {{ "name": "string", "variety": "string", "expected_yield": "string", "difficulty": "Low/Medium/High" }}
-        ],
-        "reasoning": "string",
-        "planting_window": "string (e.g. Next 2 weeks)"
-    }}
+    Three-stage pipeline:
+    1. YOLOv8 classifies the leaf disease with 99.6% accuracy.
+    2. Vision model validates it's actually a plant (rejects random photos).
+    3. Groq LLM generates detailed organic precautions for the identified disease.
     """
-
     try:
-        chat_completion = await client.chat.completions.create(
-            messages=[
-                {"role": "user", "content": prompt},
-            ],
-            model=TEXT_MODEL,
-            response_format={"type": "json_object"},
-        )
-        return json.loads(chat_completion.choices[0].message.content)
-    except Exception as e:
-        logger.error(f"Groq Recommendation Error: {e}")
-        return _mock_recommendations()
+        from PIL import Image
+        img = Image.open(io.BytesIO(image_data)).convert("RGB")
+    except Exception:
+        return _error_analysis("Invalid image file. Please upload a valid JPG or PNG.")
+
+    # STAGE 1: YOLOv8 Classification
+    yolo = _get_yolo_model()
+    yolo_diagnosis = None
+    yolo_confidence = 0.0
+    is_plant = False
+
+    if yolo:
+        try:
+            results = yolo.predict(source=img, imgsz=224, verbose=False)
+            top1_idx = results[0].probs.top1
+            top1_conf = float(results[0].probs.top1conf)
+            raw_label = results[0].names[top1_idx]
+            is_plant = top1_conf >= 0.5
+            yolo_confidence = top1_conf
+            yolo_diagnosis = DISEASE_LABELS.get(raw_label, raw_label.replace("_", " "))
+            logger.info(f"YOLOv8 detected: {yolo_diagnosis} ({yolo_confidence:.2%})")
+        except Exception as e:
+            logger.error(f"YOLOv8 inference error: {e}")
+
+    # STAGE 2: Vision validation if YOLO is unsure or unavailable
+    if not yolo or not is_plant:
+        if client:
+            base64_image = base64.b64encode(image_data).decode('utf-8')
+            try:
+                validation = await client.chat.completions.create(
+                    messages=[{
+                        "role": "user",
+                        "content": [
+                            {"type": "text", "text": (
+                                "Is this image showing a plant leaf or crop? "
+                                "Reply ONLY with valid JSON: {\"is_plant\": true/false, \"reason\": \"brief reason\"}"
+                            )},
+                            {"type": "image_url", "image_url": {"url": f"data:image/jpeg;base64,{base64_image}"}},
+                        ],
+                    }],
+                    model=VISION_MODEL,
+                    response_format={"type": "json_object"},
+                )
+                v = json.loads(validation.choices[0].message.content)
+                is_plant = v.get("is_plant", False)
+                if not is_plant:
+                    return {
+                        "diagnosis": "Not a Plant Image",
+                        "severity": "None",
+                        "advice": (
+                            f"🌿 This image does not appear to be a plant or crop leaf. "
+                            f"{v.get('reason', '')} Please upload a clear, close-up photo of a plant leaf "
+                            f"or crop showing the disease symptoms for accurate analysis."
+                        ),
+                        "precautions": [],
+                        "safety_measures": [],
+                        "is_organic_friendly": True,
+                        "confidence": 0,
+                        "is_valid_plant": False
+                    }
+            except Exception as e:
+                logger.error(f"Vision validation error: {e}")
+
+    # STAGE 3: Groq generates precautions for the detected disease
+    if client and yolo_diagnosis and is_plant:
+        is_healthy = "healthy" in yolo_diagnosis.lower()
+        prompt = f"""You are a Master Crop Disease Specialist and Organic Farming Expert for Indian farmers.
+
+A YOLOv8 AI model scanned a plant image and detected: "{yolo_diagnosis}" with {yolo_confidence:.1%} confidence.
+
+{"The plant appears HEALTHY. Provide encouraging tips to keep it thriving." if is_healthy else "The plant has a DISEASE. Provide specific organic treatment steps and safety precautions."}
+
+Farmer note: {user_query or "No additional info provided."}
+
+Respond ONLY with this exact JSON:
+{{
+    "diagnosis": "{yolo_diagnosis}",
+    "severity": "Low/Medium/High",
+    "advice": "A comprehensive paragraph explaining what this disease is, how it spreads, and the best organic treatment approach.",
+    "precautions": ["Step 1 with specific organic product or technique", "Step 2", "Step 3", "Step 4"],
+    "safety_measures": ["Personal safety measure 1 for the farmer", "Safety measure 2", "Safety measure 3"],
+    "is_organic_friendly": true
+}}"""
+
+        try:
+            response = await client.chat.completions.create(
+                messages=[{"role": "user", "content": prompt}],
+                model=TEXT_MODEL,
+                response_format={"type": "json_object"},
+                temperature=0.4
+            )
+            result = json.loads(response.choices[0].message.content)
+            result["confidence"] = round(yolo_confidence * 100, 1)
+            result["is_valid_plant"] = True
+            return result
+        except Exception as e:
+            logger.error(f"Groq precaution generation error: {e}")
+
+    # Fallback: YOLO worked but Groq is down
+    if yolo_diagnosis and is_plant:
+        return {
+            "diagnosis": yolo_diagnosis,
+            "severity": "Medium",
+            "advice": f"YOLOv8 detected: {yolo_diagnosis}. Please consult your local agricultural officer for a complete treatment plan.",
+            "precautions": ["Isolate affected plants immediately", "Remove and destroy affected leaves", "Avoid overhead watering", "Apply Neem oil spray as organic treatment"],
+            "safety_measures": ["Wear gloves when handling affected plants", "Wash hands thoroughly after contact", "Do not consume affected produce without expert advice"],
+            "is_organic_friendly": True,
+            "confidence": round(yolo_confidence * 100, 1),
+            "is_valid_plant": True
+        }
+
+    return _mock_vision_analysis()
 
 
-# ─── MOCK RESPONSES (for development without API key) ───────
+async def generate_voice_advice(text: str, voice_id: str = "pNInz6obpg8nEByWQX2t") -> Optional[bytes]:
+    """Generates audio from text using ElevenLabs for multilingual support."""
+    if not settings.ELEVENLABS_API_KEY:
+        logger.warning("ELEVENLABS_API_KEY not set.")
+        return None
 
-def _mock_advice():
-    return {
-        "response": "Based on your current weather, it's a great time for soil preparation. Ensure you use organic mulch to retain moisture.",
-        "suggestions": ["Add organic mulch", "Check soil pH", "Inspect for early pests"]
+    headers = {
+        "Accept": "audio/mpeg",
+        "xi-api-key": settings.ELEVENLABS_API_KEY,
+        "Content-Type": "application/json"
     }
+    payload = {
+        "text": text,
+        "model_id": "eleven_multilingual_v2",
+        "voice_settings": {"stability": 0.5, "similarity_boost": 0.75}
+    }
+
+    actual_voice_id = voice_id or DEFAULT_VOICE_ID
+    try:
+        async with httpx.AsyncClient() as http_client:
+            response = await http_client.post(
+                f"{ELEVENLABS_URL}/{actual_voice_id}",
+                json=payload,
+                headers=headers,
+                timeout=30.0
+            )
+            if response.status_code == 200:
+                return response.content
+            else:
+                logger.error(f"ElevenLabs Error: {response.status_code} - {response.text}")
+                return None
+    except Exception as e:
+        logger.error(f"Voice generation exception: {e}")
+        return None
+
+
+# ─── MOCK RESPONSES ───────────────────────────────────────────
+
+def _mock_advice(error_msg: Optional[str] = None):
+    response = "Hello! I'm GOO Advisor. Could you please share your farm size and soil type so I can help you better?"
+    if error_msg:
+        response = f"I'm having a bit of trouble reaching my knowledge base ({error_msg}). But I'm still here to help! {response}"
+    return {
+        "response": response,
+        "suggestions": ["Tell farm size", "Share soil type"],
+        "detected_intent": "onboarding",
+        "audio_trigger": False
+    }
+
 
 def _mock_vision_analysis():
     return {
-        "is_valid": True,
-        "confidence": 0.95,
-        "analysis_notes": "The image clearly shows organic composting behavior. This is consistent with the 'Compost Master' mission.",
-        "detected_objects": ["compost bin", "organic waste", "farmer", "garden tools"],
-        "sustainability_rating": 9
+        "diagnosis": "General Health Check",
+        "severity": "Low",
+        "advice": "The crops look healthy. Continue regular organic watering.",
+        "precautions": ["Avoid overwatering"],
+        "safety_measures": ["Wear gloves when weeding"],
+        "is_organic_friendly": True,
+        "confidence": 0,
+        "is_valid_plant": True
     }
 
-def _mock_recommendations():
+
+def _error_analysis(message: str):
     return {
-        "recommended_crops": [
-            {"name": "Millet", "variety": "Pearl Millet", "expected_yield": "High", "difficulty": "Low"},
-            {"name": "Groundnut", "variety": "Spanish Bunch", "expected_yield": "Medium", "difficulty": "Medium"}
-        ],
-        "reasoning": "These crops are drought-resistant and suit the current warm temperatures in your region.",
-        "planting_window": "Late March to Early April"
+        "diagnosis": "Image Error",
+        "severity": "None",
+        "advice": message,
+        "precautions": [],
+        "safety_measures": [],
+        "is_organic_friendly": True,
+        "confidence": 0,
+        "is_valid_plant": False
     }

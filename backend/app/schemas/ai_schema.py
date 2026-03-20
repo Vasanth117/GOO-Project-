@@ -10,7 +10,23 @@ class AdvisorChatRequest(BaseModel):
 class AdvisorResponse(BaseModel):
     response: str
     suggestions: List[str] = []
+    detected_intent: str = "advice"
+    audio_trigger: bool = False
     referenced_data: Optional[Dict[str, Any]] = None
+
+
+class CropHealthResponse(BaseModel):
+    diagnosis: str
+    severity: str
+    advice: str
+    precautions: List[str]
+    safety_measures: List[str]
+    is_organic_friendly: bool
+
+
+class TTSRequest(BaseModel):
+    text: str
+    voice_id: Optional[str] = None
 
 
 class CropRecommendationRequest(BaseModel):

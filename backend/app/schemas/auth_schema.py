@@ -6,7 +6,7 @@ from app.models.user import UserRole
 class RegisterRequest(BaseModel):
     name: str = Field(..., min_length=2, max_length=100)
     email: EmailStr
-    password: str = Field(..., min_length=6, max_length=100)
+    password: str = Field(..., min_length=6, max_length=72)
     role: UserRole = UserRole.FARMER
 
     class Config:
@@ -55,6 +55,7 @@ class UserResponse(BaseModel):
     is_verified: bool
     profile_picture: Optional[str] = None
     created_at: str
+    farm_profile: Optional[dict] = None
 
 
 class AuthResponse(BaseModel):

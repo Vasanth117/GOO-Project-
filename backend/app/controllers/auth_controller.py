@@ -1,4 +1,4 @@
-from app.models.user import User, UserStatus
+from app.models.user import User, UserStatus, UserRole
 from app.models.refresh_token import RefreshToken
 from app.models.streak import Streak
 from app.models.reward import Reward
@@ -15,7 +15,10 @@ import logging
 logger = logging.getLogger(__name__)
 
 
-def _build_user_response(user: User) -> UserResponse:
+from app.models.farm_profile import FarmProfile
+
+async def _build_user_response(user: User) -> UserResponse:
+    farm = await FarmProfile.find_one(FarmProfile.farmer_id == str(user.id))
     return UserResponse(
         id=str(user.id),
         name=user.name,
@@ -25,6 +28,7 @@ def _build_user_response(user: User) -> UserResponse:
         is_verified=user.is_verified,
         profile_picture=user.profile_picture,
         created_at=user.created_at.isoformat(),
+        farm_profile=farm.model_dump() if farm else None,
     )
 
 
@@ -44,7 +48,7 @@ async def register(data: RegisterRequest) -> AuthResponse:
     await user.insert()
 
     # Initialize streak and reward wallet for farmers
-    if data.role.value in ("farmer", "grc"):
+    if data.role in (UserRole.FARMER, UserRole.GRC):
         await Streak(farmer_id=str(user.id)).insert()
 
     # Generate tokens
@@ -63,7 +67,7 @@ async def register(data: RegisterRequest) -> AuthResponse:
     return AuthResponse(
         access_token=access_token,
         refresh_token=refresh_token,
-        user=_build_user_response(user),
+        user=await _build_user_response(user),
     )
 
 
@@ -94,7 +98,7 @@ async def login(data: LoginRequest) -> AuthResponse:
     return AuthResponse(
         access_token=access_token,
         refresh_token=refresh_token,
-        user=_build_user_response(user),
+        user=await _build_user_response(user),
     )
 
 
@@ -131,4 +135,4 @@ async def logout(refresh_token: str):
 
 
 async def get_me(user: User) -> UserResponse:
-    return _build_user_response(user)
+    return await _build_user_response(user)

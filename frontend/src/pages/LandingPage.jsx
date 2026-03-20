@@ -121,7 +121,11 @@ const LandingPage = () => {
                         variants={container}
                         initial="hidden"
                         animate="visible"
-                        style={{ display: "flex", flexWrap: "wrap", gap: "0.5rem" }}
+                        style={{ 
+                            display: "flex", flexWrap: "wrap", gap: "0.25rem",
+                            fontSize: "clamp(2.5rem, 5vw, 4rem)", // Reduced from 5.5rem
+                            marginBottom: "1.5rem"                // Reduced from 3rem
+                        }}
                     >
                         {headlineWords.map((word, index) => (
                             <motion.span
@@ -136,13 +140,13 @@ const LandingPage = () => {
 
                     <motion.div 
                         className="cta-row" 
-                        style={{ display: 'flex', gap: '1.5rem', marginTop: '3rem' }}
+                        style={{ display: 'flex', gap: '1rem', marginTop: '1.5rem' }} // Tightened
                         initial={{ opacity: 0, scale: 0.95 }}
                         animate={{ opacity: 1, scale: 1 }}
                         transition={{ delay: 1.2 }}
                     >
-                        <button className="btn-cta">Explore the Network</button>
-                        <button className="btn-cta" style={{ background: '#d4af37', border: 'none' }} onClick={() => navigate('/login')}>Login to Dashboard</button>
+                        <button className="btn-cta">Explore Network</button>
+                        <button className="btn-cta" style={{ background: '#d4af37', border: 'none' }} onClick={() => navigate('/login')}>Login Dashboard</button>
                     </motion.div>
                 </div>
 

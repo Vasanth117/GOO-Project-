@@ -1,0 +1,233 @@
+
+/* ───────────────────────────────────────────────
+   45. SOCIAL FEED & DASHBOARD — PREMIUM COMPONENTS
+   ─────────────────────────────────────────────── */
+
+.feed-layout {
+  display: flex;
+  justify-content: center;
+  gap: var(--space-8);
+  padding: var(--space-8) 5%;
+  max-width: 1600px;
+  margin: 0 auto;
+  height: calc(100vh - 80px); /* Adjust for topbar */
+  overflow-y: auto;
+  scrollbar-width: thin;
+}
+
+.feed-column {
+  flex: 1;
+  max-width: 720px;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-6);
+}
+
+.feed-right-panel {
+  width: 380px;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-6);
+  position: sticky;
+  top: 0;
+  height: fit-content;
+}
+
+/* FEED CARDS */
+.feed-card {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  padding: var(--space-6);
+  box-shadow: var(--shadow-sm);
+  transition: all var(--duration-base) var(--ease-standard);
+  margin-bottom: var(--space-6);
+}
+
+.feed-card:hover {
+  box-shadow: var(--shadow-md);
+  border-color: rgba(45, 90, 39, 0.2);
+}
+
+.feed-card-header {
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+  margin-bottom: var(--space-4);
+}
+
+.feed-avatar {
+  width: 44px;
+  height: 44px;
+  border-radius: var(--radius-md);
+  object-fit: cover;
+  border: 1.5px solid var(--color-border);
+}
+
+.feed-farmer-info {
+  display: flex;
+  flex-direction: column;
+}
+
+.feed-caption {
+  font-size: 1.05rem;
+  color: var(--color-text-1);
+  font-weight: 600;
+  line-height: 1.5;
+  margin-bottom: var(--space-4);
+}
+
+.feed-img-wrapper {
+  aspect-ratio: 16 / 9;
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  background: #f5f7f5;
+  margin-bottom: var(--space-4);
+  border: 1px solid var(--color-border-soft);
+}
+
+.feed-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* ECO IMPACT BAR */
+.eco-impact-bar {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-3) var(--space-4);
+  background: #f9fbf9;
+  border-radius: var(--radius-md);
+  margin-bottom: var(--space-4);
+  border: 1.5px dashed rgba(45, 90, 39, 0.15);
+}
+
+.eco-chip {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.78rem;
+  font-weight: 900;
+  padding: 6px 12px;
+  border-radius: var(--radius-sm);
+}
+
+/* FEED ACTIONS */
+.feed-actions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-top: 1px solid var(--color-border-soft);
+  padding-top: var(--space-4);
+  margin-top: var(--space-2);
+}
+
+.feed-action-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: none;
+  border: none;
+  color: var(--color-text-3);
+  font-weight: 800;
+  font-size: 0.9rem;
+  cursor: pointer;
+  padding: 8px 12px;
+  border-radius: var(--radius-sm);
+  transition: all var(--duration-fast);
+}
+
+.feed-action-btn:hover {
+  background: var(--color-primary-soft);
+  color: var(--color-primary);
+}
+
+.feed-action-btn.liked {
+  color: var(--color-danger);
+}
+
+.feed-action-btn.liked:hover {
+  background: var(--color-danger-soft);
+}
+
+/* COMMENTS SECTION */
+.comments-section {
+  margin-top: var(--space-5);
+  padding-top: var(--space-5);
+  border-top: 1px solid var(--color-border-soft);
+}
+
+.comment-input-wrap {
+  display: flex;
+  gap: var(--space-3);
+  align-items: center;
+  margin-bottom: var(--space-5);
+}
+
+.comment-input {
+  flex: 1;
+  background: var(--color-surface-2);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-full);
+  padding: 10px 20px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  outline: none;
+  transition: border-color var(--duration-fast);
+}
+
+.comment-input:focus {
+  border-color: var(--color-primary);
+  background: #fff;
+}
+
+.single-comment {
+  display: flex;
+  gap: var(--space-3);
+  margin-bottom: var(--space-4);
+}
+
+.comment-bubble {
+  background: var(--color-surface-2);
+  padding: 10px 16px;
+  border-radius: var(--radius-md);
+  flex: 1;
+  font-size: 0.88rem;
+}
+
+.comment-author-name {
+  font-weight: 950;
+  color: var(--color-text-1);
+  margin-bottom: 2px;
+  font-size: 0.82rem;
+}
+
+.comment-text {
+  color: var(--color-text-2);
+  font-weight: 600;
+  line-height: 1.4;
+}
+
+/* WIDGETS */
+.widget-card {
+  background: var(--color-surface);
+  border-radius: var(--radius-lg);
+  padding: var(--space-6);
+  border: 1px solid var(--color-border);
+  box-shadow: var(--shadow-sm);
+}
+
+.widget-title {
+  font-family: var(--font-display);
+  font-size: 1.05rem;
+  font-weight: 900;
+  color: var(--color-text-1);
+  margin-bottom: var(--space-5);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+/* ── END FINAL GOO CSS ── */

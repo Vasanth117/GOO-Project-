@@ -31,6 +31,7 @@ class User(Document):
     profile_picture: Optional[str] = None
     bio: Optional[str] = None
     phone: Optional[str] = None
+    preferences: Optional[dict] = Field(default_factory=dict)
     created_at: datetime = Field(default_factory=datetime.utcnow)
     updated_at: datetime = Field(default_factory=datetime.utcnow)
 

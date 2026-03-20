@@ -26,6 +26,7 @@ class Settings(BaseSettings):
     # AI
     GEMINI_API_KEY: str = ""
     GROQ_API_KEY: str = ""
+    ELEVENLABS_API_KEY: str = ""
 
     # Weather
     WEATHER_API_KEY: str = ""

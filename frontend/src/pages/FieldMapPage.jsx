@@ -8,17 +8,10 @@ import {
     Star, Users, ChevronRight, Zap, Target, Layers
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
+import { apiService } from '../services/apiService';
 import avatar1 from '../assets/images/9.jpg';
 
 const CENTER = [10.6629, 77.0065]; 
-
-const NEARBY_FARMERS = [
-    { id: 1, pos: [10.6720, 77.0160], name: 'Amit Patel', role: 'Rice Specialist', score: 94, status: 'online', activity: 'Harvesting Basmati', isSeller: true },
-    { id: 2, pos: [10.6520, 76.9960], name: 'Priya Sharma', role: 'Hydroponics Expert', score: 88, status: 'idle', activity: 'Setting up Drip Lines', isSeller: false },
-    { id: 3, pos: [10.6820, 77.0260], name: 'Kiran Rao', role: 'Organic Farmer', score: 91, status: 'online', activity: 'Soil Testing', isSeller: true },
-    { id: 4, pos: [10.6420, 77.0060], name: 'Suresh Kumar', role: 'Fruit Grower', score: 76, status: 'offline', activity: 'Irrigating Orchard', isSeller: false },
-    { id: 5, pos: [10.6629, 77.0365], name: 'Rajesh G.', role: 'Cattle Farmer', score: 98, status: 'online', activity: 'Biogas Maintenance', isSeller: true },
-];
 
 const HEATMAP_POINTS = [
     { pos: [10.6720, 77.0160], intensity: 0.8 },
@@ -34,10 +27,27 @@ const FieldMapPage = () => {
     const navigate = useNavigate();
     const { user } = useAuth();
 
+    const [nearbyFarmers, setNearbyFarmers] = useState([]);
     const [selectedUser, setSelectedUser] = useState(null);
     const [ghostMode, setGhostMode] = useState(false);
     const [heatmapVisible, setHeatmapVisible] = useState(true);
     const [searchQuery, setSearchQuery] = useState('');
+    const [loading, setLoading] = useState(true);
+
+    const fetchFarmers = async () => {
+        try {
+            const data = await apiService.getNearbyFarmers(10.6629, 77.0065);
+            setNearbyFarmers(data || []);
+        } catch (err) {
+            console.error(err);
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    useEffect(() => {
+        fetchFarmers();
+    }, []);
 
     useEffect(() => {
         let pollCount = 0;
@@ -75,7 +85,7 @@ const FieldMapPage = () => {
 
     useEffect(() => {
         if (mapInstance.current) renderLayers();
-    }, [ghostMode, heatmapVisible, searchQuery, selectedUser]);
+    }, [ghostMode, heatmapVisible, searchQuery, selectedUser, nearbyFarmers]);
 
     const renderLayers = () => {
         const L = window.L;
@@ -94,7 +104,7 @@ const FieldMapPage = () => {
             });
         }
 
-        NEARBY_FARMERS.filter(f => f.name.toLowerCase().includes(searchQuery.toLowerCase())).forEach(farmer => {
+        nearbyFarmers.filter(f => f.name.toLowerCase().includes(searchQuery.toLowerCase())).forEach(farmer => {
             const icon = L.divIcon({
                 className: 'custom-map-marker',
                 html: `
@@ -129,7 +139,7 @@ const FieldMapPage = () => {
                     <p>Real-time community activity</p>
                 </div>
                 <div className="discover-scroll">
-                    {NEARBY_FARMERS.map(f => (
+                    {nearbyFarmers.map(f => (
                         <div key={f.id} className={`discover-card ${selectedUser?.id === f.id ? 'active' : ''}`} onClick={() => { setSelectedUser(f); mapInstance.current.setView(f.pos, 15); }}>
                             <div className="d-avatar-wrap">
                                 <img src={avatar1} />

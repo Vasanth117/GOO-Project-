@@ -1,5 +1,5 @@
 from fastapi import UploadFile
-from typing import Optional
+from typing import Optional, List
 import os
 import aiofiles
 import hashlib
@@ -20,6 +20,7 @@ from app.services.score_service import get_score_tier
 from app.utils.response_utils import error_response, not_found
 from app.config import settings
 import logging
+from beanie.operators import In
 
 logger = logging.getLogger(__name__)
 
@@ -47,9 +48,14 @@ async def _post_to_dict(post: Post, viewer_id: str) -> dict:
         Reaction.post_id == str(post.id),
         Reaction.user_id == viewer_id,
     ) is not None
+    followed = await Follow.find_one(
+        Follow.follower_id == viewer_id,
+        Follow.following_id == post.author_id
+    ) is not None
+
     return {
         "id": str(post.id),
-        "author": author,
+        "author": {**author, "is_followed_by_me": followed},
         "content": post.content,
         "image_url": post.image_url,
         "video_url": post.video_url,
@@ -58,6 +64,7 @@ async def _post_to_dict(post: Post, viewer_id: str) -> dict:
         "comments_count": post.comments_count,
         "is_verified_post": post.is_verified_post,
         "is_liked_by_me": liked,
+        "impact": post.impact,
         "mission_progress_id": post.mission_progress_id,
         "created_at": post.created_at.isoformat(),
     }
@@ -65,19 +72,49 @@ async def _post_to_dict(post: Post, viewer_id: str) -> dict:
 
 # ─── POST ACTIONS ────────────────────────────────────────────
 
-async def create_post(user: User, data: CreatePostRequest) -> dict:
+async def create_post(
+    user: User, 
+    content: str, 
+    tags: List[str] = [], 
+    mission_progress_id: Optional[str] = None,
+    image: Optional[UploadFile] = None
+) -> dict:
+    image_url = None
+    if image and image.filename:
+        ext = os.path.splitext(image.filename)[1]
+        filename = f"{user.id}_{datetime.utcnow().timestamp()}{ext}"
+        post_dir = os.path.join(settings.UPLOAD_DIR, "posts")
+        os.makedirs(post_dir, exist_ok=True)
+        
+        path = os.path.join(post_dir, filename)
+        async with aiofiles.open(path, "wb") as f:
+            content_bytes = await image.read()
+            await f.write(content_bytes)
+        
+        image_url = f"/uploads/posts/{filename}"
+
     post = Post(
         author_id=str(user.id),
-        content=data.content,
-        tags=data.tags,
-        mission_progress_id=data.mission_progress_id,
+        content=content,
+        tags=tags,
+        image_url=image_url,
+        mission_progress_id=mission_progress_id,
     )
+    # Generate some random/mock impact stats if none provided (for flavor)
+    post.impact = {
+        "water": f"{len(content)*2}L saved",
+        "chemical": f"{len(tags)*10}g avoided",
+        "method": "Organic" if "organic" in [t.lower() for t in tags] else "Eco-Friendly"
+    }
+    
     await post.insert()
     logger.info(f"Post created by {user.id}")
     return await _post_to_dict(post, str(user.id))
 
 
-async def get_feed(user: User, page: int = 1, limit: int = 20) -> dict:
+from beanie.operators import In
+
+async def get_feed(user: User, page: int = 1, limit: int = 20, post_type: Optional[str] = None) -> dict:
     """
     Returns paginated feed: posts from followed users + recent community posts.
     """
@@ -88,9 +125,17 @@ async def get_feed(user: User, page: int = 1, limit: int = 20) -> dict:
     following_ids = [f.following_id for f in follows]
     following_ids.append(str(user.id))  # Include own posts
 
-    # Fetch posts from followed + general community
+    # Query building
+    query = In(Post.author_id, following_ids)
+    if post_type == "missions":
+        query = { "$and": [ { "author_id": { "$in": following_ids } }, { "mission_progress_id": { "$ne": None } } ] }
+    elif post_type == "eco":
+        # posts with chemical or water impact
+        query = { "$and": [ { "author_id": { "$in": following_ids } }, { "impact": { "$ne": None } } ] }
+
+    # Fetch posts
     posts = (
-        await Post.find(Post.author_id.in_(following_ids))
+        await Post.find(query)
         .sort(-Post.created_at)
         .skip(skip)
         .limit(limit)
@@ -106,7 +151,7 @@ async def get_feed(user: User, page: int = 1, limit: int = 20) -> dict:
             if str(p.id) not in found_ids and len(posts) < limit:
                 posts.append(p)
 
-    total_following_posts = await Post.find(Post.author_id.in_(following_ids)).count()
+    total_following_posts = await Post.find(In(Post.author_id, following_ids)).count()
 
     enriched = [await _post_to_dict(p, str(user.id)) for p in posts]
     return {

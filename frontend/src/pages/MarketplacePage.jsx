@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
     ShoppingBag, Search, Filter, ShoppingCart, 
@@ -12,14 +12,11 @@ import {
     PieChart, Activity, AlertCircle, HardDrive, Gift
 } from 'lucide-react';
 
-/* ── ASSET IMPORTS ── */
-import img1 from '../assets/images/1.jpg';
-import img2 from '../assets/images/2.jpg';
-import img3 from '../assets/images/3.jpg';
-import avatar2 from '../assets/images/2.jpg';
-import avatar3 from '../assets/images/3.jpg';
+import { apiService } from '../services/apiService';
 
 const MarketplacePage = () => {
+    const [products, setProducts] = useState([]);
+    const [loading, setLoading] = useState(true);
     // phase: 'gate' | 'buyer' | 'seller'
     const [phase, setPhase] = useState('gate');
     const [activeTab, setActiveTab] = useState('shop'); // For Buyer
@@ -31,29 +28,19 @@ const MarketplacePage = () => {
     const [showAddProduct, setShowAddProduct] = useState(false);
     const [checkoutStep, setCheckoutStep] = useState(0);
 
-    const PRODUCTS = [
-        { 
-            id: 1, name: 'Premium Organic Paddy', price: 1200, unit: '50kg', 
-            discount: '10% off', rating: 4.8, seller: 'Ravi Kumar', pointsReward: 120,
-            location: 'Warangal', img: img1, category: 'Organic Crops',
-            tags: ['Chemical Free', 'B Grade'], stock: 50, reviews: 85,
-            desc: 'Grown with 100% organic bio-compost. Verified by AI Mission History.'
-        },
-        { 
-            id: 2, name: 'Bio-Fertilizer (Nitrogen)', price: 450, unit: '5L', 
-            discount: 'Voucher Eligible', rating: 4.9, seller: 'Eco-Grow Ltd', pointsReward: 45,
-            location: 'Hyderabad', img: img2, category: 'Fertilizer',
-            tags: ['Organic', 'Fast-Acting'], stock: 120, reviews: 120,
-            desc: 'Boosts vegetative growth naturally.'
-        },
-        { 
-            id: 3, name: 'Drought Resistant Seeds', price: 300, unit: '1kg', 
-            discount: 'Use 500 Pts', rating: 4.7, seller: 'Bharat Seeds', pointsReward: 30,
-            location: 'Nizamabad', img: img3, category: 'Seeds',
-            tags: ['High Yield'], stock: 200, reviews: 45,
-            desc: 'Best for local rainfall patterns.'
-        }
-    ];
+    useEffect(() => {
+        const load = async () => {
+            try {
+                const data = await apiService.getProducts();
+                setProducts(data || []);
+            } catch (err) {
+                console.error(err);
+            } finally {
+                setLoading(false);
+            }
+        };
+        load();
+    }, []);
 
     /* ── 🟢 1: ENTRY PHASE (GATE) ── */
     if (phase === 'gate') {
@@ -154,7 +141,7 @@ const MarketplacePage = () => {
 
                             <div className="shop-main-view">
                                 <div className="product-wall-luxe">
-                                    {PRODUCTS.map(p => (
+                                    {products.map(p => (
                                         <motion.div key={p.id} className="p-card-luxe" whileHover={{ y: -8 }} onClick={() => setSelectedProduct(p)}>
                                             <div className="p-card-img-c">
                                                 <img src={p.img} alt="p" />

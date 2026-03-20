@@ -148,6 +148,35 @@ async def weekly_checkin(user: User, data: WeeklyCheckinRequest) -> dict:
     }
 
 
+async def get_nearby_farms(lat: float, lng: float, radius: float) -> list:
+    """
+    Returns farm profiles for Map view.
+    For this 'Snap Map' feature, we return primary farmers + high-activity zones.
+    """
+    # Simply fetching all for the 'Snap Map' demo scope
+    farms = await FarmProfile.find_all().to_list()
+    
+    results = []
+    for f in farms:
+        user = await User.get(f.farmer_id)
+        if not user:
+            continue
+            
+        results.append({
+            "id": str(f.id),
+            "pos": [f.location.latitude, f.location.longitude],
+            "name": user.name,
+            "farm_name": f.farm_name,
+            "role": user.role.value,
+            "score": f.sustainability_score,
+            "status": "online" if datetime.utcnow().second % 5 == 0 else "offline", # Simulated real-time
+            "activity": f"Farming {f.crop_types[0]}" if f.crop_types else "Active",
+            "isSeller": user.role.value == "seller",
+            "avatar": user.profile_picture
+        })
+    return results
+
+
 def _farm_to_dict(farm: FarmProfile) -> dict:
     return {
         "id": str(farm.id),

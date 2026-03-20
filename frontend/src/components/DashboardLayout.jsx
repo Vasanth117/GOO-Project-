@@ -20,7 +20,6 @@ const NAV_ITEMS = [
     { icon: Brain,       label: 'AI Advisor',  path: '/ai'        },
     { icon: Users,       label: 'Community',   path: '/community' },
     { icon: ShoppingBag, label: 'Marketplace', path: '/marketplace' },
-    { icon: MessageCircle, label: 'Messages',  path: '/messages'    },
     { icon: Settings,    label: 'Settings',    path: '/settings'  },
 ];
 
