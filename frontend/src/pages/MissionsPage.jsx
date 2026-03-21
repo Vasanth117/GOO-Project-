@@ -72,7 +72,8 @@ const MissionsPage = () => {
     const activeMissions = missions.filter(m => m.status === 'in_progress' || m.status === 'pending_review');
     const availableMissions = missions.filter(m => 
         m.status === 'active' && 
-        (m.mission_type === timeFilter || (timeFilter === 'daily' && m.mission_type === 'surprise'))
+        ((activeTab === 'solo' && (m.mission_type === timeFilter || (timeFilter === 'daily' && m.mission_type === 'surprise'))) ||
+         (activeTab === 'community' && m.mission_type === 'community'))
     );
     const completedMissions = [
         ...missions.filter(m => m.status === 'completed'),
@@ -187,10 +188,34 @@ const MissionsPage = () => {
 
             {/* 👥 4️⃣ COMMUNITY TASKS SECTION */}
             {activeTab === 'community' && (
-                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(380px, 1fr))', gap: 25 }}>
-                    {communityMissions.map((task, i) => (
-                        <CommunityCard key={task.id} task={task} index={i} />
-                    ))}
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 40 }}>
+                    {/* Global Community Goals */}
+                    <section>
+                        <SectionHeader icon={Globe} title="Collective Goals" color="#1e293b" />
+                        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(380px, 1fr))', gap: 25 }}>
+                            {communityMissions.length === 0 ? (
+                                <EmptyState message="No collective community goals right now." />
+                            ) : (
+                                communityMissions.map((task, i) => (
+                                    <CommunityCard key={task.id || i} task={task} index={i} />
+                                ))
+                            )}
+                        </div>
+                    </section>
+
+                    {/* Individual Community Tasks (The 10 tasks assigned for individual completion) */}
+                    <section>
+                        <SectionHeader icon={Users} title="Your Community Tasks" color="#2d5a27" />
+                        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))', gap: 25 }}>
+                            {availableMissions.filter(m => m.mission_type === 'community').length === 0 ? (
+                                <EmptyState message="All community tasks are in progress or completed!" />
+                            ) : (
+                                availableMissions.filter(m => m.mission_type === 'community').map((task, i) => (
+                                    <MissionCard key={task.progress_id} task={task} index={i} onStart={handleStart} />
+                                ))
+                            )}
+                        </div>
+                    </section>
                 </div>
             )}
 
@@ -349,10 +374,29 @@ const ActiveTaskCard = ({ task, onComplete }) => (
         </div>
 
         <button 
-            style={{ width: '100%', height: 44, background: '#1a1c19', color: 'white', border: 'none', borderRadius: 12, fontWeight: 900, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8, cursor: 'pointer' }}
-            onClick={onComplete}
+            style={{ 
+                width: '100%', 
+                height: 44, 
+                background: task.status === 'pending_review' ? '#e8eee8' : '#1a1c19', 
+                color: task.status === 'pending_review' ? '#2d5a27' : 'white', 
+                border: task.status === 'pending_review' ? '1.5px solid #2d5a2733' : 'none', 
+                borderRadius: 12, 
+                fontWeight: 900, 
+                display: 'flex', 
+                alignItems: 'center', 
+                justifyContent: 'center', 
+                gap: 8, 
+                cursor: task.status === 'pending_review' ? 'default' : 'pointer',
+                opacity: 1
+            }}
+            onClick={task.status === 'pending_review' ? null : onComplete}
+            disabled={task.status === 'pending_review'}
         >
-            <Camera size={18} /> Upload Proof
+            {task.status === 'pending_review' ? (
+                <><Loader2 className="animate-spin" size={18} /> AI Analyzing...</>
+            ) : (
+                <><Camera size={18} /> Upload Proof</>
+            )}
         </button>
     </div>
 );

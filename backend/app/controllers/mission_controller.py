@@ -2,11 +2,10 @@ from app.models.mission import Mission, MissionType
 from app.models.mission_progress import MissionProgress, MissionStatus
 from app.models.farm_profile import FarmProfile
 from app.models.user import User
-from app.schemas.mission_schema import CreateMissionRequest, MissionProgressResponse, MissionHistoryResponse
+from app.schemas.mission_schema import CreateMissionRequest
 from app.utils.response_utils import error_response, not_found
 from app.services import ai_service, weather_service
 from datetime import datetime, timedelta
-from app.services.mission_service import complete_mission
 import logging
 
 logger = logging.getLogger(__name__)
@@ -47,7 +46,6 @@ async def _enrich_progress(mp: MissionProgress) -> dict:
 async def get_active_missions(user: User) -> dict:
     """Return all active/in-progress missions for a farmer, grouped by type."""
     try:
-        now = datetime.utcnow()
         progress_items = await MissionProgress.find(
             {
                 "farmer_id": str(user.id),
@@ -149,72 +147,6 @@ async def get_mission_history(user: User, page: int = 1, limit: int = 20) -> dic
         "missions": enriched,
     }
 
-
-# ─── ADMIN ACTIONS ───────────────────────────────────────────
-
-async def admin_create_mission(data: CreateMissionRequest, admin: User) -> dict:
-    """Admin creates a new mission template."""
-    from app.models.mission import ProofRequirement
-    mission = Mission(
-        title=data.title,
-        description=data.description,
-        mission_type=data.mission_type,
-        difficulty=data.difficulty,
-        reward_points=data.reward_points,
-        proof_requirement=ProofRequirement(
-            requires_photo=data.requires_photo,
-            requires_video=data.requires_video,
-            requires_gps=data.requires_gps,
-            description=data.proof_description,
-        ),
-        duration_hours=data.duration_hours,
-        target_score_min=data.target_score_min,
-        target_score_max=data.target_score_max,
-        created_by=str(admin.id),
-    )
-    await mission.insert()
-    logger.info(f"Admin {admin.id} created mission: {data.title}")
-    return {"id": str(mission.id), "title": mission.title, "status": "created"}
-
-
-async def admin_assign_mission_to_all(mission_id: str) -> dict:
-    """Admin assigns a mission template to all eligible farmers."""
-    mission = await Mission.get(mission_id)
-    if not mission:
-        not_found("Mission template")
-
-    farms = await FarmProfile.find_all().to_list()
-    expires_at = datetime.utcnow() + timedelta(hours=mission.duration_hours)
-    count = 0
-
-    for farm in farms:
-        # Skip if already assigned and active
-        existing = await MissionProgress.find_one(
-            MissionProgress.farmer_id == farm.farmer_id,
-            MissionProgress.mission_id == mission_id,
-            {"status": {"$in": [MissionStatus.ACTIVE, MissionStatus.IN_PROGRESS]}},
-        )
-        if existing:
-            continue
-
-        # Score range targeting
-        if mission.target_score_min and farm.sustainability_score < mission.target_score_min:
-            continue
-        if mission.target_score_max and farm.sustainability_score > mission.target_score_max:
-            continue
-
-        mp = MissionProgress(
-            farmer_id=farm.farmer_id,
-            mission_id=mission_id,
-            expires_at=expires_at,
-        )
-        await mp.insert()
-        count += 1
-
-    logger.info(f"Mission {mission_id} assigned to {count} farmers")
-    return {"assigned_to": count, "mission_title": mission.title}
-
-
 async def admin_list_missions(page: int = 1, limit: int = 20) -> dict:
     """Admin lists all mission templates."""
     skip = (page - 1) * limit
@@ -238,16 +170,15 @@ async def admin_list_missions(page: int = 1, limit: int = 20) -> dict:
         ]
     }
 
-
 async def auto_assign_ai_missions(user: User) -> dict:
-    """Uses AI to generate and assign missions for a specific farmer including Community tasks."""
+    """Uses AI to generate and assign missions for a specific farmer including community tasks."""
     from app.models.farm_profile import FarmProfile
     from app.models.mission import Mission, MissionType
     from app.models.mission_progress import MissionProgress
     
     farm = await FarmProfile.find_one(FarmProfile.farmer_id == str(user.id))
     
-    # ─── 1. FORCE ASSIGN COMMUNITY TASKS (ALWAYS) ───────────────────
+    # ─── 1. FORCE ASSIGN COMMUNITY TASKS ───────────────────────────
     community_tasks = [
         {"title": "Plastic-Free Farm", "description": "Remove all non-biodegradable waste from farm paths.", "difficulty": "medium", "reward_points": 50},
         {"title": "Local Seed Bank", "description": "Trade or document 3 local heirloom seed varieties.", "difficulty": "hard", "reward_points": 100},
@@ -285,24 +216,23 @@ async def auto_assign_ai_missions(user: User) -> dict:
             mp = MissionProgress(farmer_id=str(user.id), mission_id=m_id, expires_at=datetime.utcnow() + timedelta(days=30))
             await mp.insert()
 
-    # ─── 2. CHECK IF PERSONAL AI TASKS ALREADY ASSIGNED TODAY ───────
-    today = datetime.utcnow().replace(hour=0, minute=0, second=0, microsecond=0)
-    existing_ai_missions = await MissionProgress.find(
+    # ─── 2. ASSIGN PERSONALIZED AI TASKS IF NOT ENOUGH ACTIVE
+    progress_items = await MissionProgress.find(
         MissionProgress.farmer_id == str(user.id),
-        MissionProgress.assigned_at >= today
+        {"status": {"$in": [MissionStatus.ACTIVE, MissionStatus.IN_PROGRESS, MissionStatus.PENDING_REVIEW]}}
     ).to_list()
     
-    # Check specifically for non-community missions assigned today
-    personal_assigned = 0
-    for mp in existing_ai_missions:
-        m = await Mission.get(mp.mission_id)
+    personal_active = 0
+    for p in progress_items:
+        m = await Mission.get(p.mission_id)
         if m and m.mission_type != MissionType.COMMUNITY:
-            personal_assigned += 1
+            personal_active += 1
             
-    if personal_assigned >= 3:
+    if personal_active >= 3:
         return await get_active_missions(user)
 
     # ─── 3. ASSIGN PERSONALIZED AI TASKS ────────────────────────────
+    # Try calling AI service
     ai_missions = [
         {"title": "Daily Hydration Audit", "description": "Inspect your irrigation lines for leaks.", "difficulty": "easy", "reward_points": 15, "type": "daily"},
         {"title": "Weekly Organic Enrichment", "description": "Apply organic mulch to your vegetable beds.", "difficulty": "medium", "reward_points": 40, "type": "weekly"},
@@ -310,10 +240,12 @@ async def auto_assign_ai_missions(user: User) -> dict:
     ]
 
     if farm:
-        weather = await weather_service.get_weather_data(farm.location.latitude, farm.location.longitude) if farm.location else weather_service._get_dummy_weather()
-        farm_data = {"crops": getattr(farm, 'crop_types', 'unknown'), "soil": getattr(farm, 'soil_type', 'unknown'), "score": getattr(farm, 'sustainability_score', 0)}
-        custom = await ai_service.generate_personalized_missions(farm_data, weather)
-        if custom: ai_missions = custom
+        try:
+            weather = await weather_service.get_weather_data(farm.location.latitude, farm.location.longitude) if farm.location else weather_service._get_dummy_weather()
+            farm_data = {"crops": getattr(farm, 'crop_types', 'unknown'), "soil": getattr(farm, 'soil_type', 'unknown'), "score": getattr(farm, 'sustainability_score', 0)}
+            custom = await ai_service.generate_personalized_missions(farm_data, weather)
+            if custom: ai_missions = custom
+        except: pass
 
     for am in ai_missions:
         m_type = str(am.get("type", "daily")).lower()
@@ -333,7 +265,5 @@ async def auto_assign_ai_missions(user: User) -> dict:
         mp = MissionProgress(farmer_id=str(user.id), mission_id=str(mission.id), expires_at=datetime.utcnow() + timedelta(hours=duration))
         await mp.insert()
         
-    return await get_active_missions(user)
-        
-    logger.info(f"AI assigned 10+ missions to farmer {user.id}")
+    logger.info(f"AI assigned missions to farmer {user.id}")
     return await get_active_missions(user)
