@@ -217,7 +217,9 @@ const AIPage = () => {
                                 animate={{ opacity: 1, scale: 1, y: 0 }}
                             >
                                 <div className="bubble-avatar">
-                                    {m.role === 'ai' ? <Bot size={18} /> : <User size={18} />}
+                                    {m.role === 'ai' ? <Bot size={18} /> : (
+                                        user?.profile_picture ? <img src={user.profile_picture} alt="" style={{ width: '100%', height: '100%', borderRadius: '50%', objectFit: 'cover' }} /> : <User size={18} />
+                                    )}
                                 </div>
                                 <div className="bubble-body">
                                     <div dangerouslySetInnerHTML={{ __html: formatAIResponse(m.text) }}></div>

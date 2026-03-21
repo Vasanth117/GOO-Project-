@@ -21,12 +21,12 @@ from app.models.farm_profile import FarmProfile
 async def _build_user_response(user: User) -> UserResponse:
     farm = await FarmProfile.find_one(FarmProfile.farmer_id == str(user.id))
     
-    # Safe serialization using jsonable_encoder
     farm_data = None
     if farm:
-        # Exclude internal PydanticObjectIds which cause JSON errors
-        dump = farm.model_dump(exclude={"id", "revision_id"})
-        farm_data = jsonable_encoder(dump)
+        # Pydantic v2 model_dump(mode='json') handles custom types like PydanticObjectId
+        # We exclude internal beanie fields just to be safe and clean
+        farm_data = farm.model_dump(mode='json', exclude={'revision_id'})
+        # Ensure the ID is present as a string
         farm_data["id"] = str(farm.id)
 
     return UserResponse(

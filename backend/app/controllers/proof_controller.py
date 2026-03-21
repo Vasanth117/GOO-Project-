@@ -74,6 +74,8 @@ async def submit_proof(
     file: UploadFile,
     latitude: float,
     longitude: float,
+    tasks_summary: str = "",
+    organic_materials: str = "",
 ) -> dict:
     """
     Farmer submits proof for a mission in-progress.
@@ -124,6 +126,8 @@ async def submit_proof(
         mission_progress_id=mission_progress_id,
         file_url=file_url,
         file_type=file_type,
+        tasks_summary=tasks_summary,
+        organic_materials=organic_materials,
         metadata=ProofMetadata(
             latitude=latitude,
             longitude=longitude,
@@ -144,27 +148,72 @@ async def submit_proof(
             await file.seek(0)
             img_bytes = await file.read()
             
-            # Get mission name for context
-            mission = await MissionProgress.get(mission_progress_id)
-            mission_name = mission.mission_id # Or fetch actual template name
-
-            ai_analysis = await ai_service.analyze_farming_proof(img_bytes, mission_name)
+            # Fetch the actual mission template to get its TITLE and DESCRIPTION for the AI
+            mp = await MissionProgress.get(mission_progress_id)
+            from app.models.mission import Mission
+            mission_template = await Mission.get(mp.mission_id)
             
-            proof.ai_result = AIAnalysisResult(
-                is_real_farm=ai_analysis.get("is_valid", False),
-                confidence_score=ai_analysis.get("confidence", 0.0),
-                analysis_notes=ai_analysis.get("analysis_notes", ""),
-                crop_health_valid=True if ai_analysis.get("sustainability_rating", 0) > 5 else False
+            mission_context = (
+                f"MISSION TITLE: {mission_template.title if mission_template else 'Unknown Task'}. "
+                f"DESCRIPTION: {mission_template.description if mission_template else 'Verify general farming activity.'}"
             )
+
+            system_prompt = (
+        "You are a BRUTALLY STRICT Agricultural Quality Auditor for the GOO platform. "
+        "Your sole job is to PREVENT FRAUD and ensure only real farming tasks are rewarded. "
+        "\n\nVERIFICATION PROTOCOL:"
+        "\n1. READ the 'MISSION TO VERIFY' text carefully. "
+        "\n2. AUDIT the photo for specific visual evidence of that EXACT task. "
+        "\n3. If the photo is irrelevant, poorly lit, blurry, or shows indoor generic scenes -> REJECT IMMEDIATELY. "
+        "\n4. If the task is 'Watering' but no water, wet soil, or watering tools are visible -> REJECT."
+        "\n5. If the task is 'Pruning' but no cut branches or pruning shears are visible -> REJECT."
+        "\n6. If the photo is a selfie or a person not doing the task -> REJECT."
+        "\n7. DO NOT GIVE PROBATION. IF NOT CLEARLY VALID, IT IS INVALID. "
+        "\n\nOUTPUT FORMAT (JSON ONLY): "
+        "{\"is_valid\": boolean, \"confidence\": 0.0-1.0, \"analysis_notes\": \"Detailed audit reason\"}"
+    )
+            ai_analysis = await ai_service.analyze_farming_proof(img_bytes, mission_context, system_prompt=system_prompt)
             
-            # If AI is super confident and positive, we could auto-advance
-            # For now, just move to PENDING_REVIEW
-            proof.status = ProofStatus.PENDING_REVIEW
-            ai_status_msg = "AI has analyzed your proof. "
+            is_valid = ai_analysis.get("is_valid", False)
+            confidence = ai_analysis.get("confidence", 0.0)
+            notes = ai_analysis.get("analysis_notes", "AI could not identify the task in this proof.")
+
+            proof.ai_result = {"is_valid": is_valid, "confidence": confidence, "notes": notes}
+            
+            # ── STRICTURE ──────────────────────────────────────────
+            # Rejection: If AI says it's not valid OR if confidence is extremely low (< 0.4)
+            if not is_valid or confidence < 0.4:
+                proof.status = ProofStatus.REJECTED
+                mp.status = MissionStatus.ACTIVE # Re-activate mission
+                await proof.save()
+                await mp.save()
+                error_response(f"AI Audit Failed: {notes}", 400)
+
+            # High confidence auto-approval OR Community tasks (always verified by AI)
+            from app.models.mission import Mission, MissionType
+            mission_template = await Mission.get(mp.mission_id)
+            is_community = mission_template.mission_type == MissionType.COMMUNITY if mission_template else False
+
+            if (is_valid and confidence >= 0.9) or (is_community and is_valid):
+                proof.status = ProofStatus.APPROVED
+                await proof.save()
+                await complete_mission(mission_progress=mp, approved_by="AI_SYSTEM_VERIFIED")
+                ai_status_msg = "AI has instantly verified your work! "
+                return {
+                    "proof_id": str(proof.id),
+                    "status": "approved",
+                    "ai_analyzed": True,
+                    "message": f"Mission Complete! {ai_status_msg}Points awarded.",
+                    "file_url": file_url,
+                }
+            else:
+                proof.status = ProofStatus.PENDING_REVIEW
+                ai_status_msg = "Proof is undergoing secondary verification. "
         except Exception as e:
-            logger.error(f"AI Analysis failed during submission: {e}")
+            logger.error(f"AI Vision Exception: {e}")
             proof.status = ProofStatus.PENDING_REVIEW
-            ai_status_msg = "AI analysis skipped (system busy). "
+            mp.status = MissionStatus.PENDING_REVIEW
+            ai_status_msg = "AI verification skipped due to system load. Punted to manual review. "
     else:
         proof.status = ProofStatus.PENDING_REVIEW
 

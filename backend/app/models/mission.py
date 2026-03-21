@@ -39,6 +39,15 @@ class Mission(Document):
     target_score_max: Optional[int] = None
     target_region: Optional[str] = None  # GPS-based targeting
     duration_hours: int = 24  # how long farmer has to complete
+    eco_benefit: str = "Reduces environmental impact"
+    next_step: str = "Follow instructions to complete"
+    personalization_tag: Optional[str] = None # e.g. "Recommended for your soil"
+    
+    # Community specific
+    participants_count: int = 0
+    scope: str = "Local" # Local, District, National
+    goal_text: Optional[str] = None
+    
     is_active: bool = True
     created_by: str = "system"  # "system" or admin user ID
     created_at: datetime = Field(default_factory=datetime.utcnow)

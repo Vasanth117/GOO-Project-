@@ -3,195 +3,243 @@ import { motion, AnimatePresence } from 'framer-motion';
 import {
     Leaf, Trophy, CheckCircle, Clock, PlayCircle,
     Rocket, Target, Zap, Globe, Flame, Loader2, ChevronRight, Brain,
-    ShieldCheck, Award, MapPin, Camera, X, Send, ListChecks
+    ShieldCheck, Award, MapPin, Camera, X, Send, ListChecks, Play,
+    BarChart3, Users, Crown, Filter, Calendar, Activity, CheckSquare
 } from "lucide-react";
 import { apiService } from '../services/apiService';
+import CameraCapture from '../components/CameraCapture';
 
 const MissionsPage = () => {
-    const [activeTab, setActiveTab] = useState('solo');
+    const [activeTab, setActiveTab] = useState('solo'); // solo, community, completed
+    const [timeFilter, setTimeFilter] = useState('daily'); // daily, weekly, monthly
     const [missions, setMissions] = useState([]);
     const [communityMissions, setCommunityMissions] = useState([]);
-    const [reports, setReports] = useState([]);
     const [stats, setStats] = useState(null);
     const [loading, setLoading] = useState(true);
     const [reward, setReward] = useState(null);
     const [showSubmitModal, setShowSubmitModal] = useState(false);
     const [selectedTask, setSelectedTask] = useState(null);
+    const [historyMissions, setHistoryMissions] = useState([]);
     const [submitting, setSubmitting] = useState(false);
 
     useEffect(() => {
-        const load = async () => {
+        const loadAll = async () => {
             try {
-                const [missionData, statsData, communityData, reportData] = await Promise.all([
+                const [missionData, communityData, statData, historyData] = await Promise.all([
                     apiService.getMissions(),
-                    apiService.getStats(),
                     apiService.getCommunityMissions(),
-                    apiService.getMyPeriodicReports()
+                    apiService.getStats(),
+                    apiService.getMissionHistory(1, 50)
                 ]);
-                setMissions(missionData || []);
-                setStats(statsData);
+                const flattenedMissions = missionData ? Object.values(missionData).flat() : [];
+                
+                // If no missions, trigger AI to assign some
+                if (flattenedMissions.length === 0) {
+                    const aiData = await apiService.triggerAiMissions();
+                    const newFlattened = aiData ? Object.values(aiData).flat() : [];
+                    setMissions(newFlattened);
+                } else {
+                    setMissions(flattenedMissions);
+                }
+
+                setHistoryMissions(historyData?.missions || []);
                 setCommunityMissions(communityData || []);
-                setReports(reportData || []);
+                setStats(statData);
             } catch (err) {
                 console.error(err);
             } finally {
                 setLoading(false);
             }
         };
-        load();
+        loadAll();
     }, []);
 
-    const handleComplete = (task) => {
-        // Here we would normally submit proof, but for demo:
-        setReward({ xp: task.xp_reward, badge: 'Task Completed!' });
-        setTimeout(() => setReward(null), 3000);
+    const handleStart = async (progressId) => {
+        try {
+            await apiService.startMission(progressId);
+            const missionData = await apiService.getMissions();
+            const flattenedMissions = missionData ? Object.values(missionData).flat() : [];
+            setMissions(flattenedMissions);
+            setReward({ xp: 0, title: 'Mission Started!' });
+            setTimeout(() => setReward(null), 3000);
+        } catch (err) {
+            alert(err.message);
+        }
     };
 
-    if (loading) return <div className="loading-full"><Loader2 className="spinner" /></div>;
+    if (loading) return <div style={{ display: 'flex', height: '80vh', alignItems: 'center', justifyContent: 'center' }}><Loader2 className="animate-spin" size={48} color="#2d5a27" /></div>;
 
-    const StatCard = ({ label, val, icon: Icon, color, trendIcon: Trend }) => (
-        <div className="stat-card">
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                <div className="stat-label">{label}</div>
-                <Icon size={18} color={color} />
-            </div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                <div className="stat-val">{val}</div>
-                {Trend && <Trend size={16} color={color} />}
-            </div>
-        </div>
+    const activeMissions = missions.filter(m => m.status === 'in_progress' || m.status === 'pending_review');
+    const availableMissions = missions.filter(m => 
+        m.status === 'active' && 
+        (m.mission_type === timeFilter || (timeFilter === 'daily' && m.mission_type === 'surprise'))
     );
+    const completedMissions = [
+        ...missions.filter(m => m.status === 'completed'),
+        ...historyMissions.filter(m => m.status === 'completed')
+    ].filter((v, i, a) => a.findIndex(t => t.progress_id === v.progress_id) === i); // dedupe
 
     return (
-        <div className="leaderboard-page">
-            <div style={{ marginBottom: 32 }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                    <Target size={24} color="#2d5a27" />
-                    <h2 className="topbar-title" style={{ margin: 0 }}>Missions & Tasks</h2>
+        <div className="missions-container" style={{ padding: '30px 5% 100px', maxWidth: '1400px', margin: '0 auto', background: '#f8faf8', minHeight: '100vh' }}>
+            
+            {/* 🟢 A. HEADER SECTION */}
+            <div className="missions-header" style={{ marginBottom: 40, background: 'linear-gradient(135deg, #1a3c1a 0%, #2d5a27 100%)', padding: '40px', borderRadius: '32px', color: 'white', position: 'relative', overflow: 'hidden' }}>
+                <div style={{ position: 'relative', zIndex: 2 }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 8 }}>
+                        <Crown size={24} color="#ffd700" />
+                        <h1 style={{ fontSize: '2.4rem', fontWeight: 950, letterSpacing: '-0.02em', margin: 0 }}>Your Missions</h1>
+                    </div>
+                    <p style={{ opacity: 0.9, fontSize: '1.1rem', fontWeight: 500, maxWidth: '600px' }}>Complete regenerative tasks tailored for your farm. Earn GOO points and lead the Green Revolution.</p>
                 </div>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginTop: 4 }}>
-                    <span className="topbar-sub">Complete eco-challenges, earn XP & improve global sustainability</span>
-                    <Globe size={14} color="#888" />
+
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(150px, 1fr))', gap: 20, marginTop: 30, position: 'relative', zIndex: 2 }}>
+                    <HeaderStat label="Sustainability Score" val={stats?.sustainability_score || 0} icon={Leaf} />
+                    <HeaderStat label="Current Streak" val={`${stats?.current_streak || 0} Days`} icon={Flame} />
+                    <HeaderStat label="Total Points" val={stats?.xp || 0} icon={Trophy} />
                 </div>
+
+                {/* Decorative background circle */}
+                <div style={{ position: 'absolute', top: '-50px', right: '-50px', width: '300px', height: '300px', background: 'rgba(255,255,255,0.05)', borderRadius: '50%' }} />
             </div>
 
-            <div className="stats-strip">
-                <StatCard label="Streak" val="6 Days" icon={Flame} color="#d4af37" trendIcon={Zap} />
-                <StatCard label="Total XP" val={stats?.xp || '0'} icon={Trophy} color="#2d5a27" />
-                <StatCard label="Level" val={stats?.tier?.tier || 'Explorer'} icon={Award} color="#4c7c42" />
-                <StatCard label="Sustainability Score" val={stats?.sustainability_score + " / 100"} icon={Leaf} color="#2d5a27" />
-            </div>
-
-            <div className="leaderboard-controls">
-                <div className="scope-tabs">
-                    {[
-                        { id: 'solo', label: 'Solo Tasks', icon: Target },
-                        { id: 'community', label: 'Community Marathons', icon: Globe },
-                        { id: 'verification', label: '3rd-Day Reports', icon: CheckCircle },
-                        { id: 'history', label: 'History', icon: Clock }
-                    ].map(t => (
+            {/* 🟢 B. CATEGORY TABS */}
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 30, flexWrap: 'wrap', gap: 20 }}>
+                <div className="tab-group" style={{ display: 'flex', background: '#e8eee8', padding: 6, borderRadius: 16, gap: 4 }}>
+                    {['solo', 'community', 'completed'].map(tab => (
                         <button 
-                            key={t.id}
-                            className={`filter-tab ${activeTab === t.id ? 'active' : ''}`}
-                            onClick={() => setActiveTab(t.id)}
-                            style={{ display: 'flex', alignItems: 'center', gap: '8px' }}
+                            key={tab}
+                            onClick={() => setActiveTab(tab)}
+                            style={{
+                                padding: '12px 28px', border: 'none', borderRadius: 12, fontSize: '0.9rem', fontWeight: 900, cursor: 'pointer',
+                                background: activeTab === tab ? 'white' : 'transparent',
+                                color: activeTab === tab ? '#2d5a27' : '#666',
+                                boxShadow: activeTab === tab ? '0 4px 12px rgba(0,0,0,0.08)' : 'none',
+                                transition: '0.3s'
+                            }}
                         >
-                            <t.icon size={16} />
-                            {t.label}
+                            {tab === 'solo' ? '🧍 Solo Tasks' : tab === 'community' ? '👥 Community' : '🏆 Completed'}
                         </button>
                     ))}
                 </div>
-            </div>
 
-            <div className="tasks-grid" style={{ gridColumn: '1 / -1' }}>
                 {activeTab === 'solo' && (
-                    <div style={{ width: '100%' }}>
-                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 25 }}>
-                            <h3 style={{ margin: 0, fontWeight: 950, color: '#1a1c19' }}>Daily & Weekly Challenges</h3>
+                    <div style={{ display: 'flex', background: 'white', padding: 6, borderRadius: 16, gap: 4, border: '1.5px solid #e8eee8' }}>
+                        {['daily', 'weekly', 'monthly'].map(filter => (
                             <button 
-                                className="create-post-btn" 
-                                style={{ height: 44, background: '#f0f7f0', color: '#2d5a27', border: '1.5px solid #d1e2d1' }}
-                                onClick={async () => {
-                                    setLoading(true);
-                                    try {
-                                        await apiService.triggerAiMissions();
-                                        const m = await apiService.getMissions();
-                                        setMissions(m);
-                                    } catch (err) { alert(err.message); }
-                                    finally { setLoading(false); }
+                                key={filter}
+                                onClick={() => setTimeFilter(filter)}
+                                style={{
+                                    padding: '8px 20px', border: 'none', borderRadius: 10, fontSize: '0.8rem', fontWeight: 800, cursor: 'pointer',
+                                    background: timeFilter === filter ? '#2d5a27' : 'transparent',
+                                    color: timeFilter === filter ? 'white' : '#666',
+                                    transition: '0.3s'
                                 }}
                             >
-                                <Brain size={18} /> Sync AI Missions
+                                {filter.charAt(0).toUpperCase() + filter.slice(1)}
                             </button>
-                        </div>
-                        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(360px, 1fr))', gap: 20 }}>
-                            {Object.values(missions).flat().map((task, i) => (
-                                <MissionCard 
-                                    key={task.progress_id} 
-                                    task={task} 
-                                    index={i} 
-                                    onStart={async (id) => {
-                                        try {
-                                            await apiService.startMission(id);
-                                            const m = await apiService.getMissions();
-                                            setMissions(m);
-                                            setReward({ xp: 10 });
-                                            setTimeout(() => setReward(null), 3000);
-                                        } catch (err) { alert(err.message); }
-                                    }}
-                                    onComplete={(task) => {
-                                        setSelectedTask(task);
-                                        setShowSubmitModal(true);
-                                    }}
-                                />
-                            ))}
-                        </div>
-                    </div>
-                )}
-
-                {activeTab === 'community' && (
-                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(380px, 1fr))', gap: 25 }}>
-                        {communityMissions.map((task, i) => (
-                            <CommunityCard key={task.id} task={task} index={i} />
                         ))}
                     </div>
                 )}
-
-                {activeTab === 'verification' && (
-                    <div style={{ gridColumn: '1 / -1' }}>
-                        <VerificationSection 
-                            reports={reports} 
-                            onOpenModal={() => {
-                                setSelectedTask({ id: 'periodic', title: 'Periodic Verification' });
-                                setShowSubmitModal(true);
-                            }} 
-                        />
-                    </div>
-                )}
             </div>
+
+            {/* 🧍 3️⃣ SOLO TASKS SECTION */}
+            {activeTab === 'solo' && (
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 40 }}>
+                    
+                    {/* 🔥 5️⃣ ACTIVE TASKS SECTION (PROGRESS) */}
+                    {activeMissions.length > 0 && (
+                        <section>
+                            <SectionHeader icon={Activity} title="In Progress" count={activeMissions.length} color="#d97706" />
+                            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(350px, 1fr))', gap: 25 }}>
+                                {activeMissions.map((task, i) => (
+                                    <ActiveTaskCard key={task.progress_id} task={task} onComplete={() => { setSelectedTask(task); setShowSubmitModal(true); }} />
+                                ))}
+                            </div>
+                        </section>
+                    )}
+
+                    <section>
+                        <SectionHeader icon={Target} title={`${timeFilter.charAt(0).toUpperCase() + timeFilter.slice(1)} Personal Tasks`} color="#2d5a27" />
+                        {availableMissions.length === 0 ? (
+                            <EmptyState message={`No ${timeFilter} tasks available right now. Check back soon!`} />
+                        ) : (
+                            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))', gap: 25 }}>
+                                {availableMissions.map((task, i) => (
+                                    <MissionCard key={task.progress_id} task={task} index={i} onStart={handleStart} />
+                                ))}
+                            </div>
+                        )}
+                    </section>
+                    
+                    {/* 📊 8️⃣ PROGRESS TRACKING */}
+                    <section style={{ background: 'white', padding: '35px', borderRadius: '32px', border: '1.5px solid #eeedeb' }}>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 25 }}>
+                            <SectionHeader icon={BarChart3} title="Mission Vitality" color="#2d5a27" />
+                            <div style={{ fontSize: '0.85rem', fontWeight: 800, color: '#666' }}>Total Completed: {completedMissions.length}</div>
+                        </div>
+                        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 30 }}>
+                            <ProgressBox label="Weekly Completion" target={7} current={completedMissions.filter(m => (new Date() - new Date(m.completed_at)) < 7 * 24 * 3600 * 1000).length} />
+                            <ProgressBox label="Monthly Milestone" target={30} current={completedMissions.filter(m => (new Date() - new Date(m.completed_at)) < 30 * 24 * 3600 * 1000).length} />
+                        </div>
+                    </section>
+                </div>
+            )}
+
+            {/* 👥 4️⃣ COMMUNITY TASKS SECTION */}
+            {activeTab === 'community' && (
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(380px, 1fr))', gap: 25 }}>
+                    {communityMissions.map((task, i) => (
+                        <CommunityCard key={task.id} task={task} index={i} />
+                    ))}
+                </div>
+            )}
+
+            {/* 🏆 7️⃣ COMPLETED TASKS SECTION */}
+            {activeTab === 'completed' && (
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))', gap: 25 }}>
+                    {completedMissions.length === 0 ? (
+                        <EmptyState message="You haven't completed any missions yet. Time to start your first challenge!" />
+                    ) : (
+                        completedMissions.map((task, i) => (
+                            <CompletedCard key={i} task={task} />
+                        ))
+                    )}
+                </div>
+            )}
 
             <AnimatePresence>
                 {showSubmitModal && (
                     <MissionSubmissionModal 
                         task={selectedTask}
+                        submitting={submitting}
                         onClose={() => setShowSubmitModal(false)}
                         onSubmit={async (formData) => {
                             setSubmitting(true);
                             try {
-                                if (selectedTask.id === 'periodic') {
-                                    await apiService.submitPeriodicReport(formData);
-                                    // Refresh reports
-                                    const reportData = await apiService.getMyPeriodicReports();
-                                    setReports(reportData);
-                                } else {
-                                    // Handle solo task submission
-                                }
+                                formData.append('mission_progress_id', selectedTask.progress_id);
+                                await apiService.submitMissionProof(formData);
+                                const [m, s] = await Promise.all([
+                                    apiService.getMissions(),
+                                    apiService.getStats()
+                                ]);
+                                setMissions(m ? Object.values(m).flat() : []);
+                                setStats(s);
                                 setShowSubmitModal(false);
-                                setReward({ xp: 50, badge: 'Proof Verified' });
-                                setTimeout(() => setReward(null), 3000);
-                            } catch (err) {
-                                alert(err.message);
-                            } finally {
+                                if (res.status === 'pending_review') {
+                                    setReward({ 
+                                        xp: 0, 
+                                        title: 'Verification Pending', 
+                                        subtitle: 'AI is analyzing your task. Points will be awarded after verification.' 
+                                    });
+                                } else {
+                                    setReward({ 
+                                        xp: 50, 
+                                        title: 'Task Completed!', 
+                                        subtitle: 'High-confidence AI approval. Points added!' 
+                                    });
+                                }
+                                setTimeout(() => setReward(null), 5000);
+                            } catch (err) { alert(err.message); } finally {
                                 setSubmitting(false);
                             }
                         }}
@@ -199,18 +247,22 @@ const MissionsPage = () => {
                 )}
             </AnimatePresence>
 
+            {/* 🎁 9️⃣ REWARD FEEDBACK SYSTEM */}
             <AnimatePresence>
                 {reward && (
                     <motion.div 
-                        className="reward-toast"
-                        initial={{ opacity: 0, y: 50, scale: 0.9 }}
-                        animate={{ opacity: 1, y: 0, scale: 1 }}
-                        exit={{ opacity: 0, scale: 0.9 }}
+                        initial={{ opacity: 0, scale: 0.8, y: 50 }}
+                        animate={{ opacity: 1, scale: 1, y: 0 }}
+                        exit={{ opacity: 0, scale: 0.8 }}
+                        style={{ position: 'fixed', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 9999, pointerEvents: 'none' }}
                     >
-                        <Trophy size={24} color="#d4af37" />
-                        <div>
-                            <div style={{ fontWeight: 900, color: 'white' }}>MISSION STARTED</div>
-                            <div style={{ fontSize: '0.8rem', color: '#aaa' }}>Good luck with your journey!</div>
+                        <div style={{ background: 'white', padding: '40px 60px', borderRadius: '40px', boxShadow: '0 20px 80px rgba(0,0,0,0.3)', border: '4px solid #2d5a27', textAlign: 'center', pointerEvents: 'auto' }}>
+                            <div style={{ background: '#f0fdf4', width: 80, height: 80, borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 20px' }}>
+                                <Crown size={40} color="#2d5a27" className="animate-bounce" />
+                            </div>
+                            <h2 style={{ fontSize: '2.4rem', fontWeight: 950, color: '#1a1c19', margin: '0 0 10px' }}>{reward.title}</h2>
+                            <p style={{ fontSize: '1.1rem', color: '#666', fontWeight: 700, margin: 0 }}>🎉 You earned <strong>+{reward.xp}</strong> Impact Points!</p>
+                            {reward.subtitle && <div style={{ marginTop: 10, fontSize: '0.9rem', color: '#2d5a27', fontWeight: 900 }}>{reward.subtitle}</div>}
                         </div>
                     </motion.div>
                 )}
@@ -219,170 +271,181 @@ const MissionsPage = () => {
     );
 };
 
-const MissionCard = ({ task, index, onStart, onComplete }) => (
+// ── SUB-COMPONENTS ───────────────────────────────────────────
+
+const HeaderStat = ({ label, val, icon: Icon }) => (
+    <div style={{ background: 'rgba(255,255,255,0.1)', padding: '15px 20px', borderRadius: '18px', backdropFilter: 'blur(10px)', border: '1px solid rgba(255,255,255,0.2)' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 4 }}>
+            <Icon size={16} color="#4ade80" />
+            <span style={{ fontSize: '0.75rem', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.05em' }}>{label}</span>
+        </div>
+        <div style={{ fontSize: '1.4rem', fontWeight: 950 }}>{val}</div>
+    </div>
+);
+
+const SectionHeader = ({ icon: Icon, title, count, color }) => (
+    <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 20 }}>
+        <div style={{ width: 42, height: 42, background: `${color}15`, borderRadius: 12, display: 'flex', alignItems: 'center', justifyContent: 'center', color: color }}>
+            <Icon size={22} />
+        </div>
+        <h3 style={{ fontSize: '1.25rem', fontWeight: 950, color: '#1a1c19', margin: 0 }}>{title} {count !== undefined && <span style={{ color: '#aaa', fontWeight: 700 }}>({count})</span>}</h3>
+    </div>
+);
+
+const MissionCard = ({ task, index, onStart }) => (
     <motion.div 
-        className="task-card"
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: index * 0.1 }}
-        style={{ background: 'white', padding: 25, borderRadius: 24, border: '1.5px solid #eeedeb', boxShadow: '0 4px 15px rgba(0,0,0,0.02)', display: 'flex', flexDirection: 'column' }}
+        initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: index * 0.1 }}
+        style={{ background: 'white', padding: 25, borderRadius: 28, border: '1.5px solid #eeedeb', display: 'flex', flexDirection: 'column', transition: '0.3s' }}
     >
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 15 }}>
-            <div style={{ background: '#f4f7f4', padding: '6px 12px', borderRadius: 10, fontSize: '0.75rem', fontWeight: 700, color: '#2d5a27', display: 'flex', alignItems: 'center', gap: '6px', textTransform: 'capitalize' }}>
-                <Zap size={12} /> {task.mission_type}
+            <div style={{ background: task.difficulty === 'hard' ? '#fee2e2' : task.difficulty === 'medium' ? '#fffbeb' : '#f0fdf4', padding: '6px 12px', borderRadius: 10, fontSize: '0.7rem', fontWeight: 900, color: task.difficulty === 'hard' ? '#ef4444' : task.difficulty === 'medium' ? '#d97706' : '#2d5a27', textTransform: 'uppercase' }}>
+                {task.difficulty || 'Easy'}
             </div>
-            <div className="xp-badge" style={{ background: '#fff9e6', color: '#d4af37', padding: '4px 10px', borderRadius: 8, fontSize: '0.8rem', fontWeight: 800, display: 'flex', alignItems: 'center', gap: '4px' }}>
-                <Flame size={14} /> +{task.reward_points} XP
-            </div>
-        </div>
-        
-        <h4 style={{ fontSize: '1.1rem', fontWeight: 950, color: '#1a1c19', margin: '5px 0' }}>{task.title}</h4>
-        <p style={{ fontSize: '0.88rem', color: '#666', lineHeight: 1.6, marginBottom: 20, flex: 1 }}>{task.description}</p>
-        
-        <div style={{ background: '#f8faf8', padding: 12, borderRadius: 16, marginBottom: 20, border: '1px solid #f0f4f0' }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.75rem', fontWeight: 800, color: '#2d5a27' }}>
-                <span>Status: <span style={{ textTransform: 'uppercase', color: task.status === 'active' ? '#d4af37' : '#2d5a27' }}>{task.status}</span></span>
-                <span style={{ display: 'flex', alignItems: 'center', gap: 4 }}><Clock size={12} /> 24h</span>
+            <div style={{ background: '#f8faf8', color: '#2d5a27', padding: '6px 12px', borderRadius: 10, fontSize: '0.8rem', fontWeight: 900, display: 'flex', alignItems: 'center', gap: 6 }}>
+                <Zap size={14} /> +{task.reward_points} XP
             </div>
         </div>
 
-        <div style={{ display: 'flex', gap: 12 }}>
-            {task.status === 'active' ? (
-                <button 
-                    className="btn-start-task" 
-                    style={{ flex: 1, justifyContent: 'center' }}
-                    onClick={() => onStart(task.progress_id)}
-                >
-                    <PlayCircle size={18} /> Start Challenge
-                </button>
-            ) : task.status === 'in_progress' ? (
-                <button 
-                    className="btn-complete-task" 
-                    style={{ flex: 1, justifyContent: 'center', background: '#2d5a27', color: 'white', border: 'none' }}
-                    onClick={() => onComplete(task)}
-                >
-                    <Camera size={18} /> Submit Evidence
-                </button>
-            ) : (
-                <div style={{ flex: 1, height: 48, background: '#f0f7f0', borderRadius: 12, display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#2d5a27', fontWeight: 900, gap: 8 }}>
-                    <CheckCircle size={18} /> Completed
+        {task.personalization_tag && (
+            <div style={{ color: '#2d5a27', fontSize: '0.75rem', fontWeight: 900, marginBottom: 10, display: 'flex', alignItems: 'center', gap: 6 }}>
+                <Brain size={14} /> {task.personalization_tag}
+            </div>
+        )}
+        
+        <h4 style={{ fontSize: '1.15rem', fontWeight: 950, color: '#1a1c19', margin: '0 0 10px' }}>{task.title}</h4>
+        <p style={{ fontSize: '0.88rem', color: '#666', lineHeight: 1.6, marginBottom: 20, flex: 1 }}>{task.description}</p>
+        
+        <div style={{ background: '#fcfdfc', padding: 15, borderRadius: 20, border: '1px solid #f0f4f0', marginBottom: 20 }}>
+            <div style={{ fontSize: '0.75rem', fontWeight: 800, color: '#2d5a27', marginBottom: 8, display: 'flex', alignItems: 'center', gap: 6 }}>
+                <Leaf size={14} /> Eco Benefit
+            </div>
+            <div style={{ fontSize: '0.82rem', color: '#1a3c1a', fontWeight: 700 }}>{task.eco_benefit || "Reduces environmental footprint"}</div>
+        </div>
+
+        <button 
+            style={{ width: '100%', height: 48, background: '#2d5a27', color: 'white', border: 'none', borderRadius: 14, fontWeight: 900, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8, cursor: 'pointer' }}
+            onClick={() => onStart(task.progress_id)}
+        >
+            <PlayCircle size={18} /> Start Task
+        </button>
+    </motion.div>
+);
+
+const ActiveTaskCard = ({ task, onComplete }) => (
+    <div style={{ background: 'white', padding: 25, borderRadius: 28, border: '1.5px solid #d9770633', boxShadow: '0 10px 30px rgba(217, 119, 6, 0.05)' }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 15 }}>
+            <h4 style={{ fontSize: '1.1rem', fontWeight: 950, margin: 0 }}>{task.title}</h4>
+            <div style={{ fontSize: '0.75rem', fontWeight: 900, color: '#d97706', display: 'flex', alignItems: 'center', gap: 4 }}><Clock size={14} /> {Math.max(0, Math.ceil((new Date(task.expires_at) - new Date()) / 3600000))}h left</div>
+        </div>
+
+        <div style={{ marginBottom: 20 }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.75rem', fontWeight: 800, color: '#666', marginBottom: 8 }}>
+                <span>Next: {task.next_step || 'Verify in app'}</span>
+                <span>{task.progress_percentage || 0}%</span>
+            </div>
+            <div style={{ height: 10, background: '#fcfcfc', border: '1px solid #f0f0f0', borderRadius: 5, overflow: 'hidden' }}>
+                <motion.div initial={{ width: 0 }} animate={{ width: `${task.progress_percentage || 0}%` }} style={{ height: '100%', background: '#d97706', borderRadius: 5 }} />
+            </div>
+        </div>
+
+        <button 
+            style={{ width: '100%', height: 44, background: '#1a1c19', color: 'white', border: 'none', borderRadius: 12, fontWeight: 900, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8, cursor: 'pointer' }}
+            onClick={onComplete}
+        >
+            <Camera size={18} /> Upload Proof
+        </button>
+    </div>
+);
+
+const CommunityCard = ({ task, index }) => (
+    <motion.div 
+        initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: index * 0.1 }}
+        style={{ background: 'linear-gradient(135deg, #1e293b 0%, #0f172a 100%)', color: 'white', padding: 30, borderRadius: 32, position: 'relative', overflow: 'hidden' }}
+    >
+        <div style={{ position: 'relative', zIndex: 2 }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 20 }}>
+                <div style={{ background: 'rgba(255,255,255,0.1)', padding: '6px 12px', borderRadius: 10, fontSize: '0.7rem', fontWeight: 900, textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+                    🌍 {task.scope || 'National'}
                 </div>
-            )}
+                <div style={{ color: '#ffd700', fontWeight: 900, fontSize: '0.9rem' }}>{task.reward_pool || (task.reward_points * 100)} XP Pool</div>
+            </div>
+            
+            <h4 style={{ fontSize: '1.3rem', fontWeight: 950, margin: '10px 0' }}>{task.title}</h4>
+            <p style={{ fontSize: '0.9rem', opacity: 0.8, marginBottom: 25 }}>{task.description}</p>
+            
+            <div style={{ background: 'rgba(255,255,255,0.05)', borderRadius: 20, padding: 20, marginBottom: 25 }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 12 }}>
+                    <div style={{ fontSize: '0.75rem', fontWeight: 800, opacity: 0.6 }}>Goal: {task.goal_text || "Collaborative Impact"}</div>
+                    <div style={{ fontSize: '0.75rem', fontWeight: 900, color: '#4ade80' }}>{task.participants_count || 42}+ Joined</div>
+                </div>
+                <div style={{ height: 10, background: 'rgba(255,255,255,0.1)', borderRadius: 5, overflow: 'hidden' }}>
+                    <div style={{ height: '100%', width: '45%', background: '#4ade80', borderRadius: 5 }} />
+                </div>
+            </div>
+
+            <button style={{ width: '100%', height: 50, background: '#4ade80', color: '#0f172a', border: 'none', borderRadius: 14, fontWeight: 950, cursor: 'pointer', transition: '0.3s' }}>
+                Join Challenge
+            </button>
         </div>
     </motion.div>
 );
 
-const CommunityCard = ({ task, index }) => {
-    const progress = (task.current_value / task.target_value) * 100;
-    return (
-        <motion.div 
-            className="task-card community-card"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: index * 0.1 }}
-            style={{ layer: 1, background: 'linear-gradient(135deg, #1a3c1a 0%, #2d5a27 100%)', color: 'white', padding: 25, borderRadius: 24 }}
-        >
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 15 }}>
-                <div style={{ background: 'rgba(255,255,255,0.1)', padding: '6px 12px', borderRadius: 10, fontSize: '0.75rem', fontWeight: 700, color: '#white', display: 'flex', alignItems: 'center', gap: '6px' }}>
-                    <Globe size={12} /> Community Marathon
-                </div>
-                <div className="xp-badge" style={{ background: '#ffd700', color: '#1a3c1a', padding: '4px 10px', borderRadius: 8, fontSize: '0.8rem', fontWeight: 900 }}>
-                   Pool: {task.reward_pool} XP
-                </div>
-            </div>
-            <h4 style={{ fontSize: '1.2rem', fontWeight: 900, color: 'white', margin: '10px 0' }}>{task.title}</h4>
-            <p style={{ fontSize: '0.9rem', color: '#eee', opacity: 0.9, lineHeight: 1.5 }}>{task.description}</p>
-            
-            <div style={{ marginTop: 25 }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.8rem', fontWeight: 700, marginBottom: 10 }}>
-                    <span>Global Progress</span>
-                    <span>{Math.round(progress)}%</span>
-                </div>
-                <div style={{ height: 12, background: 'rgba(255,255,255,0.1)', borderRadius: 6, overflow: 'hidden' }}>
-                    <motion.div 
-                        initial={{ width: 0 }}
-                        animate={{ width: `${progress}%` }}
-                        style={{ height: '100%', background: '#ffde59', borderRadius: 6 }}
-                    />
-                </div>
-                <div style={{ fontSize: '0.75rem', marginTop: 8, color: '#ccc' }}>
-                    {task.current_value.toLocaleString()} / {task.target_value.toLocaleString()} {task.unit}
-                </div>
-            </div>
-        </motion.div>
-    );
-};
-
-const VerificationSection = ({ reports, onOpenModal }) => (
-    <div className="verification-area">
-        <div style={{ background: 'white', padding: 30, borderRadius: 24, border: '1.5px solid #eeedeb', marginBottom: 25 }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                <div>
-                    <h3 style={{ margin: 0, fontWeight: 950 }}>3rd-Day Organic Integrity Report</h3>
-                    <p style={{ color: '#666', fontSize: '0.9rem', marginTop: 4 }}>Submit your 3rd-day verification to maintain your GOO Certification status.</p>
-                </div>
-                <button className="create-post-btn" style={{ height: '44px' }} onClick={onOpenModal}>
-                    <Camera size={18} /> Submit Verification
-                </button>
-            </div>
+const CompletedCard = ({ task }) => (
+    <div style={{ background: '#f0fdf4', padding: 20, borderRadius: 24, border: '1px solid #d1e2d1', display: 'flex', alignItems: 'center', gap: 15 }}>
+        <div style={{ width: 45, height: 45, borderRadius: '50%', background: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#2d5a27' }}>
+            <CheckCircle size={24} />
         </div>
-
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', gap: 20 }}>
-            {reports.length > 0 ? reports.map((r, i) => (
-                <div key={r.id || r._id || i} className="report-mini-card" style={{ background: '#fcfdfc', padding: 20, borderRadius: 20, border: '1px solid #e8eee8' }}>
-                    <div style={{ display: 'flex', gap: 12, alignItems: 'center', marginBottom: 12 }}>
-                        <div style={{ width: 40, height: 40, borderRadius: 10, background: r.abnormal_growth_flag ? '#fee2e2' : '#e7f5e7', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                            {r.abnormal_growth_flag ? <Flame size={20} color="#ef4444" /> : <ShieldCheck size={20} color="#2d5a27" />}
-                        </div>
-                        <div>
-                            <div style={{ fontWeight: 800, fontSize: '0.9rem' }}>{new Date(r.submission_date).toLocaleDateString()}</div>
-                            <div style={{ fontSize: '0.75rem', color: r.abnormal_growth_flag ? '#ef4444' : '#2d5a27', fontWeight: 700 }}>
-                                {r.abnormal_growth_flag ? 'Attention Required' : 'AI Verified Organic'}
-                            </div>
-                        </div>
-                    </div>
-                    <div style={{ fontSize: '0.82rem', color: '#555', lineHeight: 1.4 }}>
-                        {r.tasks_completed_summary?.substring(0, 100) || "No summary provided"}...
-                    </div>
-                </div>
-            )) : (
-                <div style={{ gridColumn: '1/-1', textAlign: 'center', padding: 40, color: '#666' }}>
-                    No verification reports submitted yet.
-                </div>
-            )}
+        <div>
+            <div style={{ fontWeight: 900, fontSize: '1rem', color: '#1a3c1a' }}>{task.title}</div>
+            <div style={{ fontSize: '0.75rem', color: '#2d5a27', fontWeight: 800 }}>Completed • +{task.reward_points} XP</div>
         </div>
     </div>
 );
 
-const MissionSubmissionModal = ({ task, onClose, onSubmit }) => {
+const ProgressBox = ({ label, target, current }) => (
+    <div>
+        <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 10 }}>
+            <span style={{ fontWeight: 900, fontSize: '0.85rem' }}>{label}</span>
+            <span style={{ fontWeight: 900, fontSize: '0.85rem', color: '#2d5a27' }}>{current}/{target}</span>
+        </div>
+        <div style={{ height: 12, background: '#f0f4f0', borderRadius: 6, overflow: 'hidden' }}>
+            <motion.div initial={{ width: 0 }} animate={{ width: `${(current/target)*100}%` }} style={{ height: '100%', background: 'linear-gradient(90deg, #2d5a27, #4ade80)', borderRadius: 6 }} />
+        </div>
+    </div>
+);
+
+const EmptyState = ({ message }) => (
+    <div style={{ textAlign: 'center', padding: '60px 20px', background: 'white', borderRadius: '32px', border: '1.5px dashed #eeedeb' }}>
+        <div style={{ width: 60, height: 60, background: '#f8faf8', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 20px', color: '#aaa' }}>
+            <Calendar size={30} />
+        </div>
+        <p style={{ color: '#666', fontWeight: 700, margin: 0 }}>{message}</p>
+    </div>
+);
+
+const MissionSubmissionModal = ({ task, onClose, onSubmit, submitting }) => {
     const [summary, setSummary] = useState('');
     const [materials, setMaterials] = useState('');
     const [image, setImage] = useState(null);
     const [preview, setPreview] = useState(null);
+    const [imageType, setImageType] = useState('image');
     const [gps, setGps] = useState(null);
     const [gettingGps, setGettingGps] = useState(false);
+    const [showCamera, setShowCamera] = useState(false);
 
     useEffect(() => {
+        let watchId;
         setGettingGps(true);
-        navigator.geolocation.getCurrentPosition(
-            (pos) => {
+        watchId = navigator.geolocation.watchPosition(
+            pos => {
                 setGps({ lat: pos.coords.latitude, lng: pos.coords.longitude });
                 setGettingGps(false);
             },
-            (err) => {
-                console.error(err);
-                setGettingGps(false);
-            }
+            err => { console.error(err); setGettingGps(false); },
+            { enableHighAccuracy: true, maximumAge: 1000 }
         );
+        return () => { if (watchId) navigator.geolocation.clearWatch(watchId); };
     }, []);
-
-    const handleFile = (e) => {
-        const file = e.target.files[0];
-        if (file) {
-            setImage(file);
-            setPreview(URL.createObjectURL(file));
-        }
-    };
 
     const handleSubmit = () => {
         if (!image || !gps) return alert("Proof and GPS are required!");
@@ -396,81 +459,53 @@ const MissionSubmissionModal = ({ task, onClose, onSubmit }) => {
     };
 
     return (
-        <motion.div 
-            className="modal-overlay"
-            initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-        >
-            <motion.div 
-                className="modal-content"
-                initial={{ scale: 0.9, y: 20 }} animate={{ scale: 1, y: 0 }}
-                style={{ width: '100%', maxWidth: '500px', background: 'white', borderRadius: 32, padding: 35 }}
-            >
-                <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 25 }}>
-                    <h2 style={{ margin: 0, fontWeight: 950 }}>{task.title}</h2>
-                    <button onClick={onClose} style={{ background: 'none', border: 'none', cursor: 'pointer' }}><X /></button>
+        <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.7)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1000, padding: 20, backdropFilter: 'blur(5px)' }}>
+            <motion.div initial={{ scale: 0.9, y: 20 }} animate={{ scale: 1, y: 0 }} style={{ width: '100%', maxWidth: 550, background: 'white', borderRadius: '40px', padding: 40, boxShadow: '0 30px 100px rgba(0,0,0,0.4)' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 30 }}>
+                    <div>
+                        <h2 style={{ margin: 0, fontWeight: 950, fontSize: '1.6rem' }}>Complete Mission</h2>
+                        <p style={{ color: '#666', fontSize: '0.9rem', marginTop: 4 }}>{task.title}</p>
+                    </div>
+                    <button onClick={onClose} style={{ border: 'none', background: '#f8faf8', width: 44, height: 44, borderRadius: '50%', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}><X size={20} /></button>
                 </div>
 
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
-                    <div className="input-field">
-                        <label style={{ fontWeight: 800, fontSize: '0.9rem', display: 'flex', gap: 6, marginBottom: 8 }}>
-                            <ListChecks size={16} color="#2d5a27" /> Summary of Activities
-                        </label>
-                        <textarea 
-                            placeholder="What tasks did you complete today?"
-                            value={summary} onChange={e => setSummary(e.target.value)}
-                            style={{ width: '100%', padding: 15, borderRadius: 12, border: '1.5px solid #eee', minHeight: 100 }}
-                        />
-                    </div>
-
-                    <div className="input-field">
-                        <label style={{ fontWeight: 800, fontSize: '0.9rem', display: 'flex', gap: 6, marginBottom: 8 }}>
-                            <Leaf size={16} color="#2d5a27" /> Organic Materials Used
-                        </label>
-                        <input 
-                            placeholder="e.g. Vermicompost, Neem Oil"
-                            value={materials} onChange={e => setMaterials(e.target.value)}
-                            style={{ width: '100%', padding: 12, borderRadius: 12, border: '1.5px solid #eee' }}
-                        />
+                    <div className="form-group">
+                        <label style={{ fontSize: '0.75rem', fontWeight: 900, color: '#aaa', textTransform: 'uppercase', marginBottom: 8, display: 'block' }}>Summary of Activities</label>
+                        <textarea placeholder="Describe how you completed this task..." value={summary} onChange={e => setSummary(e.target.value)} style={{ width: '100%', padding: 15, borderRadius: 16, border: '1.5px solid #eee', minHeight: 100, fontSize: '0.95rem' }} />
                     </div>
 
                     <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 15 }}>
-                        <div 
-                            className="gps-box" 
-                            style={{ background: '#f8faf8', padding: 15, borderRadius: 16, border: '1.5px dashed #d1e2d1', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}
-                        >
+                        <div style={{ background: '#fcfdfc', padding: 20, borderRadius: 20, border: '1.5px dashed #d1e2d1', textAlign: 'center' }}>
                             <MapPin size={24} color={gps ? "#2d5a27" : "#aaa"} />
-                            <div style={{ fontSize: '0.7rem', fontWeight: 800, marginTop: 4 }}>
-                                {gettingGps ? 'Locating...' : (gps ? `${gps.lat.toFixed(4)}, ${gps.lng.toFixed(4)}` : 'GPS Required')}
-                            </div>
+                            <div style={{ fontSize: '0.75rem', fontWeight: 900, marginTop: 8, color: gps ? '#2d5a27' : '#aaa' }}>{gettingGps ? 'Locating...' : (gps ? `${gps.lat.toFixed(4)}, ${gps.lng.toFixed(4)}` : 'GPS Required')}</div>
                         </div>
 
-                        <label 
-                            className="camera-upload-box" 
-                            style={{ background: '#f8faf8', padding: 15, borderRadius: 16, border: '1.5px dashed #2d5a27', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', overflow: 'hidden' }}
-                        >
+                        <div onClick={() => setShowCamera(true)} style={{ background: '#fcfdfc', padding: 20, borderRadius: 20, border: '1.5px dashed #2d5a27', textAlign: 'center', cursor: 'pointer', overflow: 'hidden' }}>
                             {preview ? (
-                                <img src={preview} style={{ width: '100%', height: '100%', objectFit: 'cover' }} alt="preview" />
+                                imageType === 'image' ? <img src={preview} style={{ width: '100%', height: '100%', objectFit: 'cover' }} /> : <div style={{ fontWeight: 900, color: '#2d5a27' }}>Video Captured</div>
                             ) : (
-                                <>
-                                    <Camera size={24} color="#2d5a27" />
-                                    <div style={{ fontSize: '0.7rem', fontWeight: 800, marginTop: 4 }}>Live Capture</div>
-                                </>
+                                <><Camera size={24} color="#2d5a27" /><div style={{ fontSize: '0.75rem', fontWeight: 900, marginTop: 8, color: '#2d5a27' }}>Capture Evidence</div></>
                             )}
-                            <input type="file" accept="image/*" capture="environment" hidden onChange={handleFile} />
-                        </label>
+                        </div>
                     </div>
 
-                    <button 
-                        className="btn-start-task" 
-                        style={{ width: '100%', justifyContent: 'center', height: 55, fontSize: '1rem' }}
-                        disabled={gettingGps || !image}
-                        onClick={handleSubmit}
-                    >
-                        Submit Evidence
+                    <button disabled={gettingGps || !image || submitting} onClick={handleSubmit} style={{ width: '100%', height: 55, background: '#2d5a27', color: 'white', border: 'none', borderRadius: 18, fontWeight: 950, cursor: 'pointer', fontSize: '1.05rem', marginTop: 10, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 10 }}>
+                        {submitting ? <Loader2 size={24} className="animate-spin" /> : <><CheckSquare size={20} /> Submit Evidence</>}
                     </button>
                 </div>
+
+                <AnimatePresence>
+                    {showCamera && (
+                        <CameraCapture 
+                            userLocation={gps}
+                            onCapture={(file, type) => { setImage(file); setPreview(URL.createObjectURL(file)); setImageType(type); }}
+                            onClose={() => setShowCamera(false)}
+                        />
+                    )}
+                </AnimatePresence>
             </motion.div>
-        </motion.div>
+        </div>
     );
 };
 

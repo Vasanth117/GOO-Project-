@@ -16,6 +16,8 @@ async def submit_proof(
     latitude: float = Form(...),
     longitude: float = Form(...),
     file: UploadFile = File(...),
+    tasks_summary: str = Form(""),
+    organic_materials: str = Form(""),
     current_user: User = Depends(require_farmer),
 ):
     """
@@ -30,6 +32,8 @@ async def submit_proof(
         file=file,
         latitude=latitude,
         longitude=longitude,
+        tasks_summary=tasks_summary,
+        organic_materials=organic_materials,
     )
     return success_response(result, "Proof submitted for review")
 

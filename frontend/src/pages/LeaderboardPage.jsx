@@ -165,7 +165,7 @@ const LeaderboardPage = () => {
             >
                 <div className="sticky-content">
                     <span className="sticky-rank">Your Rank: #{myRank?.national_score_rank || 'N/A'}</span>
-                    <img src={user?.avatar || avatarDefault} alt="" className="sticky-avatar" />
+                    <img src={user?.profile_picture || avatarDefault} alt="" className="sticky-avatar" />
                     <div className="sticky-info">
                         <strong>{user?.name || 'Farmer'}</strong>
                         <span>{user?.farm_profile?.location_name || 'India'}</span>

@@ -20,6 +20,8 @@ class MissionProgress(Document):
     status: MissionStatus = MissionStatus.ACTIVE
     proof_submission_id: Optional[str] = None  # references ProofSubmission._id
     points_earned: int = 0
+    progress_percentage: int = 0
+    current_step: Optional[str] = None
     started_at: Optional[datetime] = None
     completed_at: Optional[datetime] = None
     expires_at: datetime

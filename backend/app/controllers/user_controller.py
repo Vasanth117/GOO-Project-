@@ -84,7 +84,7 @@ async def update_profile(
         filepath = UPLOAD_DIR / filename
         with open(filepath, "wb") as f:
             shutil.copyfileobj(avatar.file, f)
-        user.profile_picture = f"/uploads/avatars/{filename}"
+        user.profile_picture = f"/uploads/avatars/{filename}?v={int(datetime.utcnow().timestamp())}"
 
     user.updated_at = datetime.utcnow()
     await user.save()

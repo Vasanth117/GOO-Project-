@@ -13,6 +13,7 @@ import avatar4 from '../assets/images/4.jpg';
 import img1 from '../assets/images/1.jpg';
 
 import avatar from '../assets/images/9.jpg';
+import { useAuth } from '../context/AuthContext';
 import { apiService } from '../services/apiService';
 
 const GROUPS = [
@@ -30,6 +31,7 @@ const CommunityPage = () => {
     const [activeCategory, setActiveCategory] = useState('All');
     const [showApplyModal, setShowApplyModal] = useState(false);
     const [hasApplied, setHasApplied] = useState(false);
+    const { user } = useAuth();
 
     // Dynamic Social Feed & Widget States
     const [posts, setPosts] = useState([]);
@@ -49,7 +51,9 @@ const CommunityPage = () => {
             const [feedData, expertData, verificationData, profileData] = await Promise.all([
                 apiService.getFeed(1, postType),
                 apiService.getLeaderboard('national').catch(() => ({ leaderboard: [] })),
-                apiService.getPendingVerifications().catch(() => ({ verifications: [] })),
+                (user && user.role === 'grc') 
+                    ? apiService.getPendingVerifications().catch(() => ({ verifications: [] }))
+                    : Promise.resolve({ verifications: [] }),
                 apiService.getProfile().catch(() => ({ preferences: {} }))
             ]);
 

@@ -63,7 +63,6 @@ export const apiService = {
     getCommunityMissions: () => apiRequest('/missions/community-active'),
     submitPeriodicReport: (formData) => {
         const token = localStorage.getItem('access_token');
-        // Extract params for fixed query params in the route
         const params = new URLSearchParams();
         for (const [key, value] of formData.entries()) {
             if (key !== 'file') params.append(key, value);
@@ -71,8 +70,22 @@ export const apiService = {
         return fetch(`${BASE_URL}/missions/periodic-reports?${params.toString()}`, {
             method: 'POST',
             headers: { 'Authorization': `Bearer ${token}` },
-            body: formData  // Still passing formData for the 'file' field
+            body: formData
         }).then(res => res.json());
+    },
+    submitMissionProof: async (formData) => {
+        const token = localStorage.getItem('access_token');
+        const res = await fetch(`${BASE_URL}/proofs/submit`, {
+            method: 'POST',
+            headers: { 'Authorization': `Bearer ${token}` },
+            body: formData
+        });
+        const data = await res.json();
+        if (!res.ok) {
+            console.error("PROOF SUBMISSION FAILED:", data);
+            throw new Error(data.message || data.detail || 'Proof submission failed');
+        }
+        return data.data;
     },
     getMyPeriodicReports: () => apiRequest('/missions/periodic-reports/my'),
 
@@ -82,19 +95,6 @@ export const apiService = {
     // Map / Farm
     getNearbyFarmers: (lat, lng) => apiRequest(`/farm/nearby?lat=${lat}&lng=${lng}`),
     getFarmProfile: () => apiRequest('/farm/me'),
-    generateVoice: async (text) => {
-        const token = localStorage.getItem('access_token');
-        const res = await fetch(`${BASE_URL}/ai/tts`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                ...(token ? { 'Authorization': `Bearer ${token}` } : {})
-            },
-            body: JSON.stringify({ text })
-        });
-        if (!res.ok) throw new Error('Voice generation failed');
-        return await res.blob();
-    },
     createFarm: (data) => apiRequest('/farm/create', { method: 'POST', body: JSON.stringify(data) }),
     updateFarm: (data) => apiRequest('/farm/update', { method: 'PUT', body: JSON.stringify(data) }),
 
@@ -197,4 +197,6 @@ export const apiService = {
         method: 'PUT',
         body: JSON.stringify(prefs)
     }),
+
+    getMyRank: () => apiRequest('/score/stats'),
 };

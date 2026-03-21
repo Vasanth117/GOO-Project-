@@ -178,7 +178,6 @@ async def analyze_crop_health(image_data: bytes, user_query: Optional[str] = Non
                             {"type": "image_url", "image_url": {"url": f"data:image/jpeg;base64,{base64_image}"}},
                         ],
                     }],
-                    model=VISION_MODEL,
                     response_format={"type": "json_object"},
                 )
                 v = json.loads(_clean_json_response(validation.choices[0].message.content))
@@ -353,10 +352,21 @@ async def generate_personalized_missions(farm_profile: dict, weather: dict) -> L
         ]
 
     system_prompt = (
-        "You are the GOO AI Mission Architect. Create 3 scientific, organic farming MISSONS for a farmer. "
-        "Each mission must be practical, sustainable, and directly related to their farm profile and weather. "
-        "\n\nSTRICT JSON output format (PURE JSON ONLY, NO MARKDOWN WRAPPERS): "
-        "[{\"title\": \"string\", \"description\": \"string\", \"difficulty\": \"easy/medium/hard\", \"reward_points\": int}]"
+        "You are the GOO AI Mission Architect. Your goal is to create 3 HYPER-PERSONALIZED, high-impact organic farming missions. "
+        "Analyze the provided FARM PROFILE (crops, soil) and current WEATHER conditions carefully. "
+        "Missions should be seasonally and climatically relevant. If it is hot/dry, focus on water conservation. "
+        "If they grow specific crops, give missions specific to those crops' growth cycles. "
+        "Make the 'title' catchy and the 'description' scientific yet simple. "
+        "\n\nSTRICT JSON output format (PURE JSON WRAPPED IN OBJECT ONLY): "
+        "{\"missions\": [{"
+        "  \"title\": \"string\", "
+        "  \"description\": \"string\", "
+        "  \"difficulty\": \"easy/medium/hard\", "
+        "  \"reward_points\": int, "
+        "  \"eco_benefit\": \"string (What it does for environment)\", "
+        "  \"next_step\": \"string (Single actionable next step)\", "
+        "  \"personalization_tag\": \"string (Why it fits this user)\""
+        "}]}"
     )
 
     user_context = f"FARM PROFILE: {json.dumps(farm_profile)}. WEATHER: {json.dumps(weather)}"
@@ -373,10 +383,69 @@ async def generate_personalized_missions(farm_profile: dict, weather: dict) -> L
         )
         content = response.choices[0].message.content
         data = json.loads(_clean_json_response(content))
-        return data if isinstance(data, list) else data.get("missions", [])
+        
+        # Format for backend
+        missions = data.get("missions", [])
+        return missions
     except Exception as e:
         logger.error(f"AI Mission Generation Error: {e}")
         return []
+
+
+async def analyze_farming_proof(image_data: bytes, mission_text: str, system_prompt: Optional[str] = None) -> dict:
+    """
+    Analyzes local proof (mission completion photo) against the mission description.
+    Returns: {"is_valid": bool, "confidence": float, "analysis_notes": str}
+    """
+    if not client:
+        return {
+            "is_valid": True,
+            "confidence": 0.5,
+            "analysis_notes": "AI offline. Manual review fallback."
+        }
+
+    user_prompt = f"MISSION TO VERIFY: {mission_text}"
+    final_system_prompt = system_prompt if system_prompt else (
+        "You are an ELITE Agricultural Forensic Auditor. Your mission is to verify farming activity with 100% certainty. "
+        "A user has submitted a photo/video frame as proof for a specific farming task. "
+        "\n\nDETECTION PRIORITIES:"
+        "\n1. REJECT placeholder images, pure black/white screens, indoor living rooms, selfies, and internet memes immediately."
+        "\n2. AUDIT for task-specific objects: "
+        "   - Watering -> Visible water/damp soil/hoses."
+        "   - Planting -> Seeds/saplings/soil disturbance."
+        "   - Weeding -> Pile of weeds/hand in soil/tools."
+        "\n3. REJECT if the image is too blurry to identify the task."
+        "\n4. If the photo is real but UNRELATED to the specific mission text -> REJECT."
+        "\n\nSTRICT JSON output format (PURE JSON ONLY): "
+        "{\"is_valid\": boolean, \"confidence\": 0.0-1.0, \"analysis_notes\": \"Detailed reason for audit decision\"}"
+    )
+
+    base64_image = base64.b64encode(image_data).decode('utf-8')
+    try:
+        response = await client.chat.completions.create(
+            messages=[
+                {"role": "system", "content": final_system_prompt},
+                {
+                    "role": "user",
+                    "content": [
+                        {"type": "text", "text": user_prompt},
+                        {"type": "image_url", "image_url": {"url": f"data:image/jpeg;base64,{base64_image}"}},
+                    ],
+                }
+            ],
+            model=VISION_MODEL,
+            response_format={"type": "json_object"},
+            temperature=0.2
+        )
+        content = response.choices[0].message.content
+        return json.loads(_clean_json_response(content))
+    except Exception as e:
+        logger.error(f"Proof analysis error: {e}")
+        return {
+            "is_valid": True,
+            "confidence": 0.5,
+            "analysis_notes": "AI analysis error. Punting to manual review."
+        }
 
 
 # ─── MOCK RESPONSES ───────────────────────────────────────────

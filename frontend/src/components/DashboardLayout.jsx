@@ -10,7 +10,6 @@ import {
 } from 'lucide-react';
 import logo from '../assets/images/logo.png';
 import avatar from '../assets/images/9.jpg';
-// Removed CameraModal import as we are using a full page now
 
 const NAV_ITEMS = [
     { icon: Home,        label: 'Feed',        path: '/dashboard' },
@@ -58,7 +57,7 @@ const DashboardLayout = () => {
     };
 
     return (
-        <div className="dashboard-root">
+        <div className="dashboard-root" style={{ display: 'flex', height: '100vh', background: '#fbfdfb', overflow: 'hidden' }}>
             <motion.aside
                 className="sidebar"
                 variants={sidebarVariants}
@@ -66,207 +65,67 @@ const DashboardLayout = () => {
                 transition={{ duration: 0.3, ease: 'easeInOut' }}
                 onMouseEnter={() => setSidebarHovered(true)}
                 onMouseLeave={() => setSidebarHovered(false)}
+                style={{ background: 'white', borderRight: '1px solid #eeedeb', display: 'flex', flexDirection: 'column' }}
             >
-                <div className="sidebar-logo" style={{ cursor: 'pointer' }} onClick={() => navigate('/dashboard')}>
-                    <motion.img
-                        src={logo} alt="GOO"
-                        className="sidebar-logo-img"
-                        whileHover={{ rotate: 360 }}
-                        transition={{ duration: 0.8 }}
-                    />
+                <div className="sidebar-logo" style={{ padding: '24px 20px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 12 }} onClick={() => navigate('/dashboard')}>
+                    <motion.img src={logo} alt="GOO" style={{ width: 34, height: 34 }} whileHover={{ rotate: 360 }} />
                     <AnimatePresence>
                         {sidebarHovered && (
-                            <motion.span
-                                className="sidebar-logo-text"
-                                initial={{ opacity: 0, x: -10 }}
-                                animate={{ opacity: 1, x: 0 }}
-                                exit={{ opacity: 0, x: -10 }}
-                                transition={{ duration: 0.2 }}
-                            >
-                                goo
-                            </motion.span>
+                            <motion.span initial={{ opacity: 0 }} animate={{ opacity: 1 }} style={{ fontWeight: 900, fontSize: '1.7rem', color: '#2d5a27', letterSpacing: -2 }}>goo</motion.span>
                         )}
                     </AnimatePresence>
                 </div>
 
-                <nav className="sidebar-nav">
+                <nav style={{ flex: 1, padding: '10px 0' }}>
                     {NAV_ITEMS.map((item, i) => {
                         const isActive = currentPath === item.path;
                         return (
-                            <motion.button
+                            <button
                                 key={item.label}
-                                className={`sidebar-nav-item ${isActive ? 'active' : ''}`}
                                 onClick={() => navigate(item.path)}
-                                whileHover={{ x: 4 }}
-                                initial={{ opacity: 0, x: -20 }}
-                                animate={{ opacity: 1, x: 0 }}
-                                transition={{ delay: i * 0.05 }}
-                                title={!sidebarHovered ? item.label : ''}
+                                style={{
+                                    display: 'flex', alignItems: 'center', width: '100%', padding: '12px 24px', border: 'none', background: 'transparent',
+                                    color: isActive ? '#2d5a27' : '#4a4d48', fontWeight: isActive ? 800 : 600, cursor: 'pointer', position: 'relative'
+                                }}
                             >
-                                <motion.div
-                                    className="sidebar-icon-wrap"
-                                    whileHover={{ scale: 1.15 }}
-                                    animate={isActive ? { rotate: [0, -10, 10, 0] } : {}}
-                                    transition={{ duration: 0.4 }}
-                                >
-                                    <item.icon size={20} />
-                                </motion.div>
-
-                                <AnimatePresence>
-                                    {sidebarHovered && (
-                                        <motion.span
-                                            className="sidebar-label"
-                                            initial={{ opacity: 0, x: -8 }}
-                                            animate={{ opacity: 1, x: 0 }}
-                                            exit={{ opacity: 0, x: -8 }}
-                                            transition={{ duration: 0.15 }}
-                                        >
-                                            {item.label}
-                                        </motion.span>
-                                    )}
-                                </AnimatePresence>
-
-                                {isActive && (
-                                    <motion.div className="sidebar-active-dot" layoutId="activeDot" />
-                                )}
-                            </motion.button>
+                                <item.icon size={20} style={{ minWidth: 24 }} />
+                                {sidebarHovered && <span style={{ marginLeft: 16 }}>{item.label}</span>}
+                                {isActive && <div style={{ position: 'absolute', right: 0, width: 4, height: 20, background: '#2d5a27', borderRadius: '4px 0 0 4px' }} />}
+                            </button>
                         );
                     })}
                 </nav>
 
-                <motion.button
-                    className="sidebar-nav-item"
-                    style={{ marginTop: 'auto', color: '#e63946' }}
-                    whileHover={{ x: 4 }}
-                    onClick={handleLogout}
-                    title={!sidebarHovered ? 'Logout' : ''}
-                >
-                    <div className="sidebar-icon-wrap" style={{ color: '#e63946' }}>
-                        <LogOut size={20} />
-                    </div>
-                    <AnimatePresence>
-                        {sidebarHovered && (
-                            <motion.span
-                                className="sidebar-label"
-                                initial={{ opacity: 0, x: -8 }}
-                                animate={{ opacity: 1, x: 0 }}
-                                exit={{ opacity: 0, x: -8 }}
-                                transition={{ duration: 0.15 }}
-                                style={{ color: '#e63946' }}
-                            >
-                                Logout
-                            </motion.span>
-                        )}
-                    </AnimatePresence>
-                </motion.button>
+                <button onClick={handleLogout} style={{ padding: '24px', border: 'none', background: 'transparent', color: '#e63946', fontWeight: 800, cursor: 'pointer', display: 'flex', alignItems: 'center' }}>
+                    <LogOut size={20} />
+                    {sidebarHovered && <span style={{ marginLeft: 16 }}>Logout</span>}
+                </button>
             </motion.aside>
 
-            <div className="dashboard-main">
-                <header className="topbar">
-                    <div className="topbar-left">
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <div className="dashboard-main" style={{ flex: 1, display: 'flex', flexDirection: 'column', height: '100vh', overflowY: 'auto', background: '#fbfdfb', position: 'relative' }}>
+                <header style={{ height: 76, background: 'rgba(255,255,255,0.8)', backdropFilter: 'blur(20px)', borderBottom: '1px solid #eeedeb', display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0 40px', position: 'sticky', top: 0, zIndex: 10 }}>
+                    <div style={{ display: 'flex', flexDirection: 'column' }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
                             <pageInfo.icon size={20} color="#2d5a27" />
-                            <h2 className="topbar-title">{pageInfo.title}</h2>
+                            <h2 style={{ fontSize: '1.2rem', fontWeight: 950, margin: 0 }}>{pageInfo.title}</h2>
                         </div>
-                        <span className="topbar-sub">{pageInfo.sub}</span>
+                        <span style={{ fontSize: '0.75rem', color: '#888', fontWeight: 600 }}>{pageInfo.sub}</span>
                     </div>
 
-                    <div className="topbar-right">
-                        <div className="topbar-search">
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 20 }}>
+                        <div className="topbar-search" style={{ background: '#f4f4f2', padding: '8px 16px', borderRadius: 12, display: 'flex', alignItems: 'center', gap: 10 }}>
                             <Search size={16} color="#aaa" />
-                            <input type="text" placeholder="Search farmers, missions, crops..." />
+                            <input type="text" placeholder="Search..." style={{ background: 'transparent', border: 'none', fontSize: '0.85rem', outline: 'none' }} />
                         </div>
-
-                        {/* 🗺️ FIELD MAP BUTTON (RELOCATED AS REQUESTED) */}
-                        <motion.button 
-                            className="topbar-icon-btn" 
-                            whileHover={{ scale: 1.1, background: '#f0f7f0' }} 
-                            whileTap={{ scale: 0.9 }}
-                            onClick={() => navigate('/map')}
-                            title="Field Map"
-                        >
-                            <Map size={20} color="#2d5a27" />
-                        </motion.button>
-
-                        <motion.button 
-                            className="topbar-icon-btn camera-trigger" 
-                            whileHover={{ scale: 1.1, background: '#f0f7f0' }} 
-                            whileTap={{ scale: 0.9 }}
-                            onClick={() => navigate('/camera')}
-                            title="Field Capture"
-                        >
-                            <Camera size={20} color="#2d5a27" />
-                        </motion.button>
-
-                        <motion.button
-                            className="topbar-icon-btn" whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.9 }}
-                            onClick={() => setNotifOpen(!notifOpen)}
-                        >
-                            <Bell size={20} />
-                            <span className="topbar-badge">5</span>
-                        </motion.button>
-
-                        <motion.div
-                            className="topbar-user"
-                            style={{ cursor: 'pointer' }}
-                            whileHover={{ scale: 1.03 }}
-                            onClick={() => navigate('/profile')}
-                        >
-                            <img src={avatar} alt="me" className="topbar-avatar" />
-                            <div>
-                                <div style={{ fontWeight: 700, fontSize: '0.85rem', color: '#1a1c19' }}>
-                                    {user?.name || 'Farmer'}
-                                </div>
-                                <div style={{ fontSize: '0.72rem', color: '#888', textTransform: 'capitalize' }}>
-                                    {user?.role || 'GOO Member'}
-                                </div>
-                            </div>
-                        </motion.div>
+                        <Camera size={20} onClick={() => navigate('/camera')} style={{ cursor: 'pointer' }} />
+                        <Bell size={20} onClick={() => setNotifOpen(!notifOpen)} style={{ cursor: 'pointer' }} />
+                        <img src={user?.profile_picture || avatar} alt="me" style={{ width: 38, height: 38, borderRadius: '50%', border: '2px solid #2d5a27', cursor: 'pointer' }} onClick={() => navigate('/profile')} />
                     </div>
-
-                    <AnimatePresence>
-                        {notifOpen && (
-                            <motion.div
-                                className="notif-dropdown"
-                                initial={{ opacity: 0, y: -10, scale: 0.95 }}
-                                animate={{ opacity: 1, y: 0, scale: 1 }}
-                                exit={{ opacity: 0, y: -10, scale: 0.95 }}
-                            >
-                                <div className="notif-header">
-                                    <strong>Notifications</strong>
-                                    <button style={{ fontSize: '0.75rem', color: '#2d5a27', background: 'none', border: 'none', cursor: 'pointer' }}>
-                                        Mark all read
-                                    </button>
-                                </div>
-                                {[
-                                    { icon: Trophy,      text: 'You completed the "Water Saver" mission!', time: '2m ago',  color: '#d4af37' },
-                                    { icon: Heart,       text: 'Priya Sharma liked your post',              time: '15m ago', color: '#e63946' },
-                                    { icon: Award,       text: 'You earned a new Eco Badge!',               time: '1h ago',  color: '#2d5a27' },
-                                    { icon: MessageSquare, text: 'Amit Patel commented on your post',       time: '2h ago',  color: '#768953' },
-                                    { icon: Globe,       text: '5 new farmers joined your region',          time: '5h ago',  color: '#4c7c42' },
-                                ].map((n, i) => (
-                                    <motion.div
-                                        key={i} className="notif-item"
-                                        whileHover={{ background: '#f5faf4' }}
-                                        initial={{ opacity: 0, x: 10 }}
-                                        animate={{ opacity: 1, x: 0 }}
-                                        transition={{ delay: i * 0.05 }}
-                                    >
-                                        <div className="notif-icon" style={{ background: n.color + '20', color: n.color }}>
-                                            <n.icon size={14} />
-                                        </div>
-                                        <div>
-                                            <div style={{ fontSize: '0.82rem' }}>{n.text}</div>
-                                            <div style={{ fontSize: '0.72rem', color: '#aaa' }}>{n.time}</div>
-                                        </div>
-                                    </motion.div>
-                                ))}
-                            </motion.div>
-                        )}
-                    </AnimatePresence>
                 </header>
 
-                <Outlet />
+                <main style={{ flex: 1 }}>
+                    <Outlet />
+                </main>
             </div>
         </div>
     );

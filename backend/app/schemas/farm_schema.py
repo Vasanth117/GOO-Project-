@@ -17,6 +17,13 @@ class CreateFarmRequest(BaseModel):
     pesticide_usage: PesticideUsage
     farming_practices: FarmingPractice = FarmingPractice.CONVENTIONAL
 
+    @field_validator('soil_type', 'irrigation_type', 'farming_practices', mode='before')
+    @classmethod
+    def lowercase_values(cls, v: Any) -> Any:
+        if isinstance(v, str):
+            return v.lower()
+        return v
+
     class Config:
         json_schema_extra = {
             "example": {
@@ -46,8 +53,7 @@ class UpdateFarmRequest(BaseModel):
 
     @field_validator('soil_type', 'irrigation_type', 'farming_practices', mode='before')
     @classmethod
-    def lowercase_enum(cls, v: Any) -> Any:
-        """Accept enum values in any case (e.g. 'Clay', 'CLAY', 'clay')."""
+    def lowercase_values(cls, v: Any) -> Any:
         if isinstance(v, str):
             return v.lower()
         return v
