@@ -93,22 +93,21 @@ async def submit_proof(
     if mp.expires_at < datetime.utcnow():
         error_response("This mission has expired", 400)
 
-    # 2. Fetch farm profile for GPS validation
+    # 2. Fetch farm profile for GPS validation (Make Optional for Demo/Onboarding)
     farm = await FarmProfile.find_one(FarmProfile.farmer_id == str(user.id))
-    if not farm:
-        error_response("Farm profile not found. Please create your farm profile first.", 404)
-
-    # 3. GPS validation — must be within 5km of farm
-    if not is_within_farm_radius(
-        proof_lat=latitude,
-        proof_lon=longitude,
-        farm_lat=farm.location.latitude,
-        farm_lon=farm.location.longitude,
-    ):
-        error_response(
-            "GPS location does not match your farm location. "
-            "Please submit proof from within your farm area.", 400
-        )
+    
+    # 3. GPS validation — must be within 5km of farm IF farm location exists
+    if farm and getattr(farm, "location", None):
+        if not is_within_farm_radius(
+            proof_lat=latitude,
+            proof_lon=longitude,
+            farm_lat=farm.location.latitude,
+            farm_lon=farm.location.longitude,
+        ):
+            error_response(
+                "GPS location does not match your farm location. "
+                "Please submit proof from within your farm area.", 400
+            )
 
     # 4. Save file and get hash
     file_url, file_type, file_hash = await _save_file(file, str(user.id))

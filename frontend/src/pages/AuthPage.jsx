@@ -85,11 +85,11 @@ const AuthPage = () => {
 
                         <div className="auth-input-group">
                             <User size={16} className="auth-input-icon" />
-                            <input type="text" name="name" placeholder="Full Name" value={registerData.name} onChange={handleRegisterChange} autocomplete="name" required />
+                            <input type="text" name="name" placeholder="Full Name" value={registerData.name} onChange={handleRegisterChange} autoComplete="name" required />
                         </div>
                         <div className="auth-input-group">
                             <Mail size={16} className="auth-input-icon" />
-                            <input type="email" name="email" placeholder="Email" value={registerData.email} onChange={handleRegisterChange} autocomplete="email" required />
+                            <input type="email" name="email" placeholder="Email" value={registerData.email} onChange={handleRegisterChange} autoComplete="email" required />
                         </div>
                         <div className="auth-input-group">
                             <Briefcase size={16} className="auth-input-icon" />
@@ -102,7 +102,7 @@ const AuthPage = () => {
                         </div>
                         <div className="auth-input-group" style={{ position: 'relative' }}>
                             <Lock size={16} className="auth-input-icon" />
-                            <input type={showPassword ? 'text' : 'password'} name="password" placeholder="Password (min 6 chars)" value={registerData.password} onChange={handleRegisterChange} autocomplete="new-password" required />
+                            <input type={showPassword ? 'text' : 'password'} name="password" placeholder="Password (min 6 chars)" value={registerData.password} onChange={handleRegisterChange} autoComplete="new-password" required />
                             <div onClick={() => setShowPassword(!showPassword)} style={{ position: 'absolute', right: '14px', top: '50%', transform: 'translateY(-50%)', cursor: 'pointer', color: '#aaa' }}>
                                 {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
                             </div>
@@ -145,11 +145,11 @@ const AuthPage = () => {
 
                         <div className="auth-input-group">
                             <Mail size={16} className="auth-input-icon" />
-                            <input type="email" name="email" placeholder="Email" value={loginData.email} onChange={handleLoginChange} autocomplete="email" required />
+                            <input type="email" name="email" placeholder="Email" value={loginData.email} onChange={handleLoginChange} autoComplete="email" required />
                         </div>
                         <div className="auth-input-group" style={{ position: 'relative' }}>
                             <Lock size={16} className="auth-input-icon" />
-                            <input type={showPassword ? 'text' : 'password'} name="password" placeholder="Password" value={loginData.password} onChange={handleLoginChange} autocomplete="current-password" required />
+                            <input type={showPassword ? 'text' : 'password'} name="password" placeholder="Password" value={loginData.password} onChange={handleLoginChange} autoComplete="current-password" required />
                             <div onClick={() => setShowPassword(!showPassword)} style={{ position: 'absolute', right: '14px', top: '50%', transform: 'translateY(-50%)', cursor: 'pointer', color: '#aaa' }}>
                                 {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
                             </div>
