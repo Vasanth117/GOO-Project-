@@ -180,10 +180,10 @@ const CommunityPage = () => {
 
                 <div className="create-discuss-box" style={{ flexDirection: 'column', alignItems: 'stretch' }}>
                     <div style={{ display: 'flex', gap: '15px' }}>
-                        <img src={avatar} alt="me" className="mini-avatar" />
+                        <img src={avatar} alt="me" className="com-mini-avatar" />
                         <textarea 
                             className="fake-input-btn" 
-                            style={{ flex: 1, minHeight: '60px', borderRadius: '12px', padding: '12px', resize: 'none' }}
+                            style={{ flex: 1, minHeight: '50px', borderRadius: '12px', padding: '12px 18px', resize: 'none', border: '1.5px solid var(--color-border)', background: 'var(--color-surface-2)' }}
                             placeholder="Ask the community a question or share your progress..."
                             value={newPostContent}
                             onChange={(e) => setNewPostContent(e.target.value)}
@@ -217,7 +217,7 @@ const CommunityPage = () => {
                                 transition={{ delay: i * 0.1 }}
                             >
                                 <div className="discuss-top" onClick={() => navigate(`/profile/${post.author.id}`)} style={{ cursor: 'pointer' }}>
-                                    <div className="mini-avatar" style={{ background: '#2d5a27', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'white', fontWeight: 'bold' }}>
+                                    <div className="com-mini-avatar" style={{ background: '#2d5a27', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'white', fontWeight: 'bold' }}>
                                         {post.author.name[0]}
                                     </div>
                                     <div>
