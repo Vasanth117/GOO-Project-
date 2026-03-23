@@ -179,33 +179,104 @@ async def weekly_checkin(user: User, data: WeeklyCheckinRequest) -> dict:
     }
 
 
-async def get_nearby_farms(lat: float, lng: float, radius: float) -> list:
+async def get_nearby_farms(lat: float, lng: float, radius: float, current_user=None) -> list:
     """
-    Returns farm profiles for Map view.
-    For this 'Snap Map' feature, we return primary farmers + high-activity zones.
+    Returns farm profiles for Snap Map view.
+    Respects privacy modes and uses real last_seen_at timestamps.
     """
-    # Simply fetching all for the 'Snap Map' demo scope
     farms = await FarmProfile.find_all().to_list()
-    
+    now = datetime.utcnow()
     results = []
     for f in farms:
         user = await User.get(f.farmer_id)
         if not user:
             continue
-            
+        # Respect ghost mode
+        privacy = getattr(f, "privacy_mode", "live")
+        if privacy == "ghost":
+            continue
+        if current_user and str(f.farmer_id) == str(current_user.id):
+            continue  # Don't include self in others list
+
+        last_seen = getattr(f, "last_seen_at", None) or f.updated_at
+        seconds_ago = (now - last_seen).total_seconds() if last_seen else 9999
+        status = "online" if seconds_ago < 300 else "recent" if seconds_ago < 3600 else "offline"
+        last_seen_label = "Active now" if seconds_ago < 60 else f"{int(seconds_ago // 60)}m ago" if seconds_ago < 3600 else f"{int(seconds_ago // 3600)}h ago"
+
+        pos_lat = getattr(f, "live_lat", None) or f.location.latitude
+        pos_lng = getattr(f, "live_lng", None) or f.location.longitude
+
         results.append({
             "id": str(f.id),
-            "pos": [f.location.latitude, f.location.longitude],
+            "farmer_id": str(f.farmer_id),
+            "pos": [pos_lat, pos_lng],
             "name": user.name,
             "farm_name": f.farm_name,
             "role": user.role.value,
             "score": f.sustainability_score,
-            "status": "online" if datetime.utcnow().second % 5 == 0 else "offline", # Simulated real-time
-            "activity": f"Farming {f.crop_types[0]}" if f.crop_types else "Active",
+            "status": status,
+            "last_seen": last_seen_label,
+            "activity": f"Growing {f.crop_types[0]}" if f.crop_types else "Active farmer",
             "isSeller": user.role.value == "seller",
-            "avatar": user.profile_picture
+            "avatar": user.profile_picture,
+            "crop_types": f.crop_types,
+            "farm_size_acres": f.farm_size_acres,
+            "farming_practices": f.farming_practices.value,
+            "privacy_mode": privacy,
         })
     return results
+
+
+async def update_live_location(user: User, lat: float, lng: float) -> dict:
+    """Store the user's current live GPS location into their farm profile."""
+    farm = await FarmProfile.find_one(FarmProfile.farmer_id == str(user.id))
+    if not farm:
+        return {"error": "Farm profile not found"}
+    farm.set({"live_lat": lat, "live_lng": lng, "last_seen_at": datetime.utcnow()})
+    await farm.save()
+    return {"live_lat": lat, "live_lng": lng}
+
+
+async def set_privacy_mode(user: User, mode: str) -> dict:
+    """Set location privacy: 'live', 'farm_only', or 'ghost'."""
+    valid = ["live", "farm_only", "ghost"]
+    if mode not in valid:
+        mode = "live"
+    farm = await FarmProfile.find_one(FarmProfile.farmer_id == str(user.id))
+    if not farm:
+        return {"error": "Farm profile not found"}
+    farm.set({"privacy_mode": mode})
+    await farm.save()
+    return {"privacy_mode": mode}
+
+
+async def get_activity_markers() -> list:
+    """Returns recent mission completions and checkins as activity map markers."""
+    from app.models.mission_progress import MissionProgress, MissionStatus
+    from app.models.proof_submission import ProofSubmission
+    markers = []
+    recent_completions = await MissionProgress.find(
+        MissionProgress.status == MissionStatus.COMPLETED
+    ).sort(-MissionProgress.id).limit(30).to_list()
+
+    farms_cache = {}
+    for mp in recent_completions:
+        fid = mp.farmer_id
+        if fid not in farms_cache:
+            farms_cache[fid] = await FarmProfile.find_one(FarmProfile.farmer_id == fid)
+        farm = farms_cache[fid]
+        if not farm:
+            continue
+        user = await User.get(farm.farmer_id)
+        markers.append({
+            "type": "mission",
+            "pos": [farm.location.latitude, farm.location.longitude],
+            "title": mp.title if hasattr(mp, "title") else "Mission Completed",
+            "farmer_name": user.name if user else "Farmer",
+            "farm_name": farm.farm_name,
+            "score": farm.sustainability_score,
+        })
+    return markers
 
 
 def _farm_to_dict(farm: FarmProfile) -> dict:

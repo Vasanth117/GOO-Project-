@@ -1,192 +1,287 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
-    Search, Edit, Info, Phone, Video, Image, Heart, 
-    Smile, Send, MoreVertical, ChevronLeft, Check, CheckCheck, Loader2
+    Send, Search, MessageSquare, User, MoreVertical, 
+    Image as ImageIcon, Smile, ArrowLeft, Phone, Video,
+    Check, CheckCheck, Inbox, Flame, Award, Loader2
 } from 'lucide-react';
-import avatar1 from '../assets/images/9.jpg';
-
+import { useAuth } from '../context/AuthContext';
 import { apiService } from '../services/apiService';
 
+const WS_BASE = 'ws://localhost:8000/api/v1/messages/ws';
+
 const MessagesPage = () => {
+    const { user } = useAuth();
     const [chats, setChats] = useState([]);
-    const [selectedChat, setSelectedChat] = useState(null);
+    const [activeChat, setActiveChat] = useState(null);
     const [messages, setMessages] = useState([]);
     const [newMessage, setNewMessage] = useState('');
     const [loading, setLoading] = useState(true);
-    const chatEndRef = useRef(null);
+    const [searchQuery, setSearchQuery] = useState('');
+    const ws = useRef(null);
+    const messagesEndRef = useRef(null);
+
+    const scrollToBottom = () => {
+        messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+    };
 
     useEffect(() => {
-        const load = async () => {
-            try {
-                const data = await apiService.getChats();
-                setChats(data || []);
-                if (data && data.length > 0) setSelectedChat(data[0]);
-            } catch (err) {
-                console.error(err);
-            } finally {
-                setLoading(false);
-            }
-        };
-        load();
+        fetchInbox();
+        setupWebSocket();
+        return () => ws.current?.close();
     }, []);
 
     useEffect(() => {
-        if (!selectedChat) return;
-        const fetchMessages = async () => {
-            try {
-                const data = await apiService.getMessageHistory(selectedChat.id);
-                setMessages(data || []);
-            } catch (err) {
-                console.error(err);
-            }
-        };
-        fetchMessages();
-    }, [selectedChat]);
-
-    const scrollToBottom = () => {
-        chatEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-    };
+        if (activeChat) {
+            fetchHistory(activeChat.user_id);
+        }
+    }, [activeChat]);
 
     useEffect(() => {
         scrollToBottom();
     }, [messages]);
 
-    const handleSendMessage = async (e) => {
-        e.preventDefault();
-        if (!newMessage.trim() || !selectedChat) return;
+    const setupWebSocket = () => {
+        if (!user?.id) return;
+        ws.current = new WebSocket(`${WS_BASE}/${user.id}`);
+        
+        ws.current.onmessage = (event) => {
+            const payload = JSON.parse(event.data);
+            if (payload.type === 'new_message') {
+                const msg = payload.data;
+                // If it's from the person we are currently chatting with, add to messages
+                if (activeChat && msg.sender_id === activeChat.user_id) {
+                    setMessages(prev => [...prev, {
+                        id: msg.id,
+                        sender_id: msg.sender_id,
+                        content: msg.content,
+                        created_at: msg.created_at
+                    }]);
+                }
+                // Refresh inbox to show preview/unread
+                fetchInbox();
+            }
+        };
 
-        const content = newMessage;
-        setNewMessage('');
+        ws.current.onclose = () => {
+            setTimeout(setupWebSocket, 3000); // Reconnect
+        };
+    };
 
+    const fetchInbox = async () => {
         try {
-            await apiService.sendMessage(selectedChat.id, content);
-            setMessages(prev => [...prev, { id: Date.now(), sender: 'me', text: content, time: 'Now' }]);
+            const res = await apiService.getChats();
+            const data = res.data || [];
+            setChats(data);
+            setLoading(false);
         } catch (err) {
-            console.error(err);
+            console.error("Failed to fetch inbox:", err);
+            setLoading(false);
         }
     };
 
-    if (loading) return <div className="loading-full"><Loader2 className="spinner" /></div>;
+    const fetchHistory = async (otherId) => {
+        try {
+            const res = await apiService.getMessageHistory(otherId);
+            setMessages(res.data || []);
+        } catch (err) {
+            console.error("Failed to fetch history:", err);
+        }
+    };
+
+    const handleSendMessage = async (e) => {
+        e.preventDefault();
+        if (!newMessage.trim() || !activeChat) return;
+
+        const content = newMessage.trim();
+        setNewMessage('');
+
+        // Optimistic update
+        const tempId = Date.now().toString();
+        const optimisticMsg = {
+            id: tempId,
+            sender_id: user.id,
+            content: content,
+            created_at: new Date().toISOString(),
+            status: 'sending'
+        };
+        setMessages(prev => [...prev, optimisticMsg]);
+
+        try {
+            const res = await apiService.sendMessage(activeChat.user_id, content);
+            setMessages(prev => prev.map(m => m.id === tempId ? { ...m, id: res.data.id, status: 'sent' } : m));
+            fetchInbox(); // Refresh preview
+        } catch (err) {
+            console.error("Failed to send:", err);
+            setMessages(prev => prev.filter(m => m.id !== tempId));
+        }
+    };
+
+    const filteredChats = chats.filter(c => 
+        c.name.toLowerCase().includes(searchQuery.toLowerCase())
+    );
+
+    if (loading) return (
+        <div className="messages-loading-state">
+            <Loader2 className="spinner" size={40} />
+            <p>Syncing your farm network...</p>
+        </div>
+    );
 
     return (
-        <div className="messages-layout">
-            {/* ── LEFT SIDEBAR: CHAT LIST ── */}
-            <div className="messages-sidebar">
+        <div className="messages-layout-v2">
+            {/* Sidebar */}
+            <div className={`ms-sidebar ${activeChat ? 'mobile-hidden' : ''}`}>
                 <div className="ms-header">
-                    <div className="ms-title-row">
-                        <h3>{/* user.name */} Your Messages</h3>
-                        <button className="btn-icon-ms"><Edit size={20} /></button>
-                    </div>
-                </div>
-
-                <div className="ms-search-box">
-                    <div className="ms-search-inner">
-                        <Search size={16} color="#888" />
-                        <input type="text" placeholder="Search friends, groups..." />
+                    <h2>Messages</h2>
+                    <div className="ms-search-box">
+                        <Search size={18} />
+                        <input 
+                            type="text" 
+                            placeholder="Search farmers..." 
+                            value={searchQuery}
+                            onChange={(e) => setSearchQuery(e.target.value)}
+                        />
                     </div>
                 </div>
 
                 <div className="ms-list">
-                    {chats.map(chat => (
-                        <div 
-                            key={chat.id} 
-                            className={`ms-card ${selectedChat?.id === chat.id ? 'active' : ''}`}
-                            onClick={() => setSelectedChat(chat)}
-                        >
-                            <div className="ms-avatar-wrap">
-                                <img src={chat.avatar || avatar1} alt="a" />
-                                {chat.status === 'online' && <div className="ms-status-dot" />}
-                            </div>
-                            <div className="ms-info">
-                                <div className="ms-name-row">
-                                    <strong>{chat.name || 'Anonymous User'}</strong>
-                                    <span>{chat.time || ''}</span>
-                                </div>
-                                <div className="ms-msg-row">
-                                    <p className={chat.unread > 0 ? 'unread' : ''}>{chat.lastMsg || 'No messages yet'}</p>
-                                    {chat.unread > 0 && <div className="ms-unread-badge">{chat.unread}</div>}
-                                </div>
-                            </div>
+                    {filteredChats.length === 0 ? (
+                        <div className="empty-chats">
+                            <Inbox size={48} />
+                            <p>No messages yet.<br/>Start a conversation with nearby farmers!</p>
                         </div>
-                    ))}
+                    ) : (
+                        filteredChats.map(chat => (
+                            <div 
+                                key={chat.user_id} 
+                                className={`ms-item ${activeChat?.user_id === chat.user_id ? 'active' : ''} ${chat.unread ? 'unread' : ''}`}
+                                onClick={() => setActiveChat(chat)}
+                            >
+                                <div className="ms-avatar">
+                                    {chat.avatar ? (
+                                        <img src={chat.avatar} alt={chat.name} />
+                                    ) : (
+                                        <div className="avatar-placeholder">{chat.name[0]}</div>
+                                    )}
+                                    {chat.unread && <div className="unread-dot"></div>}
+                                </div>
+                                <div className="ms-info">
+                                    <div className="ms-name-row">
+                                        <span className="ms-name">{chat.name}</span>
+                                        <span className="ms-time">
+                                            {new Date(chat.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                                        </span>
+                                    </div>
+                                    <p className="ms-preview">{chat.last_message}</p>
+                                </div>
+                            </div>
+                        ))
+                    )}
                 </div>
             </div>
 
-            {/* ── RIGHT COLUMN: ACTIVE CHAT ── */}
-            <div className="messages-chat-view">
-                {selectedChat ? (
-                    <div className="chat-container">
-                        {/* CHAT HEADER */}
+            {/* Chat Window */}
+            <div className={`ms-chat-window ${!activeChat ? 'no-selection' : ''}`}>
+                {activeChat ? (
+                    <>
                         <div className="chat-header">
-                            <div className="chat-user-info">
-                                <div className="cv-avatar-wrap">
-                                    <img src={selectedChat.avatar} alt="u" />
-                                    {selectedChat.status === 'online' && <div className="cv-status" />}
+                            <button className="back-btn" onClick={() => setActiveChat(null)}>
+                                <ArrowLeft size={20} />
+                            </button>
+                            <div className="active-user-info">
+                                <div className="header-avatar">
+                                    {activeChat.avatar ? (
+                                        <img src={activeChat.avatar} alt={activeChat.name} />
+                                    ) : (
+                                        <div className="avatar-placeholder">{activeChat.name[0]}</div>
+                                    )}
                                 </div>
-                                <div className="cv-details">
-                                    <h4>{selectedChat.name}</h4>
-                                    <span>{selectedChat.status === 'online' ? 'Active now' : 'Active ' + selectedChat.time + ' ago'}</span>
+                                <div className="header-text">
+                                    <h3>{activeChat.name}</h3>
+                                    <span className="user-status">Active now</span>
                                 </div>
                             </div>
-                            <div className="chat-actions">
-                                <button className="btn-chat-tool"><Phone size={20} /></button>
-                                <button className="btn-chat-tool"><Video size={20} /></button>
-                                <button className="btn-chat-tool"><Info size={20} /></button>
+                            <div className="header-actions">
+                                <button className="tool-btn"><Phone size={20} /></button>
+                                <button className="tool-btn"><Video size={20} /></button>
+                                <button className="tool-btn"><MoreVertical size={20} /></button>
                             </div>
                         </div>
 
-                        {/* MESSAGE HISTORY */}
-                        <div className="chat-history">
-                            <div className="chat-date-separator">Today</div>
-                            {messages.map((msg, idx) => (
-                                <motion.div 
-                                    key={msg.id}
-                                    initial={{ opacity: 0, y: 10, scale: 0.95 }}
-                                    animate={{ opacity: 1, y: 0, scale: 1 }}
-                                    className={`msg-bubble-wrap ${msg.sender}`}
-                                >
-                                    <div className="msg-bubble">
-                                        <p>{msg.text}</p>
+                        <div className="chat-history-stream">
+                            <div className="chat-intro-card">
+                                <div className="intro-avatar">
+                                    {activeChat.avatar ? <img src={activeChat.avatar} alt={activeChat.name} /> : <div className="avatar-placeholder-large">{activeChat.name[0]}</div>}
+                                </div>
+                                <h2>{activeChat.name}</h2>
+                                <p>Farmer • Network Member</p>
+                                <div className="intro-badges">
+                                    <span className="badge-pill expert"><Award size={12}/> Top Contributor</span>
+                                    <span className="badge-pill streak"><Flame size={12}/> 15 Day Streak</span>
+                                </div>
+                                <button className="btn-view-profile" onClick={() => window.location.href = `/profile/${activeChat.user_id}`}>View Profile</button>
+                            </div>
+
+                            {messages.map((msg, i) => {
+                                const isMe = msg.sender_id === user?.id;
+                                const showAvatar = !isMe && (i === 0 || messages[i-1].sender_id !== msg.sender_id);
+                                
+                                return (
+                                    <div key={msg.id} className={`msg-bubble-wrap ${isMe ? 'own-msg' : 'other-msg'} ${!showAvatar && !isMe ? 'no-avatar' : ''}`}>
+                                        {showAvatar && (
+                                            <div className="msg-avatar">
+                                                {activeChat.avatar ? <img src={activeChat.avatar} alt="" /> : <div className="mini-avatar">{activeChat.name[0]}</div>}
+                                            </div>
+                                        )}
+                                        <div className="msg-bubble-group">
+                                            <motion.div 
+                                                className="bubble"
+                                                initial={{ scale: 0.9, opacity: 0, y: 10 }}
+                                                animate={{ scale: 1, opacity: 1, y: 0 }}
+                                            >
+                                                {msg.content}
+                                            </motion.div>
+                                            {isMe && i === messages.length - 1 && (
+                                                <div className="status-indicator">
+                                                    {msg.status === 'sending' ? 'Sending...' : <CheckCheck size={12} />}
+                                                </div>
+                                            )}
+                                        </div>
                                     </div>
-                                    <div className="msg-meta">
-                                        <span>{msg.time}</span>
-                                        {msg.sender === 'me' && <CheckCheck size={12} color="#3897f0" />}
-                                    </div>
-                                </motion.div>
-                            ))}
-                            <div ref={chatEndRef} />
+                                );
+                            })}
+                            <div ref={messagesEndRef} />
                         </div>
 
-                        {/* MESSAGE INPUT */}
-                        <div className="chat-input-area">
-                            <form className="chat-input-inner" onSubmit={handleSendMessage}>
-                                <button type="button" className="btn-ms-alt"><Smile size={22} /></button>
-                                <input 
-                                    type="text" 
-                                    placeholder="Message..." 
-                                    value={newMessage}
-                                    onChange={(e) => setNewMessage(e.target.value)}
-                                />
-                                {newMessage.trim() === '' ? (
-                                    <div className="chat-input-tools">
-                                        <button type="button" className="btn-ms-alt"><Image size={22} /></button>
-                                        <button type="button" className="btn-ms-alt"><Heart size={22} /></button>
-                                    </div>
-                                ) : (
-                                    <button type="submit" className="btn-send-msg">Send</button>
-                                )}
-                            </form>
-                        </div>
-                    </div>
+                        <form className="chat-input-row" onSubmit={handleSendMessage}>
+                            <button type="button" className="input-tool"><ImageIcon size={20} /></button>
+                            <button type="button" className="input-tool"><Smile size={20} /></button>
+                            <input 
+                                type="text" 
+                                placeholder="Message..." 
+                                value={newMessage}
+                                onChange={(e) => setNewMessage(e.target.value)}
+                            />
+                            {newMessage.trim() === '' ? (
+                                <div className="input-tools-right">
+                                    <button type="button" className="input-tool"><Phone size={20} /></button>
+                                </div>
+                            ) : (
+                                <button type="submit" className="send-action-btn">Send</button>
+                            )}
+                        </form>
+                    </>
                 ) : (
-                    <div className="empty-chat-state">
-                        <div className="empty-circle">
-                            <MessageSquare size={48} color="#aaa" />
+                    <div className="ms-placeholder">
+                        <div className="placeholder-content">
+                            <div className="icon-badge">
+                                <MessageSquare size={40} />
+                            </div>
+                            <h2>Your Direct Messages</h2>
+                            <p>Send private photos and messages to a fellow farmer.</p>
+                            <button className="primary-chat-btn" onClick={() => window.location.href = '/community'}>New Message</button>
                         </div>
-                        <h2>Your Messages</h2>
-                        <p>Send photos and private messages to a friend or group.</p>
-                        <button className="btn-primary-ms">Send Message</button>
                     </div>
                 )}
             </div>

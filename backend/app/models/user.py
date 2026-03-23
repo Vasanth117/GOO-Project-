@@ -28,6 +28,7 @@ class User(Document):
     status: UserStatus = UserStatus.ACTIVE
     is_verified: bool = False
     email_verified: bool = False
+    is_private: bool = False # 🔒 Instagram-style privacy
     profile_picture: Optional[str] = None
     bio: Optional[str] = None
     phone: Optional[str] = None

@@ -216,7 +216,7 @@ const CommunityPage = () => {
                                 animate={{ opacity: 1, y: 0 }}
                                 transition={{ delay: i * 0.1 }}
                             >
-                                <div className="discuss-top">
+                                <div className="discuss-top" onClick={() => navigate(`/profile/${post.author.id}`)} style={{ cursor: 'pointer' }}>
                                     <div className="mini-avatar" style={{ background: '#2d5a27', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'white', fontWeight: 'bold' }}>
                                         {post.author.name[0]}
                                     </div>
@@ -310,7 +310,7 @@ const CommunityPage = () => {
                         <div style={{ color: '#888', fontSize: '0.85rem', padding: '10px 0' }}>Syncing leaderboard...</div>
                     ) : (
                         experts.map((exp, i) => (
-                            <div key={i} className="expert-list-item">
+                            <div key={i} className="expert-list-item" onClick={() => navigate(`/profile/${exp.user_id || exp.id}`)} style={{ cursor: 'pointer' }}>
                                 <div style={{ fontWeight: 700, fontSize: '0.82rem' }}>#{i+1} {exp.name || 'Anonymous'}</div>
                                 <div style={{ fontSize: '0.72rem', color: '#888' }}>{exp.tier || 'Farmer'} • {exp.score} XP</div>
                             </div>

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
-    Trophy, Medal, Globe, MapPin, TrendingUp, 
+    Trophy, Medal, Globe, MapPin, TrendingUp, TrendingDown, Minus,
     Search, Filter, ChevronRight, Zap, Droplets, 
     Wind, Leaf, Star, Award, Crown, Loader2
 } from 'lucide-react';
@@ -134,13 +134,15 @@ const LeaderboardPage = () => {
                                 initial={{ opacity: 0, x: -20 }}
                                 animate={{ opacity: 1, x: 0 }}
                                 transition={{ delay: i * 0.05 }}
+                                onClick={() => navigate(`/profile/${leader.user_id || leader.id}`)}
+                                style={{ cursor: 'pointer' }}
                             >
                                 <div className="col-rank">#{leader.rank}</div>
                                 <div className="col-farmer">
                                     <img src={leader.avatar || avatarDefault} alt="" className="item-avatar" />
                                     <div>
-                                        <div className="item-name">{leader.name} {leader.isUser && "⭐"}</div>
-                                        <div className="item-loc">📍 {leader.location || 'Unknown'}</div>
+                                        <div className="item-name" style={{ display: 'flex', alignItems: 'center', gap: 5 }}>{leader.name} {leader.isUser && <Star size={14} color="#d4af37" fill="#d4af37" />}</div>
+                                        <div className="item-loc" style={{ display: 'flex', alignItems: 'center', gap: 4 }}><MapPin size={11} /> {leader.location || 'Unknown'}</div>
                                     </div>
                                 </div>
                                 <div className="col-impact">
@@ -149,7 +151,9 @@ const LeaderboardPage = () => {
                                 </div>
                                 <div className="col-points">
                                     <div className="points-val"><Zap size={14} color="#d4af37" /> {(leader.points || 0).toLocaleString()}</div>
-                                    <div className={`trend-${leader.trend || 'stable'}`}>{leader.trend === 'up' ? '▲' : leader.trend === 'down' ? '▼' : '▬'}</div>
+                                    <div className={`trend-${leader.trend || 'stable'}`}>
+                                         {leader.trend === 'up' ? <TrendingUp size={14} color="#22c55e" /> : leader.trend === 'down' ? <TrendingDown size={14} color="#ef4444" /> : <Minus size={14} color="#aaa" />}
+                                     </div>
                                 </div>
                             </motion.div>
                         ))}

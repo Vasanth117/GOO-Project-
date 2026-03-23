@@ -12,24 +12,19 @@ VALID_TYPES = ["national", "local", "district", "streaks", "mission_champions", 
 @router.get("/{board_type}", summary="Get leaderboard by type")
 async def get_leaderboard(
     board_type: str,
+    timeframe: str = Query(default="all-time", description="weekly, monthly, all-time"),
     region: str = Query(default="all", description="Region name for local/district boards"),
     page: int = Query(default=1, ge=1),
     limit: int = Query(default=50, ge=1, le=100),
     current_user: User = Depends(get_current_user),
 ):
-    """
-    board_type options:
-    - national         → top farmers by score nationally
-    - local            → top farmers in same GPS area
-    - district         → top farmers in a district (use ?region=district_name)
-    - streaks          → top farmers by current streak
-    - mission_champions → top farmers by missions completed
-    """
     result = await leaderboard_controller.get_leaderboard(
         board_type=board_type,
+        timeframe=timeframe,
         region=region,
         page=page,
         limit=limit,
+        current_user=current_user,
     )
     return success_response(result)
 

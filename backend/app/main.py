@@ -16,7 +16,7 @@ from app.routes import auth_routes, farm_routes, score_routes, notification_rout
 from app.routes import mission_routes, proof_routes, report_routes
 
 # ─── Phase 3 Routes ──────────────────────────────────────────
-from app.routes import social_routes, leaderboard_routes, grc_routes
+from app.routes import social_routes, leaderboard_routes, grc_routes, follow_routes
 
 # ─── Phase 4 Routes ──────────────────────────────────────────
 from app.routes import ai_routes
@@ -28,7 +28,7 @@ from app.routes import marketplace_routes, reward_routes
 from app.routes import admin_routes
 
 # ─── User Profile Routes ─────────────────────────────────────
-from app.routes import user_routes
+from app.routes import user_routes, chat_routes
 
 # ─── Seeders ─────────────────────────────────────────────────
 from app.services.badge_service import seed_badge_definitions
@@ -161,6 +161,7 @@ app.include_router(report_routes.router, prefix=API_PREFIX)
 app.include_router(social_routes.router, prefix=API_PREFIX)
 app.include_router(leaderboard_routes.router, prefix=API_PREFIX)
 app.include_router(grc_routes.router, prefix=API_PREFIX)
+app.include_router(follow_routes.router, prefix=API_PREFIX)
 
 # Phase 4
 app.include_router(ai_routes.router, prefix=API_PREFIX)
@@ -174,6 +175,8 @@ app.include_router(admin_routes.router, prefix=API_PREFIX)
 
 # User Profile
 app.include_router(user_routes.router, prefix=API_PREFIX)
+app.include_router(chat_routes.router, prefix=API_PREFIX)
+
 
 
 @app.get(API_PREFIX, tags=["Health"])

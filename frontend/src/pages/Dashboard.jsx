@@ -402,10 +402,10 @@ const Dashboard = () => {
                         <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '15px', color: '#a5d6a7', fontWeight: 700, fontSize: '0.85rem' }}>
                             <TrendingUp size={16} /> Community Impact
                         </div>
-                        <div className="trend-item">
-                            <div style={{ fontWeight: 500, color: 'rgba(255,255,255,0.7)', fontSize: '0.9rem' }}>Global CO₂ Saved</div>
-                            <div style={{ fontSize: '2rem', fontWeight: 900, color: '#fff', marginTop: '4px' }}>1.4M Tons</div>
-                            <div style={{ display: 'flex', alignItems: 'center', gap: '6px', color: '#81c784', fontSize: '0.8rem', mt: '8px', fontWeight: 700 }}>
+                        <div className="trend-item" style={{ marginTop: '10px' }}>
+                            <div style={{ fontWeight: 600, color: 'rgba(255,255,255,0.7)', fontSize: '0.85rem' }}>Global CO₂ Saved</div>
+                            <div style={{ fontSize: '1.6rem', fontWeight: 900, color: '#fff', marginTop: '2px', lineHeight: 1.2 }}>1.4M Tons</div>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '6px', color: '#81c784', fontSize: '0.78rem', marginTop: '8px', fontWeight: 700 }}>
                                 <Zap size={12} fill="#81c784" /> +12% from last month
                             </div>
                         </div>

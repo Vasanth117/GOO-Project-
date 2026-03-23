@@ -3,7 +3,7 @@ from pydantic import BaseModel
 from app.controllers import user_controller
 from app.middleware.auth_middleware import get_current_user
 from app.models.user import User
-from app.utils.response_utils import success_response
+from app.utils.response_utils import success_response, error_response
 from typing import Optional
 
 
@@ -25,8 +25,17 @@ router = APIRouter(prefix="/user", tags=["User Profile"])
 
 
 @router.get("/me", summary="Get full profile (user + farm stats)")
-async def get_profile(current_user: User = Depends(get_current_user)):
+async def get_my_profile(current_user: User = Depends(get_current_user)):
     result = await user_controller.get_full_profile(current_user)
+    return success_response(result)
+
+
+@router.get("/{user_id}", summary="Get any user's profile")
+async def get_user_profile(user_id: str, current_user: User = Depends(get_current_user)):
+    target_user = await User.get(user_id)
+    if not target_user:
+        return error_response("User not found", 404)
+    result = await user_controller.get_full_profile(target_user)
     return success_response(result)
 
 
@@ -35,10 +44,11 @@ async def update_profile(
     name: Optional[str] = Form(None),
     bio: Optional[str] = Form(None),
     phone: Optional[str] = Form(None),
+    is_private: Optional[bool] = Form(None),
     avatar: Optional[UploadFile] = File(None),
     current_user: User = Depends(get_current_user),
 ):
-    result = await user_controller.update_profile(current_user, name, bio, phone, avatar)
+    result = await user_controller.update_profile(current_user, name, bio, phone, is_private, avatar)
     return success_response(result, "Profile updated successfully")
 
 

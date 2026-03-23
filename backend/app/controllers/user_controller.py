@@ -29,6 +29,12 @@ async def get_full_profile(user: User) -> dict:
         MissionProgress.status == MissionStatus.COMPLETED
     ).count()
 
+    # Calculate follow counts
+    from app.models.follow import Follow
+    followers_count = await Follow.find(Follow.following_id == str(user.id)).count()
+    following_count = await Follow.find(Follow.follower_id == str(user.id)).count()
+
+
     # If no farm profile yet, we return defaults safely
     return {
         "id": str(user.id),
@@ -39,6 +45,9 @@ async def get_full_profile(user: User) -> dict:
         "profile_picture": user.profile_picture,
         "role": user.role,
         "is_verified": user.is_verified,
+        "is_private": getattr(user, "is_private", False),
+        "followers_count": followers_count,
+        "following_count": following_count,
         "created_at": user.created_at.isoformat(),
         "preferences": getattr(user, "preferences", {}),
         "farm": {
@@ -66,6 +75,7 @@ async def update_profile(
     name: Optional[str],
     bio: Optional[str],
     phone: Optional[str],
+    is_private: Optional[bool],
     avatar: Optional[UploadFile]
 ) -> dict:
     """Updates user's name, bio, phone and optionally their avatar image."""
@@ -75,6 +85,8 @@ async def update_profile(
         user.bio = bio
     if phone is not None:
         user.phone = phone
+    if is_private is not None:
+        user.is_private = is_private
 
     if avatar and avatar.filename:
         ext = Path(avatar.filename).suffix.lower()

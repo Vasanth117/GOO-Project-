@@ -9,12 +9,16 @@ import logging
 logger = logging.getLogger(__name__)
 
 
-async def get_leaderboard(board_type: str, region: str = "all", page: int = 1, limit: int = 50) -> dict:
+async def get_leaderboard(board_type: str, timeframe: str = "all-time", region: str = "all", page: int = 1, limit: int = 50, current_user: User = None) -> dict:
     """Fetch cached leaderboard by type. Falls back to live query if cache empty."""
     try:
         lb_type = LeaderboardType(board_type)
     except ValueError:
         lb_type = LeaderboardType.NATIONAL
+
+    # We bypass cache for timeframe/user-specific queries temporarily to ensure real-time accuracy
+    if timeframe != "all-time" or board_type in ["local", "district", "state"]:
+        return await _live_leaderboard(board_type, timeframe, region, page, limit, current_user)
 
     cached = await Leaderboard.find_one(
         Leaderboard.type == lb_type,
@@ -27,6 +31,7 @@ async def get_leaderboard(board_type: str, region: str = "all", page: int = 1, l
         page_entries = cached.entries[start:end]
         return {
             "type": board_type,
+            "timeframe": timeframe,
             "region": region,
             "last_updated": cached.last_updated.isoformat(),
             "page": page,
@@ -36,18 +41,58 @@ async def get_leaderboard(board_type: str, region: str = "all", page: int = 1, l
             "entries": [e.model_dump() for e in page_entries],
         }
 
-    # Cache is empty — do a live query (will be replaced by cron cache soon)
-    return await _live_leaderboard(board_type, page, limit)
+    # Cache is empty — do a live query
+    return await _live_leaderboard(board_type, timeframe, region, page, limit, current_user)
 
 
-async def _live_leaderboard(board_type: str, page: int, limit: int) -> dict:
+from datetime import datetime, timedelta
+from app.models.score import ScoreLog
+
+async def _live_leaderboard(board_type: str, timeframe: str, region: str, page: int, limit: int, current_user: User = None) -> dict:
     """Live leaderboard query when cache is not yet built."""
-    farms = await FarmProfile.find_all().to_list()
+    all_farms = await FarmProfile.find_all().to_list()
+    
+    farms = all_farms
+    if board_type in ["local", "district", "state"] and current_user:
+        current_farm = next((f for f in all_farms if f.farmer_id == str(current_user.id)), None)
+        current_loc = getattr(current_farm, "location_name", "India") if current_farm else "India"
+        
+        if board_type == "local":
+            farms = [f for f in all_farms if getattr(f, "location_name", "") == current_loc]
+        elif board_type == "district" and "," in current_loc:
+            district = current_loc.split(",")[0].strip()
+            farms = [f for f in all_farms if district in getattr(f, "location_name", "")]
+        elif board_type == "state" and "," in current_loc:
+            state = current_loc.split(",")[-1].strip()
+            farms = [f for f in all_farms if state in getattr(f, "location_name", "")]
+
     users_map = {}
     for farm in farms:
         u = await User.get(farm.farmer_id)
         if u:
-            users_map[farm.farmer_id] = u.name
+            users_map[farm.farmer_id] = {
+                "name": u.name,
+                "avatar": getattr(u, "profile_picture", None) or getattr(u, "avatar", None),
+                "location": getattr(farm, "location_name", "India")
+            }
+
+    # Calculate Timeframe Filter
+    start_date = None
+    if timeframe == "weekly":
+        start_date = datetime.utcnow() - timedelta(days=7)
+    elif timeframe == "monthly":
+        start_date = datetime.utcnow() - timedelta(days=30)
+        
+    farmer_scores = {}
+    if start_date:
+        logs = await ScoreLog.find(ScoreLog.logged_at >= start_date).to_list()
+        for log in logs:
+            if log.delta > 0: # Only count positive gains for timeframe boards, or net? Let's do net.
+                farmer_scores[log.farmer_id] = farmer_scores.get(log.farmer_id, 0) + log.delta
+    else:
+        # All-time uses absolute farm profiles
+        for farm in farms:
+            farmer_scores[farm.farmer_id] = farm.sustainability_score
 
     if board_type == "streaks":
         streaks = await Streak.find_all().to_list()
@@ -60,40 +105,43 @@ async def _live_leaderboard(board_type: str, page: int, limit: int) -> dict:
                 "rank": i + 1,
                 "farmer_id": s.farmer_id,
                 "farmer_name": name,
-                "score": farm.sustainability_score if farm else 0,
+                "score": farmer_scores.get(s.farmer_id, 0),
                 "streak": s.current_streak,
-                "badge_tier": _score_to_tier(farm.sustainability_score if farm else 0),
+                "badge_tier": _score_to_tier(farmer_scores.get(s.farmer_id, 0)),
             })
     elif board_type == "mission_champions":
         farmer_counts = {}
-        completed = await MissionProgress.find(MissionProgress.status == MissionStatus.COMPLETED).to_list()
+        query = MissionProgress.status == MissionStatus.COMPLETED
+        if start_date:
+            query = (MissionProgress.status == MissionStatus.COMPLETED) & (MissionProgress.completed_at >= start_date)
+        completed = await MissionProgress.find(query).to_list()
+        
         for mp in completed:
             farmer_counts[mp.farmer_id] = farmer_counts.get(mp.farmer_id, 0) + 1
         sorted_data = sorted(farmer_counts.items(), key=lambda x: x[1], reverse=True)
         entries = []
         for i, (fid, count) in enumerate(sorted_data[:100]):
-            farm = next((f for f in farms if f.farmer_id == fid), None)
             entries.append({
                 "rank": i + 1,
                 "farmer_id": fid,
                 "farmer_name": users_map.get(fid, "Unknown"),
-                "score": farm.sustainability_score if farm else 0,
+                "score": farmer_scores.get(fid, 0),
                 "missions_completed": count,
-                "badge_tier": _score_to_tier(farm.sustainability_score if farm else 0),
+                "badge_tier": _score_to_tier(farmer_scores.get(fid, 0)),
             })
     else:
         # Default: national score leaderboard
-        sorted_farms = sorted(farms, key=lambda f: f.sustainability_score, reverse=True)
-        entries = [
-            {
+        # Only include farmers who have a score > 0 in this timeframe
+        sorted_scores = sorted(farmer_scores.items(), key=lambda x: x[1], reverse=True)
+        entries = []
+        for i, (fid, score) in enumerate(sorted_scores[:100]):
+            entries.append({
                 "rank": i + 1,
-                "farmer_id": farm.farmer_id,
-                "farmer_name": users_map.get(farm.farmer_id, "Unknown"),
-                "score": farm.sustainability_score,
-                "badge_tier": _score_to_tier(farm.sustainability_score),
-            }
-            for i, farm in enumerate(sorted_farms[:100])
-        ]
+                "farmer_id": fid,
+                "farmer_name": users_map.get(fid, "Unknown"),
+                "score": score,
+                "badge_tier": _score_to_tier(score),
+            })
 
     skip = (page - 1) * limit
     page_entries = entries[skip: skip + limit]
@@ -106,13 +154,24 @@ async def _live_leaderboard(board_type: str, page: int, limit: int) -> dict:
         water_saved = int(score * 12.5) # 12.5L per point
         co2_saved = round(score * 0.05, 1) # 0.05kg per point
         
+        user_info = e.get("farmer_name")
+        if isinstance(user_info, dict):
+            name = user_info.get("name", "Unknown")
+            avatar = user_info.get("avatar")
+            farmer_loc = user_info.get("location", "Unknown Location")
+        else:
+            name = user_info if user_info else "Unknown"
+            avatar = None
+            farmer_loc = "Unknown Location"
+
         final_entries.append({
             "id": e["farmer_id"],
             "rank": e["rank"],
-            "name": e["farmer_name"],
+            "name": name,
+            "avatar": avatar,
             "points": score,
             "tier": e.get("badge_tier", "beginner"),
-            "location": "Telangana, India", # Default for now
+            "location": farmer_loc,
             "impact": {
                 "water": f"{water_saved} L",
                 "co2": f"{co2_saved}kg"

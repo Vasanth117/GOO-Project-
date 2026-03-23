@@ -68,6 +68,13 @@ class FarmProfile(Document):
     sustainability_score: int = 100
     history_logs: List[HistoryLog] = []
     last_checkin_at: Optional[datetime] = None
+    
+    # 🌍 SNAPPY MAP FIELDS
+    live_lat: Optional[float] = None
+    live_lng: Optional[float] = None
+    last_seen_at: Optional[datetime] = None
+    privacy_mode: str = "live" # live, farm_only, ghost
+    
     created_at: datetime = Field(default_factory=datetime.utcnow)
     updated_at: datetime = Field(default_factory=datetime.utcnow)
 

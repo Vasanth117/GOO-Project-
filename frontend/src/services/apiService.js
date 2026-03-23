@@ -92,13 +92,17 @@ export const apiService = {
     getMyPeriodicReports: () => apiRequest('/missions/periodic-reports/my'),
 
     // Leaderboard
-    getLeaderboard: (scope = 'national') => apiRequest(`/leaderboard/${scope}`),
+    getLeaderboard: (scope = 'national', timeframe = 'all-time') => apiRequest(`/leaderboard/${scope}?timeframe=${timeframe.toLowerCase()}`),
+    getMyRank: () => apiRequest('/leaderboard/me/rank'),
 
     // Map / Farm
     getNearbyFarmers: (lat, lng) => apiRequest(`/farm/nearby?lat=${lat}&lng=${lng}`),
     getFarmProfile: () => apiRequest('/farm/me'),
     createFarm: (data) => apiRequest('/farm/create', { method: 'POST', body: JSON.stringify(data) }),
     updateFarm: (data) => apiRequest('/farm/update', { method: 'PUT', body: JSON.stringify(data) }),
+    pingLocation: (lat, lng) => apiRequest('/farm/location/ping', { method: 'POST', body: JSON.stringify({ lat, lng }) }),
+    setPrivacyMode: (mode) => apiRequest('/farm/privacy', { method: 'PUT', body: JSON.stringify({ mode }) }),
+    getActivityMarkers: () => apiRequest('/farm/activity/markers'),
 
     // Marketplace
     getProducts: (category = '') => apiRequest(`/marketplace/products${category ? `?category=${category}` : ''}`),
@@ -125,12 +129,19 @@ export const apiService = {
     getStats: () => apiRequest('/score/stats'),
 
     // Messaging
-    getChats: () => apiRequest('/social/messages/inbox'),
-    getMessageHistory: (receiverId) => apiRequest(`/social/messages/chat/${receiverId}`),
-    sendMessage: (receiverId, content) => apiRequest('/social/messages/send', {
-        method: 'POST',
-        body: JSON.stringify({ receiver_id: receiverId, content })
+    getChats: () => apiRequest('/messages/inbox'),
+    getMessageHistory: (receiverId) => apiRequest(`/messages/chat/${receiverId}`),
+    sendMessage: (receiverId, content) => apiRequest(`/messages/send?receiver_id=${receiverId}&content=${encodeURIComponent(content)}`, {
+        method: 'POST'
     }),
+
+    // Following / Social
+    followUser: (userId) => apiRequest(`/follow/${userId}`, { method: 'POST' }),
+    unfollowUser: (userId) => apiRequest(`/follow/${userId}`, { method: 'DELETE' }),
+    getFollowStatus: (userId) => apiRequest(`/follow/status/${userId}`),
+    getPendingFollowRequests: () => apiRequest('/follow/requests'),
+    respondToFollowRequest: (requestId, accept) => apiRequest(`/follow/request/${requestId}/respond?accept=${accept}`, { method: 'POST' }),
+
 
     // AI 
     askAdvisor: (message, context = {}) => apiRequest('/ai/advisor', {
@@ -180,6 +191,7 @@ export const apiService = {
 
     // ── User Profile & Settings ──────────────────────────────────
     getProfile: () => apiRequest('/user/me'),
+    getAnyProfile: (userId) => apiRequest(`/user/${userId}`),
 
     updateProfile: (formData) => {
         const token = localStorage.getItem('access_token');

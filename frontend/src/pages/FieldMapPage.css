@@ -1,0 +1,744 @@
+/* ─────────────────────────────────────────────────
+   FIELD MAP PAGE — Complete Snap Map Styles
+───────────────────────────────────────────────── */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+.field-map-layout {
+    display: flex;
+    height: 100vh;
+    width: 100%;
+    overflow: hidden;
+    font-family: 'Inter', sans-serif;
+    background: #0d1117;
+    position: relative;
+}
+
+/* ── LEAFLET BASE ── */
+.leaflet-map-target {
+    width: 100%;
+    height: 100%;
+    z-index: 1;
+}
+.map-canvas-container {
+    flex: 1;
+    position: relative;
+    overflow: hidden;
+}
+
+/* ─────────────────────────────────────────────────
+   1. LEFT SIDEBAR
+───────────────────────────────────────────────── */
+.map-left-discover {
+    width: 310px;
+    flex-shrink: 0;
+    background: white;
+    display: flex;
+    flex-direction: column;
+    border-right: 1.5px solid #e8f0e8;
+    z-index: 10;
+    overflow: hidden;
+}
+
+.discover-header {
+    padding: 20px 20px 12px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-bottom: 1.5px solid #f0f4f0;
+}
+.discover-header h3 {
+    font-size: 1rem;
+    font-weight: 800;
+    color: #1a1c19;
+}
+
+/* Stats Row */
+.discover-stats-row {
+    display: flex;
+    padding: 12px 20px;
+    gap: 12px;
+    border-bottom: 1px solid #f0f4f0;
+}
+.dsr-item {
+    flex: 1;
+    text-align: center;
+    background: #f8faf8;
+    border-radius: 10px;
+    padding: 8px 4px;
+}
+.dsr-item strong {
+    display: block;
+    font-size: 1.1rem;
+    font-weight: 900;
+    color: #1a1c19;
+}
+.dsr-item span {
+    font-size: 0.7rem;
+    color: #888;
+    font-weight: 600;
+}
+
+/* View Filter Tabs */
+.discover-view-tabs {
+    display: flex;
+    padding: 10px 14px;
+    gap: 6px;
+    border-bottom: 1px solid #f0f4f0;
+}
+.dvt-btn {
+    flex: 1;
+    padding: 6px 4px;
+    border: none;
+    border-radius: 8px;
+    font-size: 0.75rem;
+    font-weight: 700;
+    cursor: pointer;
+    background: #f0f4f0;
+    color: #666;
+    transition: 0.2s;
+}
+.dvt-btn.active {
+    background: #2d5a27;
+    color: white;
+}
+
+/* Scroll List */
+.discover-scroll {
+    flex: 1;
+    overflow-y: auto;
+    padding: 8px 12px;
+}
+.discover-scroll::-webkit-scrollbar { width: 4px; }
+.discover-scroll::-webkit-scrollbar-thumb { background: #d1e2d1; border-radius: 4px; }
+
+/* Farmer Card */
+.discover-card {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px;
+    border-radius: 14px;
+    cursor: pointer;
+    transition: 0.2s;
+    margin-bottom: 6px;
+    border: 1.5px solid transparent;
+}
+.discover-card:hover { background: #f8faf8; }
+.discover-card.active { background: #f0fdf4; border-color: #86efac; }
+
+.d-avatar-wrap {
+    position: relative;
+    flex-shrink: 0;
+}
+.d-avatar-wrap img {
+    width: 42px;
+    height: 42px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid #e8eee8;
+}
+.d-avatar-initial {
+    width: 42px;
+    height: 42px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #2d5a27, #4ade80);
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 800;
+    font-size: 1rem;
+}
+.d-status {
+    width: 11px;
+    height: 11px;
+    border-radius: 50%;
+    border: 2px solid white;
+    position: absolute;
+    bottom: 1px;
+    right: 1px;
+}
+.d-status.online { background: #22c55e; }
+.d-status.recent { background: #eab308; }
+.d-status.offline { background: #9ca3af; }
+
+.d-info { flex: 1; min-width: 0; }
+.d-info strong {
+    display: block;
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: #1a1c19;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+.d-info span {
+    font-size: 0.75rem;
+    color: #888;
+    display: block;
+    margin-top: 2px;
+}
+.d-meta {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    margin-top: 4px;
+    color: #aaa;
+    font-size: 0.72rem;
+}
+.seller-tag {
+    background: #fef3c7;
+    color: #92400e;
+    padding: 1px 5px;
+    border-radius: 4px;
+    font-size: 0.65rem;
+    font-weight: 700;
+}
+.d-score {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    font-size: 0.75rem;
+    font-weight: 800;
+    color: #92400e;
+    background: #fef3c7;
+    border-radius: 8px;
+    padding: 4px 8px;
+}
+
+/* Footer Goal */
+.map-footer-discovery {
+    padding: 16px 20px;
+    border-top: 1.5px solid #f0f4f0;
+    background: #f8faf8;
+}
+.goal-bar {
+    height: 6px;
+    background: #e8eee8;
+    border-radius: 99px;
+    overflow: hidden;
+    margin: 8px 0;
+}
+.goal-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #22c55e, #16a34a);
+    border-radius: 99px;
+    transition: width 0.8s ease;
+}
+
+/* ─────────────────────────────────────────────────
+   2. MAP OVERLAYS
+───────────────────────────────────────────────── */
+
+/* Top Search Bar */
+.map-interface-top {
+    position: absolute;
+    top: 16px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 900;
+    width: min(90%, 420px);
+}
+.map-search-pill {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: white;
+    padding: 10px 16px;
+    border-radius: 50px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.18);
+}
+.map-search-pill input {
+    flex: 1;
+    border: none;
+    outline: none;
+    font-size: 0.9rem;
+    background: transparent;
+    font-family: 'Inter', sans-serif;
+    color: #1a1c19;
+}
+.search-stats {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    background: #f0fdf4;
+    border-radius: 99px;
+    padding: 3px 8px;
+    font-size: 0.72rem;
+    font-weight: 700;
+    color: #166534;
+    flex-shrink: 0;
+}
+
+/* Direction Banner */
+.direction-banner {
+    position: absolute;
+    top: 70px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 950;
+    background: #1a3c1a;
+    color: white;
+    padding: 10px 20px;
+    border-radius: 50px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-size: 0.85rem;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+}
+.direction-banner button {
+    background: rgba(255,255,255,0.15);
+    border: none;
+    border-radius: 50%;
+    width: 28px;
+    height: 28px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    color: white;
+}
+
+/* Right Toolbar */
+.map-toolbar-right {
+    position: absolute;
+    right: 16px;
+    top: 70px;
+    z-index: 900;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+.toolbar-btn {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 3px;
+    background: white;
+    border: none;
+    border-radius: 14px;
+    padding: 10px 12px;
+    cursor: pointer;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.12);
+    font-size: 0.65rem;
+    font-weight: 700;
+    color: #444;
+    transition: 0.2s;
+    font-family: 'Inter', sans-serif;
+    min-width: 60px;
+}
+.toolbar-btn:hover { transform: scale(1.05); background: #f8faf8; }
+.toolbar-btn.active { background: #f0fdf4; color: #166534; border: 1.5px solid #86efac; }
+.toolbar-btn.ghost { background: #1a1c19; color: #9ca3af; }
+
+/* ─────────────────────────────────────────────────
+   3. PRIVACY PANEL
+───────────────────────────────────────────────── */
+.privacy-panel {
+    position: absolute;
+    right: 90px;
+    top: 70px;
+    z-index: 1000;
+    background: white;
+    border-radius: 20px;
+    padding: 20px;
+    width: 280px;
+    box-shadow: 0 8px 40px rgba(0,0,0,0.2);
+}
+.privacy-panel h4 { color: #1a1c19; font-weight: 800; }
+.privacy-option {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: 0.2s;
+    margin-top: 8px;
+    border: 1.5px solid transparent;
+}
+.privacy-option:hover { background: #f8faf8; }
+.privacy-option.selected { background: #f0fdf4; border-color: #86efac; }
+.privacy-option strong { display: block; font-size: 0.85rem; color: #1a1c19; }
+.privacy-option p { font-size: 0.75rem; color: #888; margin-top: 2px; }
+
+/* ─────────────────────────────────────────────────
+   4. PROFILE OVERLAY CARD
+───────────────────────────────────────────────── */
+.map-profile-overlay {
+    position: absolute;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 1000;
+    background: white;
+    border-radius: 24px;
+    padding: 20px;
+    width: min(560px, 90%);
+    box-shadow: 0 12px 50px rgba(0,0,0,0.25);
+}
+.po-close {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    background: #f0f4f0;
+    border: none;
+    border-radius: 50%;
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    color: #444;
+}
+.po-content { display: flex; gap: 20px; }
+.po-left { flex-shrink: 0; text-align: center; }
+.po-left img {
+    width: 80px;
+    height: 80px;
+    border-radius: 20px;
+    object-fit: cover;
+    border: 3px solid #e8f0e8;
+}
+.po-initial {
+    width: 80px;
+    height: 80px;
+    border-radius: 20px;
+    background: linear-gradient(135deg, #2d5a27, #4ade80);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2rem;
+    font-weight: 900;
+    color: white;
+}
+.po-online-badge {
+    display: inline-block;
+    margin-top: 8px;
+    font-size: 0.7rem;
+    font-weight: 700;
+    padding: 3px 10px;
+    border-radius: 99px;
+}
+.po-online-badge.online { background: #dcfce7; color: #166534; }
+.po-online-badge.recent { background: #fef9c3; color: #713f12; }
+.po-online-badge.offline { background: #f3f4f6; color: #6b7280; }
+
+.po-right { flex: 1; }
+.po-meta h4 { font-size: 1.1rem; font-weight: 800; color: #1a1c19; }
+.po-meta p { font-size: 0.82rem; color: #888; margin-top: 4px; display: flex; align-items: center; gap: 4px; }
+
+.po-stats {
+    display: flex;
+    gap: 12px;
+    margin: 12px 0;
+}
+.pos-item {
+    flex: 1;
+    background: #f8faf8;
+    border-radius: 12px;
+    padding: 8px;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 3px;
+}
+.pos-item strong { font-size: 0.9rem; font-weight: 800; color: #1a1c19; }
+.pos-item span { font-size: 0.68rem; color: #888; font-weight: 600; }
+
+.po-crops {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-bottom: 12px;
+}
+.crop-tag {
+    background: #dcfce7;
+    color: #166534;
+    font-size: 0.72rem;
+    font-weight: 700;
+    padding: 3px 10px;
+    border-radius: 99px;
+}
+
+.po-actions {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 8px;
+}
+.btn-m-direction, .btn-m-chat, .btn-m-follow, .btn-m-shop {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 9px 14px;
+    border-radius: 12px;
+    border: none;
+    cursor: pointer;
+    font-size: 0.82rem;
+    font-weight: 700;
+    font-family: 'Inter', sans-serif;
+    transition: 0.2s;
+}
+.btn-m-direction { background: #1a3c1a; color: white; }
+.btn-m-direction:hover { background: #2d5a27; transform: translateY(-1px); }
+.btn-m-chat { background: #eff6ff; color: #1d4ed8; }
+.btn-m-chat:hover { background: #dbeafe; }
+.btn-m-follow { background: #f0fdf4; color: #166534; border: 1.5px solid #86efac; }
+.btn-m-follow:hover { background: #dcfce7; }
+.btn-m-shop { background: #fef3c7; color: #92400e; width: 100%; justify-content: center; margin-top: 4px; }
+.btn-m-shop:hover { background: #fde68a; }
+
+/* ─────────────────────────────────────────────────
+   5. CUSTOM FARMER MAP MARKERS
+───────────────────────────────────────────────── */
+.snap-marker {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    cursor: pointer;
+    transition: transform 0.2s;
+    filter: drop-shadow(0 2px 8px rgba(0,0,0,0.3));
+}
+.snap-marker:hover { transform: scale(1.08); }
+.snap-marker.selected .sm-avatar img, .snap-marker.selected .sm-initial {
+    border-color: #2d5a27 !important;
+    box-shadow: 0 0 0 3px rgba(45,90,39,0.4);
+}
+
+.sm-avatar {
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    overflow: hidden;
+    border: 3px solid white;
+    position: relative;
+}
+.sm-avatar img { width: 100%; height: 100%; object-fit: cover; }
+.sm-initial {
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #2d5a27, #4ade80);
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 900;
+    font-size: 1.1rem;
+    border: 3px solid white;
+}
+
+.sm-status-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    border: 2px solid white;
+    position: absolute;
+    top: 0;
+    right: 0;
+}
+
+.sm-label {
+    background: #1a1c19;
+    color: white;
+    border-radius: 8px;
+    padding: 3px 8px;
+    margin-top: 2px;
+    text-align: center;
+    min-width: 70px;
+}
+.sm-type { display: block; font-size: 0.55rem; font-weight: 800; color: #86efac; letter-spacing: 0.05em; }
+.sm-name { display: block; font-size: 0.72rem; font-weight: 700; }
+
+.sm-tail {
+    width: 0;
+    height: 0;
+    border-left: 5px solid transparent;
+    border-right: 5px solid transparent;
+    border-top: 7px solid #1a1c19;
+    margin-top: -1px;
+}
+
+/* My Location */
+.my-loc-marker {
+    position: relative;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.my-pulse {
+    position: absolute;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: rgba(34,197,94,0.3);
+    animation: pulse-ring 1.8s ease-out infinite;
+}
+.my-dot {
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background: #22c55e;
+    border: 3px solid white;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+    z-index: 1;
+}
+@keyframes pulse-ring {
+    0% { transform: scale(0.5); opacity: 0.8; }
+    100% { transform: scale(2); opacity: 0; }
+}
+
+/* Activity Pin */
+.activity-pin {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #2d5a27, #4ade80);
+    border: 2px solid white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+    color: white;
+    font-size: 0.7rem;
+    font-weight: 800;
+}
+
+/* 🟢 ECO-HEATMAP PULSE 🟢 */
+.heatmap-zone {
+    pointer-events: none;
+    animation: heatmap-pulse 4s ease-in-out infinite;
+    mix-blend-mode: multiply;
+}
+@keyframes heatmap-pulse {
+    0% { fill-opacity: 0.08; transform: scale(0.95); }
+    50% { fill-opacity: 0.22; transform: scale(1.05); }
+    100% { fill-opacity: 0.08; transform: scale(0.95); }
+}
+
+/* Leaflet Routing Machine container override */
+.leaflet-routing-container {
+    background: white !important;
+    border-radius: 16px !important;
+    padding: 12px !important;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.15) !important;
+    max-height: 240px;
+    overflow-y: auto;
+    font-family: 'Inter', sans-serif !important;
+    font-size: 0.8rem !important;
+}
+.leaflet-routing-alt h3 { display: none; }
+.leaflet-routing-alt table { font-size: 0.78rem; }
+
+@media (max-width: 768px) {
+    .map-left-discover { display: none; }
+    .map-profile-overlay { bottom: 80px; }
+}
+
+/* ── AI INSIGHTS BOX ── */
+.ai-map-hint {
+    position: absolute;
+    bottom: 25px;
+    left: 20px;
+    z-index: 900;
+    width: 320px;
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(10px);
+    border-radius: 20px;
+    padding: 18px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+    border: 1px solid #dcfce7;
+}
+.ai-hint-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 10px;
+}
+.ai-hint-header span {
+    font-size: 0.75rem;
+    font-weight: 800;
+    color: #166534;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    flex: 1;
+}
+.ai-hint-header button {
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: #aaa;
+}
+.ai-map-hint p {
+    font-size: 0.85rem;
+    color: #444;
+    line-height: 1.5;
+    margin-bottom: 12px;
+}
+.ai-hint-action {
+    width: 100%;
+    background: #2d5a27;
+    color: white;
+    border: none;
+    padding: 10px;
+    border-radius: 12px;
+    font-size: 0.8rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: 0.2s;
+}
+.ai-hint-action:hover {
+    background: #1a3c1a;
+    transform: translateY(-2px);
+}
+
+/* ── ACTIVITY TICKER ── */
+.map-activity-ticker {
+    position: absolute;
+    bottom: 25px;
+    right: 20px;
+    z-index: 900;
+    background: #1a1c19;
+    border-radius: 14px;
+    padding: 12px 18px;
+    min-width: 280px;
+    max-width: 400px;
+    box-shadow: 0 8px 30px rgba(0,0,0,0.3);
+}
+.ticker-label {
+    font-size: 0.6rem;
+    font-weight: 900;
+    color: #86efac;
+    letter-spacing: 0.1em;
+    margin-bottom: 8px;
+}
+.ticker-wrap {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+.ticker-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 0.78rem;
+    color: #efefef;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+.ticker-item strong { color: #fff; }
+.ticker-item em { color: #86efac; font-style: normal; }
+
+@media (max-width: 1100px) {
+    .ai-map-hint, .map-activity-ticker {
+        display: none;
+    }
+}

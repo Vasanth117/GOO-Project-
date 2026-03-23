@@ -4,7 +4,8 @@ import {
     Leaf, Trophy, CheckCircle, Clock, PlayCircle,
     Rocket, Target, Zap, Globe, Flame, Loader2, ChevronRight, Brain,
     ShieldCheck, Award, MapPin, Camera, X, Send, ListChecks, Play,
-    BarChart3, Users, Crown, Filter, Calendar, Activity, CheckSquare, Upload
+    BarChart3, Users, Crown, Filter, Calendar, Activity, CheckSquare, Upload,
+    User, CheckCircle2
 } from "lucide-react";
 import { apiService } from '../services/apiService';
 import CameraCapture from '../components/CameraCapture';
@@ -119,7 +120,7 @@ const MissionsPage = () => {
                                 transition: '0.3s'
                             }}
                         >
-                            {tab === 'solo' ? '🧍 Solo Tasks' : tab === 'community' ? '👥 Community' : '🏆 Completed'}
+                            {tab === 'solo' ? (<><User size={15} style={{ marginRight: 6 }} />Solo Tasks</>) : tab === 'community' ? (<><Users size={15} style={{ marginRight: 6 }} />Community</>) : (<><CheckCircle2 size={15} style={{ marginRight: 6 }} />Completed</>)}
                         </button>
                     ))}
                 </div>

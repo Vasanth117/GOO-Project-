@@ -36,7 +36,7 @@ function App() {
         <Route path="/marketplace" element={<MarketplacePage />} />
         <Route path="/messages"    element={<MessagesPage />} />
         <Route path="/settings"    element={<SettingsPage />} />
-        <Route path="/profile"     element={<ProfilePage />} />
+        <Route path="/profile/:userId?" element={<ProfilePage />} />
       </Route>
 
       {/* 📸 FULL PAGE CAMERA (No Sidebar/Topbar) */}
