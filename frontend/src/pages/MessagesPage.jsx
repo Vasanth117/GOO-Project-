@@ -42,7 +42,7 @@ const MessagesPage = () => {
         if (!user) return;
         
         const token = localStorage.getItem('access_token');
-        const socket = new WebSocket(`ws://localhost:8000/api/v1/messages/ws?token=${token}`);
+        const socket = new WebSocket(`ws://localhost:8000/api/v1/messages/ws/${user.id}`);
         
         socket.onopen = () => console.log('WebSocket Connected');
         socket.onmessage = (event) => {

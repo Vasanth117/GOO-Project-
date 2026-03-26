@@ -35,6 +35,8 @@ class FarmingPractice(str, Enum):
     MIXED = "mixed"
     SUSTAINABLE = "sustainable"
     INTEGRATED = "integrated"
+    PERMACULTURE = "permaculture"
+    REGENERATIVE = "regenerative"
 
 
 from pydantic import BaseModel

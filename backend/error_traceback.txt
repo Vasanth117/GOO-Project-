@@ -13450,3 +13450,2347 @@ soil_type
   Input should be 'alluvial', 'black', 'red', 'laterite', 'desert', 'clay', 'sandy', 'loam', 'silt', 'peat' or 'chalk' [type=enum, input_value='loamy', input_type=str]
     For further information visit https://errors.pydantic.dev/2.12/v/enum
 
+
+================================================================================
+ERROR ON http://localhost:8000/api/v1/farm/update
+Traceback (most recent call last):
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\starlette\middleware\errors.py", line 164, in __call__
+    await self.app(scope, receive, _send)
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\starlette\middleware\cors.py", line 93, in __call__
+    await self.simple_response(scope, receive, send, request_headers=headers)
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\starlette\middleware\cors.py", line 144, in simple_response
+    await self.app(scope, receive, send)
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\starlette\middleware\exceptions.py", line 63, in __call__
+    await wrap_app_handling_exceptions(self.app, conn)(scope, receive, send)
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\starlette\_exception_handler.py", line 53, in wrapped_app
+    raise exc
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\starlette\_exception_handler.py", line 42, in wrapped_app
+    await app(scope, receive, sender)
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\starlette\routing.py", line 716, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\starlette\routing.py", line 736, in app
+    await route.handle(scope, receive, send)
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\starlette\routing.py", line 290, in handle
+    await self.app(scope, receive, send)
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\starlette\routing.py", line 78, in app
+    await wrap_app_handling_exceptions(app, request)(scope, receive, send)
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\starlette\_exception_handler.py", line 53, in wrapped_app
+    raise exc
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\starlette\_exception_handler.py", line 42, in wrapped_app
+    await app(scope, receive, sender)
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\starlette\routing.py", line 75, in app
+    response = await f(request)
+               ^^^^^^^^^^^^^^^^
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\fastapi\routing.py", line 299, in app
+    raise e
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\fastapi\routing.py", line 294, in app
+    raw_response = await run_endpoint_function(
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        dependant=dependant, values=values, is_coroutine=is_coroutine
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\fastapi\routing.py", line 191, in run_endpoint_function
+    return await dependant.call(**values)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "E:\GOO\backend\app\routes\farm_routes.py", line 88, in update_farm
+    result = await farm_controller.update_farm(current_user, data)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "E:\GOO\backend\app\controllers\farm_controller.py", line 133, in update_farm
+    await farm.save()
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\beanie\odm\actions.py", line 237, in wrapper
+    result = await f(
+             ^^^^^^^^
+    ...<4 lines>...
+    )
+    ^
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\beanie\odm\utils\state.py", line 89, in wrapper
+    result = await f(self, *args, **kwargs)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\beanie\odm\utils\self_validation.py", line 19, in wrapper
+    return await f(self, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\beanie\odm\documents.py", line 616, in save
+    return await self.update(
+           ^^^^^^^^^^^^^^^^^^
+    ...<11 lines>...
+    )
+    ^
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\beanie\odm\actions.py", line 237, in wrapper
+    result = await f(
+             ^^^^^^^^
+    ...<4 lines>...
+    )
+    ^
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\beanie\odm\utils\state.py", line 89, in wrapper
+    result = await f(self, *args, **kwargs)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\beanie\odm\documents.py", line 733, in update
+    result = await self.find_one(find_query).update(
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    ...<5 lines>...
+    )
+    ^
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\beanie\odm\queries\update.py", line 346, in __await__
+    update_result = yield from self._update().__await__()
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\beanie\odm\queries\update.py", line 327, in _update
+    result = parse_obj(self.document_model, result)
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\beanie\odm\utils\parsing.py", line 146, in parse_obj
+    result = parse_model(model, data)
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\beanie\odm\utils\pydantic.py", line 42, in parse_model
+    return model_type.model_validate(data)
+           ~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\pydantic\main.py", line 716, in model_validate
+    return cls.__pydantic_validator__.validate_python(
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^
+        obj,
+        ^^^^
+    ...<5 lines>...
+        by_name=by_name,
+        ^^^^^^^^^^^^^^^^
+    )
+    ^
+pydantic_core._pydantic_core.ValidationError: 1 validation error for FarmProfile
+farming_practices
+  Input should be 'organic', 'conventional', 'mixed', 'sustainable' or 'integrated' [type=enum, input_value='permaculture', input_type=str]
+    For further information visit https://errors.pydantic.dev/2.12/v/enum
+
+
+================================================================================
+ERROR ON http://localhost:8000/api/v1/rewards/wallet
+Traceback (most recent call last):
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\starlette\middleware\errors.py", line 164, in __call__
+    await self.app(scope, receive, _send)
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\starlette\middleware\cors.py", line 93, in __call__
+    await self.simple_response(scope, receive, send, request_headers=headers)
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\starlette\middleware\cors.py", line 144, in simple_response
+    await self.app(scope, receive, send)
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\starlette\middleware\exceptions.py", line 63, in __call__
+    await wrap_app_handling_exceptions(self.app, conn)(scope, receive, send)
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\starlette\_exception_handler.py", line 53, in wrapped_app
+    raise exc
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\starlette\_exception_handler.py", line 42, in wrapped_app
+    await app(scope, receive, sender)
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\starlette\routing.py", line 716, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\starlette\routing.py", line 736, in app
+    await route.handle(scope, receive, send)
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\starlette\routing.py", line 290, in handle
+    await self.app(scope, receive, send)
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\starlette\routing.py", line 78, in app
+    await wrap_app_handling_exceptions(app, request)(scope, receive, send)
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\starlette\_exception_handler.py", line 53, in wrapped_app
+    raise exc
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\starlette\_exception_handler.py", line 42, in wrapped_app
+    await app(scope, receive, sender)
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\starlette\routing.py", line 75, in app
+    response = await f(request)
+               ^^^^^^^^^^^^^^^^
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\fastapi\routing.py", line 299, in app
+    raise e
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\fastapi\routing.py", line 294, in app
+    raw_response = await run_endpoint_function(
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        dependant=dependant, values=values, is_coroutine=is_coroutine
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\fastapi\routing.py", line 191, in run_endpoint_function
+    return await dependant.call(**values)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "E:\GOO\backend\app\routes\reward_routes.py", line 13, in get_wallet
+    result = await reward_controller.get_reward_wallet(current_user)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "E:\GOO\backend\app\controllers\reward_controller.py", line 18, in get_reward_wallet
+    farm = await FarmProfile.find_one(FarmProfile.farmer_id == str(user.id))
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\beanie\odm\queries\find.py", line 1036, in __await__
+    FindQueryResultType, parse_obj(self.projection_model, document)
+                         ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\beanie\odm\utils\parsing.py", line 146, in parse_obj
+    result = parse_model(model, data)
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\beanie\odm\utils\pydantic.py", line 42, in parse_model
+    return model_type.model_validate(data)
+           ~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\pydantic\main.py", line 716, in model_validate
+    return cls.__pydantic_validator__.validate_python(
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^
+        obj,
+        ^^^^
+    ...<5 lines>...
+        by_name=by_name,
+        ^^^^^^^^^^^^^^^^
+    )
+    ^
+pydantic_core._pydantic_core.ValidationError: 1 validation error for FarmProfile
+farming_practices
+  Input should be 'organic', 'conventional', 'mixed', 'sustainable' or 'integrated' [type=enum, input_value='permaculture', input_type=str]
+    For further information visit https://errors.pydantic.dev/2.12/v/enum
+
+
+================================================================================
+ERROR ON http://localhost:8000/api/v1/rewards/wallet
+Traceback (most recent call last):
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\starlette\middleware\errors.py", line 164, in __call__
+    await self.app(scope, receive, _send)
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\starlette\middleware\cors.py", line 93, in __call__
+    await self.simple_response(scope, receive, send, request_headers=headers)
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\starlette\middleware\cors.py", line 144, in simple_response
+    await self.app(scope, receive, send)
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\starlette\middleware\exceptions.py", line 63, in __call__
+    await wrap_app_handling_exceptions(self.app, conn)(scope, receive, send)
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\starlette\_exception_handler.py", line 53, in wrapped_app
+    raise exc
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\starlette\_exception_handler.py", line 42, in wrapped_app
+    await app(scope, receive, sender)
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\starlette\routing.py", line 716, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\starlette\routing.py", line 736, in app
+    await route.handle(scope, receive, send)
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\starlette\routing.py", line 290, in handle
+    await self.app(scope, receive, send)
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\starlette\routing.py", line 78, in app
+    await wrap_app_handling_exceptions(app, request)(scope, receive, send)
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\starlette\_exception_handler.py", line 53, in wrapped_app
+    raise exc
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\starlette\_exception_handler.py", line 42, in wrapped_app
+    await app(scope, receive, sender)
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\starlette\routing.py", line 75, in app
+    response = await f(request)
+               ^^^^^^^^^^^^^^^^
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\fastapi\routing.py", line 299, in app
+    raise e
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\fastapi\routing.py", line 294, in app
+    raw_response = await run_endpoint_function(
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        dependant=dependant, values=values, is_coroutine=is_coroutine
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\fastapi\routing.py", line 191, in run_endpoint_function
+    return await dependant.call(**values)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "E:\GOO\backend\app\routes\reward_routes.py", line 13, in get_wallet
+    result = await reward_controller.get_reward_wallet(current_user)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "E:\GOO\backend\app\controllers\reward_controller.py", line 18, in get_reward_wallet
+    farm = await FarmProfile.find_one(FarmProfile.farmer_id == str(user.id))
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\beanie\odm\queries\find.py", line 1036, in __await__
+    FindQueryResultType, parse_obj(self.projection_model, document)
+                         ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\beanie\odm\utils\parsing.py", line 146, in parse_obj
+    result = parse_model(model, data)
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\beanie\odm\utils\pydantic.py", line 42, in parse_model
+    return model_type.model_validate(data)
+           ~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\pydantic\main.py", line 716, in model_validate
+    return cls.__pydantic_validator__.validate_python(
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^
+        obj,
+        ^^^^
+    ...<5 lines>...
+        by_name=by_name,
+        ^^^^^^^^^^^^^^^^
+    )
+    ^
+pydantic_core._pydantic_core.ValidationError: 1 validation error for FarmProfile
+farming_practices
+  Input should be 'organic', 'conventional', 'mixed', 'sustainable' or 'integrated' [type=enum, input_value='permaculture', input_type=str]
+    For further information visit https://errors.pydantic.dev/2.12/v/enum
+
+
+================================================================================
+ERROR ON http://localhost:8000/api/v1/leaderboard/national?timeframe=all-time
+Traceback (most recent call last):
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\starlette\middleware\errors.py", line 164, in __call__
+    await self.app(scope, receive, _send)
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\starlette\middleware\cors.py", line 93, in __call__
+    await self.simple_response(scope, receive, send, request_headers=headers)
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\starlette\middleware\cors.py", line 144, in simple_response
+    await self.app(scope, receive, send)
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\starlette\middleware\exceptions.py", line 63, in __call__
+    await wrap_app_handling_exceptions(self.app, conn)(scope, receive, send)
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\starlette\_exception_handler.py", line 53, in wrapped_app
+    raise exc
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\starlette\_exception_handler.py", line 42, in wrapped_app
+    await app(scope, receive, sender)
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\starlette\routing.py", line 716, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\starlette\routing.py", line 736, in app
+    await route.handle(scope, receive, send)
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\starlette\routing.py", line 290, in handle
+    await self.app(scope, receive, send)
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\starlette\routing.py", line 78, in app
+    await wrap_app_handling_exceptions(app, request)(scope, receive, send)
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\starlette\_exception_handler.py", line 53, in wrapped_app
+    raise exc
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\starlette\_exception_handler.py", line 42, in wrapped_app
+    await app(scope, receive, sender)
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\starlette\routing.py", line 75, in app
+    response = await f(request)
+               ^^^^^^^^^^^^^^^^
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\fastapi\routing.py", line 299, in app
+    raise e
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\fastapi\routing.py", line 294, in app
+    raw_response = await run_endpoint_function(
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        dependant=dependant, values=values, is_coroutine=is_coroutine
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\fastapi\routing.py", line 191, in run_endpoint_function
+    return await dependant.call(**values)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "E:\GOO\backend\app\routes\leaderboard_routes.py", line 22, in get_leaderboard
+    result = await leaderboard_controller.get_leaderboard(
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    ...<6 lines>...
+    )
+    ^
+  File "E:\GOO\backend\app\controllers\leaderboard_controller.py", line 45, in get_leaderboard
+    return await _live_leaderboard(board_type, timeframe, region, page, limit, current_user)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "E:\GOO\backend\app\controllers\leaderboard_controller.py", line 53, in _live_leaderboard
+    all_farms = await FarmProfile.find_all().to_list()
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\beanie\odm\queries\cursor.py", line 75, in to_list
+    parse_obj(projection, i, lazy_parse=self.lazy_parse)
+    ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\beanie\odm\utils\parsing.py", line 146, in parse_obj
+    result = parse_model(model, data)
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\beanie\odm\utils\pydantic.py", line 42, in parse_model
+    return model_type.model_validate(data)
+           ~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\pydantic\main.py", line 716, in model_validate
+    return cls.__pydantic_validator__.validate_python(
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^
+        obj,
+        ^^^^
+    ...<5 lines>...
+        by_name=by_name,
+        ^^^^^^^^^^^^^^^^
+    )
+    ^
+pydantic_core._pydantic_core.ValidationError: 1 validation error for FarmProfile
+farming_practices
+  Input should be 'organic', 'conventional', 'mixed', 'sustainable' or 'integrated' [type=enum, input_value='permaculture', input_type=str]
+    For further information visit https://errors.pydantic.dev/2.12/v/enum
+
+
+================================================================================
+ERROR ON http://localhost:8000/api/v1/leaderboard/me/rank
+Traceback (most recent call last):
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\starlette\middleware\errors.py", line 164, in __call__
+    await self.app(scope, receive, _send)
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\starlette\middleware\cors.py", line 93, in __call__
+    await self.simple_response(scope, receive, send, request_headers=headers)
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\starlette\middleware\cors.py", line 144, in simple_response
+    await self.app(scope, receive, send)
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\starlette\middleware\exceptions.py", line 63, in __call__
+    await wrap_app_handling_exceptions(self.app, conn)(scope, receive, send)
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\starlette\_exception_handler.py", line 53, in wrapped_app
+    raise exc
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\starlette\_exception_handler.py", line 42, in wrapped_app
+    await app(scope, receive, sender)
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\starlette\routing.py", line 716, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\starlette\routing.py", line 736, in app
+    await route.handle(scope, receive, send)
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\starlette\routing.py", line 290, in handle
+    await self.app(scope, receive, send)
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\starlette\routing.py", line 78, in app
+    await wrap_app_handling_exceptions(app, request)(scope, receive, send)
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\starlette\_exception_handler.py", line 53, in wrapped_app
+    raise exc
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\starlette\_exception_handler.py", line 42, in wrapped_app
+    await app(scope, receive, sender)
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\starlette\routing.py", line 75, in app
+    response = await f(request)
+               ^^^^^^^^^^^^^^^^
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\fastapi\routing.py", line 299, in app
+    raise e
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\fastapi\routing.py", line 294, in app
+    raw_response = await run_endpoint_function(
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        dependant=dependant, values=values, is_coroutine=is_coroutine
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\fastapi\routing.py", line 191, in run_endpoint_function
+    return await dependant.call(**values)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "E:\GOO\backend\app\routes\leaderboard_routes.py", line 35, in get_my_rank
+    result = await leaderboard_controller.get_my_rank(current_user)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "E:\GOO\backend\app\controllers\leaderboard_controller.py", line 196, in get_my_rank
+    farm = await FarmProfile.find_one(FarmProfile.farmer_id == str(user.id))
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\beanie\odm\queries\find.py", line 1036, in __await__
+    FindQueryResultType, parse_obj(self.projection_model, document)
+                         ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\beanie\odm\utils\parsing.py", line 146, in parse_obj
+    result = parse_model(model, data)
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\beanie\odm\utils\pydantic.py", line 42, in parse_model
+    return model_type.model_validate(data)
+           ~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\pydantic\main.py", line 716, in model_validate
+    return cls.__pydantic_validator__.validate_python(
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^
+        obj,
+        ^^^^
+    ...<5 lines>...
+        by_name=by_name,
+        ^^^^^^^^^^^^^^^^
+    )
+    ^
+pydantic_core._pydantic_core.ValidationError: 1 validation error for FarmProfile
+farming_practices
+  Input should be 'organic', 'conventional', 'mixed', 'sustainable' or 'integrated' [type=enum, input_value='permaculture', input_type=str]
+    For further information visit https://errors.pydantic.dev/2.12/v/enum
+
+
+================================================================================
+ERROR ON http://localhost:8000/api/v1/leaderboard/national?timeframe=all-time
+Traceback (most recent call last):
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\starlette\middleware\errors.py", line 164, in __call__
+    await self.app(scope, receive, _send)
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\starlette\middleware\cors.py", line 93, in __call__
+    await self.simple_response(scope, receive, send, request_headers=headers)
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\starlette\middleware\cors.py", line 144, in simple_response
+    await self.app(scope, receive, send)
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\starlette\middleware\exceptions.py", line 63, in __call__
+    await wrap_app_handling_exceptions(self.app, conn)(scope, receive, send)
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\starlette\_exception_handler.py", line 53, in wrapped_app
+    raise exc
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\starlette\_exception_handler.py", line 42, in wrapped_app
+    await app(scope, receive, sender)
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\starlette\routing.py", line 716, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\starlette\routing.py", line 736, in app
+    await route.handle(scope, receive, send)
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\starlette\routing.py", line 290, in handle
+    await self.app(scope, receive, send)
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\starlette\routing.py", line 78, in app
+    await wrap_app_handling_exceptions(app, request)(scope, receive, send)
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\starlette\_exception_handler.py", line 53, in wrapped_app
+    raise exc
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\starlette\_exception_handler.py", line 42, in wrapped_app
+    await app(scope, receive, sender)
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\starlette\routing.py", line 75, in app
+    response = await f(request)
+               ^^^^^^^^^^^^^^^^
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\fastapi\routing.py", line 299, in app
+    raise e
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\fastapi\routing.py", line 294, in app
+    raw_response = await run_endpoint_function(
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        dependant=dependant, values=values, is_coroutine=is_coroutine
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\fastapi\routing.py", line 191, in run_endpoint_function
+    return await dependant.call(**values)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "E:\GOO\backend\app\routes\leaderboard_routes.py", line 22, in get_leaderboard
+    result = await leaderboard_controller.get_leaderboard(
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    ...<6 lines>...
+    )
+    ^
+  File "E:\GOO\backend\app\controllers\leaderboard_controller.py", line 45, in get_leaderboard
+    return await _live_leaderboard(board_type, timeframe, region, page, limit, current_user)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "E:\GOO\backend\app\controllers\leaderboard_controller.py", line 53, in _live_leaderboard
+    all_farms = await FarmProfile.find_all().to_list()
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\beanie\odm\queries\cursor.py", line 75, in to_list
+    parse_obj(projection, i, lazy_parse=self.lazy_parse)
+    ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\beanie\odm\utils\parsing.py", line 146, in parse_obj
+    result = parse_model(model, data)
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\beanie\odm\utils\pydantic.py", line 42, in parse_model
+    return model_type.model_validate(data)
+           ~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\pydantic\main.py", line 716, in model_validate
+    return cls.__pydantic_validator__.validate_python(
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^
+        obj,
+        ^^^^
+    ...<5 lines>...
+        by_name=by_name,
+        ^^^^^^^^^^^^^^^^
+    )
+    ^
+pydantic_core._pydantic_core.ValidationError: 1 validation error for FarmProfile
+farming_practices
+  Input should be 'organic', 'conventional', 'mixed', 'sustainable' or 'integrated' [type=enum, input_value='permaculture', input_type=str]
+    For further information visit https://errors.pydantic.dev/2.12/v/enum
+
+
+================================================================================
+ERROR ON http://localhost:8000/api/v1/leaderboard/me/rank
+Traceback (most recent call last):
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\starlette\middleware\errors.py", line 164, in __call__
+    await self.app(scope, receive, _send)
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\starlette\middleware\cors.py", line 93, in __call__
+    await self.simple_response(scope, receive, send, request_headers=headers)
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\starlette\middleware\cors.py", line 144, in simple_response
+    await self.app(scope, receive, send)
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\starlette\middleware\exceptions.py", line 63, in __call__
+    await wrap_app_handling_exceptions(self.app, conn)(scope, receive, send)
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\starlette\_exception_handler.py", line 53, in wrapped_app
+    raise exc
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\starlette\_exception_handler.py", line 42, in wrapped_app
+    await app(scope, receive, sender)
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\starlette\routing.py", line 716, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\starlette\routing.py", line 736, in app
+    await route.handle(scope, receive, send)
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\starlette\routing.py", line 290, in handle
+    await self.app(scope, receive, send)
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\starlette\routing.py", line 78, in app
+    await wrap_app_handling_exceptions(app, request)(scope, receive, send)
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\starlette\_exception_handler.py", line 53, in wrapped_app
+    raise exc
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\starlette\_exception_handler.py", line 42, in wrapped_app
+    await app(scope, receive, sender)
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\starlette\routing.py", line 75, in app
+    response = await f(request)
+               ^^^^^^^^^^^^^^^^
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\fastapi\routing.py", line 299, in app
+    raise e
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\fastapi\routing.py", line 294, in app
+    raw_response = await run_endpoint_function(
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        dependant=dependant, values=values, is_coroutine=is_coroutine
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\fastapi\routing.py", line 191, in run_endpoint_function
+    return await dependant.call(**values)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "E:\GOO\backend\app\routes\leaderboard_routes.py", line 35, in get_my_rank
+    result = await leaderboard_controller.get_my_rank(current_user)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "E:\GOO\backend\app\controllers\leaderboard_controller.py", line 196, in get_my_rank
+    farm = await FarmProfile.find_one(FarmProfile.farmer_id == str(user.id))
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\beanie\odm\queries\find.py", line 1036, in __await__
+    FindQueryResultType, parse_obj(self.projection_model, document)
+                         ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\beanie\odm\utils\parsing.py", line 146, in parse_obj
+    result = parse_model(model, data)
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\beanie\odm\utils\pydantic.py", line 42, in parse_model
+    return model_type.model_validate(data)
+           ~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\pydantic\main.py", line 716, in model_validate
+    return cls.__pydantic_validator__.validate_python(
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^
+        obj,
+        ^^^^
+    ...<5 lines>...
+        by_name=by_name,
+        ^^^^^^^^^^^^^^^^
+    )
+    ^
+pydantic_core._pydantic_core.ValidationError: 1 validation error for FarmProfile
+farming_practices
+  Input should be 'organic', 'conventional', 'mixed', 'sustainable' or 'integrated' [type=enum, input_value='permaculture', input_type=str]
+    For further information visit https://errors.pydantic.dev/2.12/v/enum
+
+
+================================================================================
+ERROR ON http://localhost:8000/api/v1/user/me
+Traceback (most recent call last):
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\starlette\middleware\errors.py", line 164, in __call__
+    await self.app(scope, receive, _send)
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\starlette\middleware\cors.py", line 93, in __call__
+    await self.simple_response(scope, receive, send, request_headers=headers)
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\starlette\middleware\cors.py", line 144, in simple_response
+    await self.app(scope, receive, send)
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\starlette\middleware\exceptions.py", line 63, in __call__
+    await wrap_app_handling_exceptions(self.app, conn)(scope, receive, send)
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\starlette\_exception_handler.py", line 53, in wrapped_app
+    raise exc
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\starlette\_exception_handler.py", line 42, in wrapped_app
+    await app(scope, receive, sender)
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\starlette\routing.py", line 716, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\starlette\routing.py", line 736, in app
+    await route.handle(scope, receive, send)
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\starlette\routing.py", line 290, in handle
+    await self.app(scope, receive, send)
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\starlette\routing.py", line 78, in app
+    await wrap_app_handling_exceptions(app, request)(scope, receive, send)
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\starlette\_exception_handler.py", line 53, in wrapped_app
+    raise exc
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\starlette\_exception_handler.py", line 42, in wrapped_app
+    await app(scope, receive, sender)
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\starlette\routing.py", line 75, in app
+    response = await f(request)
+               ^^^^^^^^^^^^^^^^
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\fastapi\routing.py", line 299, in app
+    raise e
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\fastapi\routing.py", line 294, in app
+    raw_response = await run_endpoint_function(
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        dependant=dependant, values=values, is_coroutine=is_coroutine
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\fastapi\routing.py", line 191, in run_endpoint_function
+    return await dependant.call(**values)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "E:\GOO\backend\app\routes\user_routes.py", line 40, in get_my_profile
+    result = await user_controller.get_full_profile(current_user)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "E:\GOO\backend\app\controllers\user_controller.py", line 23, in get_full_profile
+    farm = await FarmProfile.find_one(FarmProfile.farmer_id == str(user.id))
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\beanie\odm\queries\find.py", line 1036, in __await__
+    FindQueryResultType, parse_obj(self.projection_model, document)
+                         ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\beanie\odm\utils\parsing.py", line 146, in parse_obj
+    result = parse_model(model, data)
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\beanie\odm\utils\pydantic.py", line 42, in parse_model
+    return model_type.model_validate(data)
+           ~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\pydantic\main.py", line 716, in model_validate
+    return cls.__pydantic_validator__.validate_python(
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^
+        obj,
+        ^^^^
+    ...<5 lines>...
+        by_name=by_name,
+        ^^^^^^^^^^^^^^^^
+    )
+    ^
+pydantic_core._pydantic_core.ValidationError: 1 validation error for FarmProfile
+farming_practices
+  Input should be 'organic', 'conventional', 'mixed', 'sustainable' or 'integrated' [type=enum, input_value='permaculture', input_type=str]
+    For further information visit https://errors.pydantic.dev/2.12/v/enum
+
+
+================================================================================
+ERROR ON http://localhost:8000/api/v1/user/me
+Traceback (most recent call last):
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\starlette\middleware\errors.py", line 164, in __call__
+    await self.app(scope, receive, _send)
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\starlette\middleware\cors.py", line 93, in __call__
+    await self.simple_response(scope, receive, send, request_headers=headers)
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\starlette\middleware\cors.py", line 144, in simple_response
+    await self.app(scope, receive, send)
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\starlette\middleware\exceptions.py", line 63, in __call__
+    await wrap_app_handling_exceptions(self.app, conn)(scope, receive, send)
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\starlette\_exception_handler.py", line 53, in wrapped_app
+    raise exc
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\starlette\_exception_handler.py", line 42, in wrapped_app
+    await app(scope, receive, sender)
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\starlette\routing.py", line 716, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\starlette\routing.py", line 736, in app
+    await route.handle(scope, receive, send)
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\starlette\routing.py", line 290, in handle
+    await self.app(scope, receive, send)
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\starlette\routing.py", line 78, in app
+    await wrap_app_handling_exceptions(app, request)(scope, receive, send)
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\starlette\_exception_handler.py", line 53, in wrapped_app
+    raise exc
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\starlette\_exception_handler.py", line 42, in wrapped_app
+    await app(scope, receive, sender)
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\starlette\routing.py", line 75, in app
+    response = await f(request)
+               ^^^^^^^^^^^^^^^^
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\fastapi\routing.py", line 299, in app
+    raise e
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\fastapi\routing.py", line 294, in app
+    raw_response = await run_endpoint_function(
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        dependant=dependant, values=values, is_coroutine=is_coroutine
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\fastapi\routing.py", line 191, in run_endpoint_function
+    return await dependant.call(**values)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "E:\GOO\backend\app\routes\user_routes.py", line 40, in get_my_profile
+    result = await user_controller.get_full_profile(current_user)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "E:\GOO\backend\app\controllers\user_controller.py", line 23, in get_full_profile
+    farm = await FarmProfile.find_one(FarmProfile.farmer_id == str(user.id))
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\beanie\odm\queries\find.py", line 1036, in __await__
+    FindQueryResultType, parse_obj(self.projection_model, document)
+                         ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\beanie\odm\utils\parsing.py", line 146, in parse_obj
+    result = parse_model(model, data)
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\beanie\odm\utils\pydantic.py", line 42, in parse_model
+    return model_type.model_validate(data)
+           ~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\pydantic\main.py", line 716, in model_validate
+    return cls.__pydantic_validator__.validate_python(
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^
+        obj,
+        ^^^^
+    ...<5 lines>...
+        by_name=by_name,
+        ^^^^^^^^^^^^^^^^
+    )
+    ^
+pydantic_core._pydantic_core.ValidationError: 1 validation error for FarmProfile
+farming_practices
+  Input should be 'organic', 'conventional', 'mixed', 'sustainable' or 'integrated' [type=enum, input_value='permaculture', input_type=str]
+    For further information visit https://errors.pydantic.dev/2.12/v/enum
+
+
+================================================================================
+ERROR ON http://localhost:8000/api/v1/leaderboard/national?timeframe=all-time
+Traceback (most recent call last):
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\starlette\middleware\errors.py", line 164, in __call__
+    await self.app(scope, receive, _send)
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\starlette\middleware\cors.py", line 93, in __call__
+    await self.simple_response(scope, receive, send, request_headers=headers)
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\starlette\middleware\cors.py", line 144, in simple_response
+    await self.app(scope, receive, send)
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\starlette\middleware\exceptions.py", line 63, in __call__
+    await wrap_app_handling_exceptions(self.app, conn)(scope, receive, send)
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\starlette\_exception_handler.py", line 53, in wrapped_app
+    raise exc
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\starlette\_exception_handler.py", line 42, in wrapped_app
+    await app(scope, receive, sender)
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\starlette\routing.py", line 716, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\starlette\routing.py", line 736, in app
+    await route.handle(scope, receive, send)
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\starlette\routing.py", line 290, in handle
+    await self.app(scope, receive, send)
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\starlette\routing.py", line 78, in app
+    await wrap_app_handling_exceptions(app, request)(scope, receive, send)
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\starlette\_exception_handler.py", line 53, in wrapped_app
+    raise exc
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\starlette\_exception_handler.py", line 42, in wrapped_app
+    await app(scope, receive, sender)
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\starlette\routing.py", line 75, in app
+    response = await f(request)
+               ^^^^^^^^^^^^^^^^
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\fastapi\routing.py", line 299, in app
+    raise e
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\fastapi\routing.py", line 294, in app
+    raw_response = await run_endpoint_function(
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        dependant=dependant, values=values, is_coroutine=is_coroutine
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\fastapi\routing.py", line 191, in run_endpoint_function
+    return await dependant.call(**values)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "E:\GOO\backend\app\routes\leaderboard_routes.py", line 22, in get_leaderboard
+    result = await leaderboard_controller.get_leaderboard(
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    ...<6 lines>...
+    )
+    ^
+  File "E:\GOO\backend\app\controllers\leaderboard_controller.py", line 45, in get_leaderboard
+    return await _live_leaderboard(board_type, timeframe, region, page, limit, current_user)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "E:\GOO\backend\app\controllers\leaderboard_controller.py", line 53, in _live_leaderboard
+    all_farms = await FarmProfile.find_all().to_list()
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\beanie\odm\queries\cursor.py", line 75, in to_list
+    parse_obj(projection, i, lazy_parse=self.lazy_parse)
+    ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\beanie\odm\utils\parsing.py", line 146, in parse_obj
+    result = parse_model(model, data)
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\beanie\odm\utils\pydantic.py", line 42, in parse_model
+    return model_type.model_validate(data)
+           ~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\pydantic\main.py", line 716, in model_validate
+    return cls.__pydantic_validator__.validate_python(
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^
+        obj,
+        ^^^^
+    ...<5 lines>...
+        by_name=by_name,
+        ^^^^^^^^^^^^^^^^
+    )
+    ^
+pydantic_core._pydantic_core.ValidationError: 1 validation error for FarmProfile
+farming_practices
+  Input should be 'organic', 'conventional', 'mixed', 'sustainable' or 'integrated' [type=enum, input_value='permaculture', input_type=str]
+    For further information visit https://errors.pydantic.dev/2.12/v/enum
+
+
+================================================================================
+ERROR ON http://localhost:8000/api/v1/leaderboard/me/rank
+Traceback (most recent call last):
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\starlette\middleware\errors.py", line 164, in __call__
+    await self.app(scope, receive, _send)
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\starlette\middleware\cors.py", line 93, in __call__
+    await self.simple_response(scope, receive, send, request_headers=headers)
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\starlette\middleware\cors.py", line 144, in simple_response
+    await self.app(scope, receive, send)
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\starlette\middleware\exceptions.py", line 63, in __call__
+    await wrap_app_handling_exceptions(self.app, conn)(scope, receive, send)
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\starlette\_exception_handler.py", line 53, in wrapped_app
+    raise exc
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\starlette\_exception_handler.py", line 42, in wrapped_app
+    await app(scope, receive, sender)
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\starlette\routing.py", line 716, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\starlette\routing.py", line 736, in app
+    await route.handle(scope, receive, send)
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\starlette\routing.py", line 290, in handle
+    await self.app(scope, receive, send)
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\starlette\routing.py", line 78, in app
+    await wrap_app_handling_exceptions(app, request)(scope, receive, send)
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\starlette\_exception_handler.py", line 53, in wrapped_app
+    raise exc
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\starlette\_exception_handler.py", line 42, in wrapped_app
+    await app(scope, receive, sender)
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\starlette\routing.py", line 75, in app
+    response = await f(request)
+               ^^^^^^^^^^^^^^^^
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\fastapi\routing.py", line 299, in app
+    raise e
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\fastapi\routing.py", line 294, in app
+    raw_response = await run_endpoint_function(
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        dependant=dependant, values=values, is_coroutine=is_coroutine
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\fastapi\routing.py", line 191, in run_endpoint_function
+    return await dependant.call(**values)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "E:\GOO\backend\app\routes\leaderboard_routes.py", line 35, in get_my_rank
+    result = await leaderboard_controller.get_my_rank(current_user)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "E:\GOO\backend\app\controllers\leaderboard_controller.py", line 200, in get_my_rank
+    all_farms = await FarmProfile.find_all().to_list()
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\beanie\odm\queries\cursor.py", line 75, in to_list
+    parse_obj(projection, i, lazy_parse=self.lazy_parse)
+    ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\beanie\odm\utils\parsing.py", line 146, in parse_obj
+    result = parse_model(model, data)
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\beanie\odm\utils\pydantic.py", line 42, in parse_model
+    return model_type.model_validate(data)
+           ~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\pydantic\main.py", line 716, in model_validate
+    return cls.__pydantic_validator__.validate_python(
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^
+        obj,
+        ^^^^
+    ...<5 lines>...
+        by_name=by_name,
+        ^^^^^^^^^^^^^^^^
+    )
+    ^
+pydantic_core._pydantic_core.ValidationError: 1 validation error for FarmProfile
+farming_practices
+  Input should be 'organic', 'conventional', 'mixed', 'sustainable' or 'integrated' [type=enum, input_value='permaculture', input_type=str]
+    For further information visit https://errors.pydantic.dev/2.12/v/enum
+
+
+================================================================================
+ERROR ON http://localhost:8000/api/v1/leaderboard/me/rank
+Traceback (most recent call last):
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\starlette\middleware\errors.py", line 164, in __call__
+    await self.app(scope, receive, _send)
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\starlette\middleware\cors.py", line 93, in __call__
+    await self.simple_response(scope, receive, send, request_headers=headers)
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\starlette\middleware\cors.py", line 144, in simple_response
+    await self.app(scope, receive, send)
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\starlette\middleware\exceptions.py", line 63, in __call__
+    await wrap_app_handling_exceptions(self.app, conn)(scope, receive, send)
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\starlette\_exception_handler.py", line 53, in wrapped_app
+    raise exc
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\starlette\_exception_handler.py", line 42, in wrapped_app
+    await app(scope, receive, sender)
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\starlette\routing.py", line 716, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\starlette\routing.py", line 736, in app
+    await route.handle(scope, receive, send)
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\starlette\routing.py", line 290, in handle
+    await self.app(scope, receive, send)
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\starlette\routing.py", line 78, in app
+    await wrap_app_handling_exceptions(app, request)(scope, receive, send)
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\starlette\_exception_handler.py", line 53, in wrapped_app
+    raise exc
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\starlette\_exception_handler.py", line 42, in wrapped_app
+    await app(scope, receive, sender)
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\starlette\routing.py", line 75, in app
+    response = await f(request)
+               ^^^^^^^^^^^^^^^^
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\fastapi\routing.py", line 299, in app
+    raise e
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\fastapi\routing.py", line 294, in app
+    raw_response = await run_endpoint_function(
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        dependant=dependant, values=values, is_coroutine=is_coroutine
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\fastapi\routing.py", line 191, in run_endpoint_function
+    return await dependant.call(**values)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "E:\GOO\backend\app\routes\leaderboard_routes.py", line 35, in get_my_rank
+    result = await leaderboard_controller.get_my_rank(current_user)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "E:\GOO\backend\app\controllers\leaderboard_controller.py", line 200, in get_my_rank
+    all_farms = await FarmProfile.find_all().to_list()
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\beanie\odm\queries\cursor.py", line 75, in to_list
+    parse_obj(projection, i, lazy_parse=self.lazy_parse)
+    ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\beanie\odm\utils\parsing.py", line 146, in parse_obj
+    result = parse_model(model, data)
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\beanie\odm\utils\pydantic.py", line 42, in parse_model
+    return model_type.model_validate(data)
+           ~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\pydantic\main.py", line 716, in model_validate
+    return cls.__pydantic_validator__.validate_python(
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^
+        obj,
+        ^^^^
+    ...<5 lines>...
+        by_name=by_name,
+        ^^^^^^^^^^^^^^^^
+    )
+    ^
+pydantic_core._pydantic_core.ValidationError: 1 validation error for FarmProfile
+farming_practices
+  Input should be 'organic', 'conventional', 'mixed', 'sustainable' or 'integrated' [type=enum, input_value='permaculture', input_type=str]
+    For further information visit https://errors.pydantic.dev/2.12/v/enum
+
+
+================================================================================
+ERROR ON http://localhost:8000/api/v1/leaderboard/national?timeframe=all-time
+Traceback (most recent call last):
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\starlette\middleware\errors.py", line 164, in __call__
+    await self.app(scope, receive, _send)
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\starlette\middleware\cors.py", line 93, in __call__
+    await self.simple_response(scope, receive, send, request_headers=headers)
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\starlette\middleware\cors.py", line 144, in simple_response
+    await self.app(scope, receive, send)
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\starlette\middleware\exceptions.py", line 63, in __call__
+    await wrap_app_handling_exceptions(self.app, conn)(scope, receive, send)
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\starlette\_exception_handler.py", line 53, in wrapped_app
+    raise exc
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\starlette\_exception_handler.py", line 42, in wrapped_app
+    await app(scope, receive, sender)
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\starlette\routing.py", line 716, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\starlette\routing.py", line 736, in app
+    await route.handle(scope, receive, send)
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\starlette\routing.py", line 290, in handle
+    await self.app(scope, receive, send)
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\starlette\routing.py", line 78, in app
+    await wrap_app_handling_exceptions(app, request)(scope, receive, send)
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\starlette\_exception_handler.py", line 53, in wrapped_app
+    raise exc
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\starlette\_exception_handler.py", line 42, in wrapped_app
+    await app(scope, receive, sender)
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\starlette\routing.py", line 75, in app
+    response = await f(request)
+               ^^^^^^^^^^^^^^^^
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\fastapi\routing.py", line 299, in app
+    raise e
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\fastapi\routing.py", line 294, in app
+    raw_response = await run_endpoint_function(
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        dependant=dependant, values=values, is_coroutine=is_coroutine
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\fastapi\routing.py", line 191, in run_endpoint_function
+    return await dependant.call(**values)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "E:\GOO\backend\app\routes\leaderboard_routes.py", line 22, in get_leaderboard
+    result = await leaderboard_controller.get_leaderboard(
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    ...<6 lines>...
+    )
+    ^
+  File "E:\GOO\backend\app\controllers\leaderboard_controller.py", line 45, in get_leaderboard
+    return await _live_leaderboard(board_type, timeframe, region, page, limit, current_user)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "E:\GOO\backend\app\controllers\leaderboard_controller.py", line 53, in _live_leaderboard
+    all_farms = await FarmProfile.find_all().to_list()
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\beanie\odm\queries\cursor.py", line 75, in to_list
+    parse_obj(projection, i, lazy_parse=self.lazy_parse)
+    ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\beanie\odm\utils\parsing.py", line 146, in parse_obj
+    result = parse_model(model, data)
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\beanie\odm\utils\pydantic.py", line 42, in parse_model
+    return model_type.model_validate(data)
+           ~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\pydantic\main.py", line 716, in model_validate
+    return cls.__pydantic_validator__.validate_python(
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^
+        obj,
+        ^^^^
+    ...<5 lines>...
+        by_name=by_name,
+        ^^^^^^^^^^^^^^^^
+    )
+    ^
+pydantic_core._pydantic_core.ValidationError: 1 validation error for FarmProfile
+farming_practices
+  Input should be 'organic', 'conventional', 'mixed', 'sustainable' or 'integrated' [type=enum, input_value='permaculture', input_type=str]
+    For further information visit https://errors.pydantic.dev/2.12/v/enum
+
+
+================================================================================
+ERROR ON http://localhost:8000/api/v1/leaderboard/national?timeframe=all-time
+Traceback (most recent call last):
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\starlette\middleware\errors.py", line 164, in __call__
+    await self.app(scope, receive, _send)
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\starlette\middleware\cors.py", line 93, in __call__
+    await self.simple_response(scope, receive, send, request_headers=headers)
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\starlette\middleware\cors.py", line 144, in simple_response
+    await self.app(scope, receive, send)
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\starlette\middleware\exceptions.py", line 63, in __call__
+    await wrap_app_handling_exceptions(self.app, conn)(scope, receive, send)
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\starlette\_exception_handler.py", line 53, in wrapped_app
+    raise exc
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\starlette\_exception_handler.py", line 42, in wrapped_app
+    await app(scope, receive, sender)
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\starlette\routing.py", line 716, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\starlette\routing.py", line 736, in app
+    await route.handle(scope, receive, send)
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\starlette\routing.py", line 290, in handle
+    await self.app(scope, receive, send)
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\starlette\routing.py", line 78, in app
+    await wrap_app_handling_exceptions(app, request)(scope, receive, send)
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\starlette\_exception_handler.py", line 53, in wrapped_app
+    raise exc
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\starlette\_exception_handler.py", line 42, in wrapped_app
+    await app(scope, receive, sender)
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\starlette\routing.py", line 75, in app
+    response = await f(request)
+               ^^^^^^^^^^^^^^^^
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\fastapi\routing.py", line 299, in app
+    raise e
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\fastapi\routing.py", line 294, in app
+    raw_response = await run_endpoint_function(
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        dependant=dependant, values=values, is_coroutine=is_coroutine
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\fastapi\routing.py", line 191, in run_endpoint_function
+    return await dependant.call(**values)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "E:\GOO\backend\app\routes\leaderboard_routes.py", line 22, in get_leaderboard
+    result = await leaderboard_controller.get_leaderboard(
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    ...<6 lines>...
+    )
+    ^
+  File "E:\GOO\backend\app\controllers\leaderboard_controller.py", line 45, in get_leaderboard
+    return await _live_leaderboard(board_type, timeframe, region, page, limit, current_user)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "E:\GOO\backend\app\controllers\leaderboard_controller.py", line 53, in _live_leaderboard
+    all_farms = await FarmProfile.find_all().to_list()
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\beanie\odm\queries\cursor.py", line 75, in to_list
+    parse_obj(projection, i, lazy_parse=self.lazy_parse)
+    ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\beanie\odm\utils\parsing.py", line 146, in parse_obj
+    result = parse_model(model, data)
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\beanie\odm\utils\pydantic.py", line 42, in parse_model
+    return model_type.model_validate(data)
+           ~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\pydantic\main.py", line 716, in model_validate
+    return cls.__pydantic_validator__.validate_python(
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^
+        obj,
+        ^^^^
+    ...<5 lines>...
+        by_name=by_name,
+        ^^^^^^^^^^^^^^^^
+    )
+    ^
+pydantic_core._pydantic_core.ValidationError: 1 validation error for FarmProfile
+farming_practices
+  Input should be 'organic', 'conventional', 'mixed', 'sustainable' or 'integrated' [type=enum, input_value='permaculture', input_type=str]
+    For further information visit https://errors.pydantic.dev/2.12/v/enum
+
+
+================================================================================
+ERROR ON http://localhost:8000/api/v1/leaderboard/me/rank
+Traceback (most recent call last):
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\starlette\middleware\errors.py", line 164, in __call__
+    await self.app(scope, receive, _send)
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\starlette\middleware\cors.py", line 93, in __call__
+    await self.simple_response(scope, receive, send, request_headers=headers)
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\starlette\middleware\cors.py", line 144, in simple_response
+    await self.app(scope, receive, send)
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\starlette\middleware\exceptions.py", line 63, in __call__
+    await wrap_app_handling_exceptions(self.app, conn)(scope, receive, send)
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\starlette\_exception_handler.py", line 53, in wrapped_app
+    raise exc
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\starlette\_exception_handler.py", line 42, in wrapped_app
+    await app(scope, receive, sender)
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\starlette\routing.py", line 716, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\starlette\routing.py", line 736, in app
+    await route.handle(scope, receive, send)
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\starlette\routing.py", line 290, in handle
+    await self.app(scope, receive, send)
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\starlette\routing.py", line 78, in app
+    await wrap_app_handling_exceptions(app, request)(scope, receive, send)
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\starlette\_exception_handler.py", line 53, in wrapped_app
+    raise exc
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\starlette\_exception_handler.py", line 42, in wrapped_app
+    await app(scope, receive, sender)
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\starlette\routing.py", line 75, in app
+    response = await f(request)
+               ^^^^^^^^^^^^^^^^
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\fastapi\routing.py", line 299, in app
+    raise e
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\fastapi\routing.py", line 294, in app
+    raw_response = await run_endpoint_function(
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        dependant=dependant, values=values, is_coroutine=is_coroutine
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\fastapi\routing.py", line 191, in run_endpoint_function
+    return await dependant.call(**values)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "E:\GOO\backend\app\routes\leaderboard_routes.py", line 35, in get_my_rank
+    result = await leaderboard_controller.get_my_rank(current_user)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "E:\GOO\backend\app\controllers\leaderboard_controller.py", line 200, in get_my_rank
+    all_farms = await FarmProfile.find_all().to_list()
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\beanie\odm\queries\cursor.py", line 75, in to_list
+    parse_obj(projection, i, lazy_parse=self.lazy_parse)
+    ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\beanie\odm\utils\parsing.py", line 146, in parse_obj
+    result = parse_model(model, data)
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\beanie\odm\utils\pydantic.py", line 42, in parse_model
+    return model_type.model_validate(data)
+           ~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\pydantic\main.py", line 716, in model_validate
+    return cls.__pydantic_validator__.validate_python(
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^
+        obj,
+        ^^^^
+    ...<5 lines>...
+        by_name=by_name,
+        ^^^^^^^^^^^^^^^^
+    )
+    ^
+pydantic_core._pydantic_core.ValidationError: 1 validation error for FarmProfile
+farming_practices
+  Input should be 'organic', 'conventional', 'mixed', 'sustainable' or 'integrated' [type=enum, input_value='permaculture', input_type=str]
+    For further information visit https://errors.pydantic.dev/2.12/v/enum
+
+
+================================================================================
+ERROR ON http://localhost:8000/api/v1/leaderboard/me/rank
+Traceback (most recent call last):
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\starlette\middleware\errors.py", line 164, in __call__
+    await self.app(scope, receive, _send)
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\starlette\middleware\cors.py", line 93, in __call__
+    await self.simple_response(scope, receive, send, request_headers=headers)
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\starlette\middleware\cors.py", line 144, in simple_response
+    await self.app(scope, receive, send)
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\starlette\middleware\exceptions.py", line 63, in __call__
+    await wrap_app_handling_exceptions(self.app, conn)(scope, receive, send)
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\starlette\_exception_handler.py", line 53, in wrapped_app
+    raise exc
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\starlette\_exception_handler.py", line 42, in wrapped_app
+    await app(scope, receive, sender)
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\starlette\routing.py", line 716, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\starlette\routing.py", line 736, in app
+    await route.handle(scope, receive, send)
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\starlette\routing.py", line 290, in handle
+    await self.app(scope, receive, send)
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\starlette\routing.py", line 78, in app
+    await wrap_app_handling_exceptions(app, request)(scope, receive, send)
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\starlette\_exception_handler.py", line 53, in wrapped_app
+    raise exc
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\starlette\_exception_handler.py", line 42, in wrapped_app
+    await app(scope, receive, sender)
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\starlette\routing.py", line 75, in app
+    response = await f(request)
+               ^^^^^^^^^^^^^^^^
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\fastapi\routing.py", line 299, in app
+    raise e
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\fastapi\routing.py", line 294, in app
+    raw_response = await run_endpoint_function(
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        dependant=dependant, values=values, is_coroutine=is_coroutine
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\fastapi\routing.py", line 191, in run_endpoint_function
+    return await dependant.call(**values)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "E:\GOO\backend\app\routes\leaderboard_routes.py", line 35, in get_my_rank
+    result = await leaderboard_controller.get_my_rank(current_user)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "E:\GOO\backend\app\controllers\leaderboard_controller.py", line 200, in get_my_rank
+    all_farms = await FarmProfile.find_all().to_list()
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\beanie\odm\queries\cursor.py", line 75, in to_list
+    parse_obj(projection, i, lazy_parse=self.lazy_parse)
+    ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\beanie\odm\utils\parsing.py", line 146, in parse_obj
+    result = parse_model(model, data)
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\beanie\odm\utils\pydantic.py", line 42, in parse_model
+    return model_type.model_validate(data)
+           ~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\pydantic\main.py", line 716, in model_validate
+    return cls.__pydantic_validator__.validate_python(
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^
+        obj,
+        ^^^^
+    ...<5 lines>...
+        by_name=by_name,
+        ^^^^^^^^^^^^^^^^
+    )
+    ^
+pydantic_core._pydantic_core.ValidationError: 1 validation error for FarmProfile
+farming_practices
+  Input should be 'organic', 'conventional', 'mixed', 'sustainable' or 'integrated' [type=enum, input_value='permaculture', input_type=str]
+    For further information visit https://errors.pydantic.dev/2.12/v/enum
+
+
+================================================================================
+ERROR ON http://localhost:8000/api/v1/leaderboard/national?timeframe=all-time
+Traceback (most recent call last):
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\starlette\middleware\errors.py", line 164, in __call__
+    await self.app(scope, receive, _send)
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\starlette\middleware\cors.py", line 93, in __call__
+    await self.simple_response(scope, receive, send, request_headers=headers)
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\starlette\middleware\cors.py", line 144, in simple_response
+    await self.app(scope, receive, send)
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\starlette\middleware\exceptions.py", line 63, in __call__
+    await wrap_app_handling_exceptions(self.app, conn)(scope, receive, send)
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\starlette\_exception_handler.py", line 53, in wrapped_app
+    raise exc
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\starlette\_exception_handler.py", line 42, in wrapped_app
+    await app(scope, receive, sender)
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\starlette\routing.py", line 716, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\starlette\routing.py", line 736, in app
+    await route.handle(scope, receive, send)
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\starlette\routing.py", line 290, in handle
+    await self.app(scope, receive, send)
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\starlette\routing.py", line 78, in app
+    await wrap_app_handling_exceptions(app, request)(scope, receive, send)
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\starlette\_exception_handler.py", line 53, in wrapped_app
+    raise exc
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\starlette\_exception_handler.py", line 42, in wrapped_app
+    await app(scope, receive, sender)
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\starlette\routing.py", line 75, in app
+    response = await f(request)
+               ^^^^^^^^^^^^^^^^
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\fastapi\routing.py", line 299, in app
+    raise e
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\fastapi\routing.py", line 294, in app
+    raw_response = await run_endpoint_function(
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        dependant=dependant, values=values, is_coroutine=is_coroutine
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\fastapi\routing.py", line 191, in run_endpoint_function
+    return await dependant.call(**values)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "E:\GOO\backend\app\routes\leaderboard_routes.py", line 22, in get_leaderboard
+    result = await leaderboard_controller.get_leaderboard(
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    ...<6 lines>...
+    )
+    ^
+  File "E:\GOO\backend\app\controllers\leaderboard_controller.py", line 45, in get_leaderboard
+    return await _live_leaderboard(board_type, timeframe, region, page, limit, current_user)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "E:\GOO\backend\app\controllers\leaderboard_controller.py", line 53, in _live_leaderboard
+    all_farms = await FarmProfile.find_all().to_list()
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\beanie\odm\queries\cursor.py", line 75, in to_list
+    parse_obj(projection, i, lazy_parse=self.lazy_parse)
+    ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\beanie\odm\utils\parsing.py", line 146, in parse_obj
+    result = parse_model(model, data)
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\beanie\odm\utils\pydantic.py", line 42, in parse_model
+    return model_type.model_validate(data)
+           ~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\pydantic\main.py", line 716, in model_validate
+    return cls.__pydantic_validator__.validate_python(
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^
+        obj,
+        ^^^^
+    ...<5 lines>...
+        by_name=by_name,
+        ^^^^^^^^^^^^^^^^
+    )
+    ^
+pydantic_core._pydantic_core.ValidationError: 1 validation error for FarmProfile
+farming_practices
+  Input should be 'organic', 'conventional', 'mixed', 'sustainable' or 'integrated' [type=enum, input_value='permaculture', input_type=str]
+    For further information visit https://errors.pydantic.dev/2.12/v/enum
+
+
+================================================================================
+ERROR ON http://localhost:8000/api/v1/leaderboard/national?timeframe=all-time
+Traceback (most recent call last):
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\starlette\middleware\errors.py", line 164, in __call__
+    await self.app(scope, receive, _send)
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\starlette\middleware\cors.py", line 93, in __call__
+    await self.simple_response(scope, receive, send, request_headers=headers)
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\starlette\middleware\cors.py", line 144, in simple_response
+    await self.app(scope, receive, send)
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\starlette\middleware\exceptions.py", line 63, in __call__
+    await wrap_app_handling_exceptions(self.app, conn)(scope, receive, send)
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\starlette\_exception_handler.py", line 53, in wrapped_app
+    raise exc
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\starlette\_exception_handler.py", line 42, in wrapped_app
+    await app(scope, receive, sender)
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\starlette\routing.py", line 716, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\starlette\routing.py", line 736, in app
+    await route.handle(scope, receive, send)
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\starlette\routing.py", line 290, in handle
+    await self.app(scope, receive, send)
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\starlette\routing.py", line 78, in app
+    await wrap_app_handling_exceptions(app, request)(scope, receive, send)
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\starlette\_exception_handler.py", line 53, in wrapped_app
+    raise exc
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\starlette\_exception_handler.py", line 42, in wrapped_app
+    await app(scope, receive, sender)
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\starlette\routing.py", line 75, in app
+    response = await f(request)
+               ^^^^^^^^^^^^^^^^
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\fastapi\routing.py", line 299, in app
+    raise e
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\fastapi\routing.py", line 294, in app
+    raw_response = await run_endpoint_function(
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        dependant=dependant, values=values, is_coroutine=is_coroutine
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\fastapi\routing.py", line 191, in run_endpoint_function
+    return await dependant.call(**values)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "E:\GOO\backend\app\routes\leaderboard_routes.py", line 22, in get_leaderboard
+    result = await leaderboard_controller.get_leaderboard(
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    ...<6 lines>...
+    )
+    ^
+  File "E:\GOO\backend\app\controllers\leaderboard_controller.py", line 45, in get_leaderboard
+    return await _live_leaderboard(board_type, timeframe, region, page, limit, current_user)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "E:\GOO\backend\app\controllers\leaderboard_controller.py", line 53, in _live_leaderboard
+    all_farms = await FarmProfile.find_all().to_list()
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\beanie\odm\queries\cursor.py", line 75, in to_list
+    parse_obj(projection, i, lazy_parse=self.lazy_parse)
+    ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\beanie\odm\utils\parsing.py", line 146, in parse_obj
+    result = parse_model(model, data)
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\beanie\odm\utils\pydantic.py", line 42, in parse_model
+    return model_type.model_validate(data)
+           ~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\pydantic\main.py", line 716, in model_validate
+    return cls.__pydantic_validator__.validate_python(
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^
+        obj,
+        ^^^^
+    ...<5 lines>...
+        by_name=by_name,
+        ^^^^^^^^^^^^^^^^
+    )
+    ^
+pydantic_core._pydantic_core.ValidationError: 1 validation error for FarmProfile
+farming_practices
+  Input should be 'organic', 'conventional', 'mixed', 'sustainable' or 'integrated' [type=enum, input_value='permaculture', input_type=str]
+    For further information visit https://errors.pydantic.dev/2.12/v/enum
+
+
+================================================================================
+ERROR ON http://localhost:8000/api/v1/leaderboard/me/rank
+Traceback (most recent call last):
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\starlette\middleware\errors.py", line 164, in __call__
+    await self.app(scope, receive, _send)
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\starlette\middleware\cors.py", line 93, in __call__
+    await self.simple_response(scope, receive, send, request_headers=headers)
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\starlette\middleware\cors.py", line 144, in simple_response
+    await self.app(scope, receive, send)
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\starlette\middleware\exceptions.py", line 63, in __call__
+    await wrap_app_handling_exceptions(self.app, conn)(scope, receive, send)
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\starlette\_exception_handler.py", line 53, in wrapped_app
+    raise exc
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\starlette\_exception_handler.py", line 42, in wrapped_app
+    await app(scope, receive, sender)
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\starlette\routing.py", line 716, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\starlette\routing.py", line 736, in app
+    await route.handle(scope, receive, send)
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\starlette\routing.py", line 290, in handle
+    await self.app(scope, receive, send)
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\starlette\routing.py", line 78, in app
+    await wrap_app_handling_exceptions(app, request)(scope, receive, send)
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\starlette\_exception_handler.py", line 53, in wrapped_app
+    raise exc
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\starlette\_exception_handler.py", line 42, in wrapped_app
+    await app(scope, receive, sender)
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\starlette\routing.py", line 75, in app
+    response = await f(request)
+               ^^^^^^^^^^^^^^^^
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\fastapi\routing.py", line 299, in app
+    raise e
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\fastapi\routing.py", line 294, in app
+    raw_response = await run_endpoint_function(
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        dependant=dependant, values=values, is_coroutine=is_coroutine
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\fastapi\routing.py", line 191, in run_endpoint_function
+    return await dependant.call(**values)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "E:\GOO\backend\app\routes\leaderboard_routes.py", line 35, in get_my_rank
+    result = await leaderboard_controller.get_my_rank(current_user)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "E:\GOO\backend\app\controllers\leaderboard_controller.py", line 200, in get_my_rank
+    all_farms = await FarmProfile.find_all().to_list()
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\beanie\odm\queries\cursor.py", line 75, in to_list
+    parse_obj(projection, i, lazy_parse=self.lazy_parse)
+    ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\beanie\odm\utils\parsing.py", line 146, in parse_obj
+    result = parse_model(model, data)
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\beanie\odm\utils\pydantic.py", line 42, in parse_model
+    return model_type.model_validate(data)
+           ~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\pydantic\main.py", line 716, in model_validate
+    return cls.__pydantic_validator__.validate_python(
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^
+        obj,
+        ^^^^
+    ...<5 lines>...
+        by_name=by_name,
+        ^^^^^^^^^^^^^^^^
+    )
+    ^
+pydantic_core._pydantic_core.ValidationError: 1 validation error for FarmProfile
+farming_practices
+  Input should be 'organic', 'conventional', 'mixed', 'sustainable' or 'integrated' [type=enum, input_value='permaculture', input_type=str]
+    For further information visit https://errors.pydantic.dev/2.12/v/enum
+
+
+================================================================================
+ERROR ON http://localhost:8000/api/v1/leaderboard/me/rank
+Traceback (most recent call last):
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\starlette\middleware\errors.py", line 164, in __call__
+    await self.app(scope, receive, _send)
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\starlette\middleware\cors.py", line 93, in __call__
+    await self.simple_response(scope, receive, send, request_headers=headers)
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\starlette\middleware\cors.py", line 144, in simple_response
+    await self.app(scope, receive, send)
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\starlette\middleware\exceptions.py", line 63, in __call__
+    await wrap_app_handling_exceptions(self.app, conn)(scope, receive, send)
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\starlette\_exception_handler.py", line 53, in wrapped_app
+    raise exc
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\starlette\_exception_handler.py", line 42, in wrapped_app
+    await app(scope, receive, sender)
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\starlette\routing.py", line 716, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\starlette\routing.py", line 736, in app
+    await route.handle(scope, receive, send)
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\starlette\routing.py", line 290, in handle
+    await self.app(scope, receive, send)
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\starlette\routing.py", line 78, in app
+    await wrap_app_handling_exceptions(app, request)(scope, receive, send)
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\starlette\_exception_handler.py", line 53, in wrapped_app
+    raise exc
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\starlette\_exception_handler.py", line 42, in wrapped_app
+    await app(scope, receive, sender)
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\starlette\routing.py", line 75, in app
+    response = await f(request)
+               ^^^^^^^^^^^^^^^^
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\fastapi\routing.py", line 299, in app
+    raise e
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\fastapi\routing.py", line 294, in app
+    raw_response = await run_endpoint_function(
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        dependant=dependant, values=values, is_coroutine=is_coroutine
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\fastapi\routing.py", line 191, in run_endpoint_function
+    return await dependant.call(**values)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "E:\GOO\backend\app\routes\leaderboard_routes.py", line 35, in get_my_rank
+    result = await leaderboard_controller.get_my_rank(current_user)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "E:\GOO\backend\app\controllers\leaderboard_controller.py", line 200, in get_my_rank
+    all_farms = await FarmProfile.find_all().to_list()
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\beanie\odm\queries\cursor.py", line 75, in to_list
+    parse_obj(projection, i, lazy_parse=self.lazy_parse)
+    ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\beanie\odm\utils\parsing.py", line 146, in parse_obj
+    result = parse_model(model, data)
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\beanie\odm\utils\pydantic.py", line 42, in parse_model
+    return model_type.model_validate(data)
+           ~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\pydantic\main.py", line 716, in model_validate
+    return cls.__pydantic_validator__.validate_python(
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^
+        obj,
+        ^^^^
+    ...<5 lines>...
+        by_name=by_name,
+        ^^^^^^^^^^^^^^^^
+    )
+    ^
+pydantic_core._pydantic_core.ValidationError: 1 validation error for FarmProfile
+farming_practices
+  Input should be 'organic', 'conventional', 'mixed', 'sustainable' or 'integrated' [type=enum, input_value='permaculture', input_type=str]
+    For further information visit https://errors.pydantic.dev/2.12/v/enum
+
+
+================================================================================
+ERROR ON http://localhost:8000/api/v1/leaderboard/national?timeframe=all-time
+Traceback (most recent call last):
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\starlette\middleware\errors.py", line 164, in __call__
+    await self.app(scope, receive, _send)
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\starlette\middleware\cors.py", line 93, in __call__
+    await self.simple_response(scope, receive, send, request_headers=headers)
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\starlette\middleware\cors.py", line 144, in simple_response
+    await self.app(scope, receive, send)
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\starlette\middleware\exceptions.py", line 63, in __call__
+    await wrap_app_handling_exceptions(self.app, conn)(scope, receive, send)
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\starlette\_exception_handler.py", line 53, in wrapped_app
+    raise exc
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\starlette\_exception_handler.py", line 42, in wrapped_app
+    await app(scope, receive, sender)
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\starlette\routing.py", line 716, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\starlette\routing.py", line 736, in app
+    await route.handle(scope, receive, send)
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\starlette\routing.py", line 290, in handle
+    await self.app(scope, receive, send)
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\starlette\routing.py", line 78, in app
+    await wrap_app_handling_exceptions(app, request)(scope, receive, send)
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\starlette\_exception_handler.py", line 53, in wrapped_app
+    raise exc
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\starlette\_exception_handler.py", line 42, in wrapped_app
+    await app(scope, receive, sender)
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\starlette\routing.py", line 75, in app
+    response = await f(request)
+               ^^^^^^^^^^^^^^^^
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\fastapi\routing.py", line 299, in app
+    raise e
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\fastapi\routing.py", line 294, in app
+    raw_response = await run_endpoint_function(
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        dependant=dependant, values=values, is_coroutine=is_coroutine
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\fastapi\routing.py", line 191, in run_endpoint_function
+    return await dependant.call(**values)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "E:\GOO\backend\app\routes\leaderboard_routes.py", line 22, in get_leaderboard
+    result = await leaderboard_controller.get_leaderboard(
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    ...<6 lines>...
+    )
+    ^
+  File "E:\GOO\backend\app\controllers\leaderboard_controller.py", line 45, in get_leaderboard
+    return await _live_leaderboard(board_type, timeframe, region, page, limit, current_user)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "E:\GOO\backend\app\controllers\leaderboard_controller.py", line 53, in _live_leaderboard
+    all_farms = await FarmProfile.find_all().to_list()
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\beanie\odm\queries\cursor.py", line 75, in to_list
+    parse_obj(projection, i, lazy_parse=self.lazy_parse)
+    ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\beanie\odm\utils\parsing.py", line 146, in parse_obj
+    result = parse_model(model, data)
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\beanie\odm\utils\pydantic.py", line 42, in parse_model
+    return model_type.model_validate(data)
+           ~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\pydantic\main.py", line 716, in model_validate
+    return cls.__pydantic_validator__.validate_python(
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^
+        obj,
+        ^^^^
+    ...<5 lines>...
+        by_name=by_name,
+        ^^^^^^^^^^^^^^^^
+    )
+    ^
+pydantic_core._pydantic_core.ValidationError: 1 validation error for FarmProfile
+farming_practices
+  Input should be 'organic', 'conventional', 'mixed', 'sustainable' or 'integrated' [type=enum, input_value='permaculture', input_type=str]
+    For further information visit https://errors.pydantic.dev/2.12/v/enum
+
+
+================================================================================
+ERROR ON http://localhost:8000/api/v1/leaderboard/national?timeframe=all-time
+Traceback (most recent call last):
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\starlette\middleware\errors.py", line 164, in __call__
+    await self.app(scope, receive, _send)
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\starlette\middleware\cors.py", line 93, in __call__
+    await self.simple_response(scope, receive, send, request_headers=headers)
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\starlette\middleware\cors.py", line 144, in simple_response
+    await self.app(scope, receive, send)
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\starlette\middleware\exceptions.py", line 63, in __call__
+    await wrap_app_handling_exceptions(self.app, conn)(scope, receive, send)
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\starlette\_exception_handler.py", line 53, in wrapped_app
+    raise exc
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\starlette\_exception_handler.py", line 42, in wrapped_app
+    await app(scope, receive, sender)
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\starlette\routing.py", line 716, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\starlette\routing.py", line 736, in app
+    await route.handle(scope, receive, send)
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\starlette\routing.py", line 290, in handle
+    await self.app(scope, receive, send)
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\starlette\routing.py", line 78, in app
+    await wrap_app_handling_exceptions(app, request)(scope, receive, send)
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\starlette\_exception_handler.py", line 53, in wrapped_app
+    raise exc
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\starlette\_exception_handler.py", line 42, in wrapped_app
+    await app(scope, receive, sender)
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\starlette\routing.py", line 75, in app
+    response = await f(request)
+               ^^^^^^^^^^^^^^^^
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\fastapi\routing.py", line 299, in app
+    raise e
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\fastapi\routing.py", line 294, in app
+    raw_response = await run_endpoint_function(
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        dependant=dependant, values=values, is_coroutine=is_coroutine
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\fastapi\routing.py", line 191, in run_endpoint_function
+    return await dependant.call(**values)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "E:\GOO\backend\app\routes\leaderboard_routes.py", line 22, in get_leaderboard
+    result = await leaderboard_controller.get_leaderboard(
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    ...<6 lines>...
+    )
+    ^
+  File "E:\GOO\backend\app\controllers\leaderboard_controller.py", line 45, in get_leaderboard
+    return await _live_leaderboard(board_type, timeframe, region, page, limit, current_user)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "E:\GOO\backend\app\controllers\leaderboard_controller.py", line 53, in _live_leaderboard
+    all_farms = await FarmProfile.find_all().to_list()
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\beanie\odm\queries\cursor.py", line 75, in to_list
+    parse_obj(projection, i, lazy_parse=self.lazy_parse)
+    ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\beanie\odm\utils\parsing.py", line 146, in parse_obj
+    result = parse_model(model, data)
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\beanie\odm\utils\pydantic.py", line 42, in parse_model
+    return model_type.model_validate(data)
+           ~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\pydantic\main.py", line 716, in model_validate
+    return cls.__pydantic_validator__.validate_python(
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^
+        obj,
+        ^^^^
+    ...<5 lines>...
+        by_name=by_name,
+        ^^^^^^^^^^^^^^^^
+    )
+    ^
+pydantic_core._pydantic_core.ValidationError: 1 validation error for FarmProfile
+farming_practices
+  Input should be 'organic', 'conventional', 'mixed', 'sustainable' or 'integrated' [type=enum, input_value='permaculture', input_type=str]
+    For further information visit https://errors.pydantic.dev/2.12/v/enum
+
+
+================================================================================
+ERROR ON http://localhost:8000/api/v1/leaderboard/me/rank
+Traceback (most recent call last):
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\starlette\middleware\errors.py", line 164, in __call__
+    await self.app(scope, receive, _send)
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\starlette\middleware\cors.py", line 93, in __call__
+    await self.simple_response(scope, receive, send, request_headers=headers)
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\starlette\middleware\cors.py", line 144, in simple_response
+    await self.app(scope, receive, send)
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\starlette\middleware\exceptions.py", line 63, in __call__
+    await wrap_app_handling_exceptions(self.app, conn)(scope, receive, send)
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\starlette\_exception_handler.py", line 53, in wrapped_app
+    raise exc
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\starlette\_exception_handler.py", line 42, in wrapped_app
+    await app(scope, receive, sender)
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\starlette\routing.py", line 716, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\starlette\routing.py", line 736, in app
+    await route.handle(scope, receive, send)
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\starlette\routing.py", line 290, in handle
+    await self.app(scope, receive, send)
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\starlette\routing.py", line 78, in app
+    await wrap_app_handling_exceptions(app, request)(scope, receive, send)
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\starlette\_exception_handler.py", line 53, in wrapped_app
+    raise exc
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\starlette\_exception_handler.py", line 42, in wrapped_app
+    await app(scope, receive, sender)
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\starlette\routing.py", line 75, in app
+    response = await f(request)
+               ^^^^^^^^^^^^^^^^
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\fastapi\routing.py", line 299, in app
+    raise e
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\fastapi\routing.py", line 294, in app
+    raw_response = await run_endpoint_function(
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        dependant=dependant, values=values, is_coroutine=is_coroutine
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\fastapi\routing.py", line 191, in run_endpoint_function
+    return await dependant.call(**values)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "E:\GOO\backend\app\routes\leaderboard_routes.py", line 35, in get_my_rank
+    result = await leaderboard_controller.get_my_rank(current_user)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "E:\GOO\backend\app\controllers\leaderboard_controller.py", line 200, in get_my_rank
+    all_farms = await FarmProfile.find_all().to_list()
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\beanie\odm\queries\cursor.py", line 75, in to_list
+    parse_obj(projection, i, lazy_parse=self.lazy_parse)
+    ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\beanie\odm\utils\parsing.py", line 146, in parse_obj
+    result = parse_model(model, data)
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\beanie\odm\utils\pydantic.py", line 42, in parse_model
+    return model_type.model_validate(data)
+           ~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\pydantic\main.py", line 716, in model_validate
+    return cls.__pydantic_validator__.validate_python(
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^
+        obj,
+        ^^^^
+    ...<5 lines>...
+        by_name=by_name,
+        ^^^^^^^^^^^^^^^^
+    )
+    ^
+pydantic_core._pydantic_core.ValidationError: 1 validation error for FarmProfile
+farming_practices
+  Input should be 'organic', 'conventional', 'mixed', 'sustainable' or 'integrated' [type=enum, input_value='permaculture', input_type=str]
+    For further information visit https://errors.pydantic.dev/2.12/v/enum
+
+
+================================================================================
+ERROR ON http://localhost:8000/api/v1/leaderboard/me/rank
+Traceback (most recent call last):
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\starlette\middleware\errors.py", line 164, in __call__
+    await self.app(scope, receive, _send)
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\starlette\middleware\cors.py", line 93, in __call__
+    await self.simple_response(scope, receive, send, request_headers=headers)
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\starlette\middleware\cors.py", line 144, in simple_response
+    await self.app(scope, receive, send)
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\starlette\middleware\exceptions.py", line 63, in __call__
+    await wrap_app_handling_exceptions(self.app, conn)(scope, receive, send)
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\starlette\_exception_handler.py", line 53, in wrapped_app
+    raise exc
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\starlette\_exception_handler.py", line 42, in wrapped_app
+    await app(scope, receive, sender)
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\starlette\routing.py", line 716, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\starlette\routing.py", line 736, in app
+    await route.handle(scope, receive, send)
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\starlette\routing.py", line 290, in handle
+    await self.app(scope, receive, send)
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\starlette\routing.py", line 78, in app
+    await wrap_app_handling_exceptions(app, request)(scope, receive, send)
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\starlette\_exception_handler.py", line 53, in wrapped_app
+    raise exc
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\starlette\_exception_handler.py", line 42, in wrapped_app
+    await app(scope, receive, sender)
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\starlette\routing.py", line 75, in app
+    response = await f(request)
+               ^^^^^^^^^^^^^^^^
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\fastapi\routing.py", line 299, in app
+    raise e
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\fastapi\routing.py", line 294, in app
+    raw_response = await run_endpoint_function(
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        dependant=dependant, values=values, is_coroutine=is_coroutine
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\fastapi\routing.py", line 191, in run_endpoint_function
+    return await dependant.call(**values)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "E:\GOO\backend\app\routes\leaderboard_routes.py", line 35, in get_my_rank
+    result = await leaderboard_controller.get_my_rank(current_user)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "E:\GOO\backend\app\controllers\leaderboard_controller.py", line 200, in get_my_rank
+    all_farms = await FarmProfile.find_all().to_list()
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\beanie\odm\queries\cursor.py", line 75, in to_list
+    parse_obj(projection, i, lazy_parse=self.lazy_parse)
+    ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\beanie\odm\utils\parsing.py", line 146, in parse_obj
+    result = parse_model(model, data)
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\beanie\odm\utils\pydantic.py", line 42, in parse_model
+    return model_type.model_validate(data)
+           ~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\pydantic\main.py", line 716, in model_validate
+    return cls.__pydantic_validator__.validate_python(
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^
+        obj,
+        ^^^^
+    ...<5 lines>...
+        by_name=by_name,
+        ^^^^^^^^^^^^^^^^
+    )
+    ^
+pydantic_core._pydantic_core.ValidationError: 1 validation error for FarmProfile
+farming_practices
+  Input should be 'organic', 'conventional', 'mixed', 'sustainable' or 'integrated' [type=enum, input_value='permaculture', input_type=str]
+    For further information visit https://errors.pydantic.dev/2.12/v/enum
+
+
+================================================================================
+ERROR ON http://localhost:8000/api/v1/leaderboard/national?timeframe=all-time
+Traceback (most recent call last):
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\starlette\middleware\errors.py", line 164, in __call__
+    await self.app(scope, receive, _send)
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\starlette\middleware\cors.py", line 93, in __call__
+    await self.simple_response(scope, receive, send, request_headers=headers)
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\starlette\middleware\cors.py", line 144, in simple_response
+    await self.app(scope, receive, send)
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\starlette\middleware\exceptions.py", line 63, in __call__
+    await wrap_app_handling_exceptions(self.app, conn)(scope, receive, send)
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\starlette\_exception_handler.py", line 53, in wrapped_app
+    raise exc
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\starlette\_exception_handler.py", line 42, in wrapped_app
+    await app(scope, receive, sender)
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\starlette\routing.py", line 716, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\starlette\routing.py", line 736, in app
+    await route.handle(scope, receive, send)
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\starlette\routing.py", line 290, in handle
+    await self.app(scope, receive, send)
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\starlette\routing.py", line 78, in app
+    await wrap_app_handling_exceptions(app, request)(scope, receive, send)
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\starlette\_exception_handler.py", line 53, in wrapped_app
+    raise exc
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\starlette\_exception_handler.py", line 42, in wrapped_app
+    await app(scope, receive, sender)
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\starlette\routing.py", line 75, in app
+    response = await f(request)
+               ^^^^^^^^^^^^^^^^
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\fastapi\routing.py", line 299, in app
+    raise e
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\fastapi\routing.py", line 294, in app
+    raw_response = await run_endpoint_function(
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        dependant=dependant, values=values, is_coroutine=is_coroutine
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\fastapi\routing.py", line 191, in run_endpoint_function
+    return await dependant.call(**values)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "E:\GOO\backend\app\routes\leaderboard_routes.py", line 22, in get_leaderboard
+    result = await leaderboard_controller.get_leaderboard(
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    ...<6 lines>...
+    )
+    ^
+  File "E:\GOO\backend\app\controllers\leaderboard_controller.py", line 45, in get_leaderboard
+    return await _live_leaderboard(board_type, timeframe, region, page, limit, current_user)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "E:\GOO\backend\app\controllers\leaderboard_controller.py", line 53, in _live_leaderboard
+    all_farms = await FarmProfile.find_all().to_list()
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\beanie\odm\queries\cursor.py", line 75, in to_list
+    parse_obj(projection, i, lazy_parse=self.lazy_parse)
+    ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\beanie\odm\utils\parsing.py", line 146, in parse_obj
+    result = parse_model(model, data)
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\beanie\odm\utils\pydantic.py", line 42, in parse_model
+    return model_type.model_validate(data)
+           ~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\pydantic\main.py", line 716, in model_validate
+    return cls.__pydantic_validator__.validate_python(
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^
+        obj,
+        ^^^^
+    ...<5 lines>...
+        by_name=by_name,
+        ^^^^^^^^^^^^^^^^
+    )
+    ^
+pydantic_core._pydantic_core.ValidationError: 1 validation error for FarmProfile
+farming_practices
+  Input should be 'organic', 'conventional', 'mixed', 'sustainable' or 'integrated' [type=enum, input_value='permaculture', input_type=str]
+    For further information visit https://errors.pydantic.dev/2.12/v/enum
+
+
+================================================================================
+ERROR ON http://localhost:8000/api/v1/leaderboard/national?timeframe=all-time
+Traceback (most recent call last):
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\starlette\middleware\errors.py", line 164, in __call__
+    await self.app(scope, receive, _send)
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\starlette\middleware\cors.py", line 93, in __call__
+    await self.simple_response(scope, receive, send, request_headers=headers)
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\starlette\middleware\cors.py", line 144, in simple_response
+    await self.app(scope, receive, send)
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\starlette\middleware\exceptions.py", line 63, in __call__
+    await wrap_app_handling_exceptions(self.app, conn)(scope, receive, send)
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\starlette\_exception_handler.py", line 53, in wrapped_app
+    raise exc
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\starlette\_exception_handler.py", line 42, in wrapped_app
+    await app(scope, receive, sender)
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\starlette\routing.py", line 716, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\starlette\routing.py", line 736, in app
+    await route.handle(scope, receive, send)
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\starlette\routing.py", line 290, in handle
+    await self.app(scope, receive, send)
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\starlette\routing.py", line 78, in app
+    await wrap_app_handling_exceptions(app, request)(scope, receive, send)
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\starlette\_exception_handler.py", line 53, in wrapped_app
+    raise exc
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\starlette\_exception_handler.py", line 42, in wrapped_app
+    await app(scope, receive, sender)
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\starlette\routing.py", line 75, in app
+    response = await f(request)
+               ^^^^^^^^^^^^^^^^
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\fastapi\routing.py", line 299, in app
+    raise e
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\fastapi\routing.py", line 294, in app
+    raw_response = await run_endpoint_function(
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        dependant=dependant, values=values, is_coroutine=is_coroutine
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\fastapi\routing.py", line 191, in run_endpoint_function
+    return await dependant.call(**values)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "E:\GOO\backend\app\routes\leaderboard_routes.py", line 22, in get_leaderboard
+    result = await leaderboard_controller.get_leaderboard(
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    ...<6 lines>...
+    )
+    ^
+  File "E:\GOO\backend\app\controllers\leaderboard_controller.py", line 45, in get_leaderboard
+    return await _live_leaderboard(board_type, timeframe, region, page, limit, current_user)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "E:\GOO\backend\app\controllers\leaderboard_controller.py", line 53, in _live_leaderboard
+    all_farms = await FarmProfile.find_all().to_list()
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\beanie\odm\queries\cursor.py", line 75, in to_list
+    parse_obj(projection, i, lazy_parse=self.lazy_parse)
+    ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\beanie\odm\utils\parsing.py", line 146, in parse_obj
+    result = parse_model(model, data)
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\beanie\odm\utils\pydantic.py", line 42, in parse_model
+    return model_type.model_validate(data)
+           ~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\pydantic\main.py", line 716, in model_validate
+    return cls.__pydantic_validator__.validate_python(
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^
+        obj,
+        ^^^^
+    ...<5 lines>...
+        by_name=by_name,
+        ^^^^^^^^^^^^^^^^
+    )
+    ^
+pydantic_core._pydantic_core.ValidationError: 1 validation error for FarmProfile
+farming_practices
+  Input should be 'organic', 'conventional', 'mixed', 'sustainable' or 'integrated' [type=enum, input_value='permaculture', input_type=str]
+    For further information visit https://errors.pydantic.dev/2.12/v/enum
+
+
+================================================================================
+ERROR ON http://localhost:8000/api/v1/leaderboard/me/rank
+Traceback (most recent call last):
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\starlette\middleware\errors.py", line 164, in __call__
+    await self.app(scope, receive, _send)
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\starlette\middleware\cors.py", line 93, in __call__
+    await self.simple_response(scope, receive, send, request_headers=headers)
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\starlette\middleware\cors.py", line 144, in simple_response
+    await self.app(scope, receive, send)
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\starlette\middleware\exceptions.py", line 63, in __call__
+    await wrap_app_handling_exceptions(self.app, conn)(scope, receive, send)
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\starlette\_exception_handler.py", line 53, in wrapped_app
+    raise exc
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\starlette\_exception_handler.py", line 42, in wrapped_app
+    await app(scope, receive, sender)
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\starlette\routing.py", line 716, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\starlette\routing.py", line 736, in app
+    await route.handle(scope, receive, send)
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\starlette\routing.py", line 290, in handle
+    await self.app(scope, receive, send)
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\starlette\routing.py", line 78, in app
+    await wrap_app_handling_exceptions(app, request)(scope, receive, send)
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\starlette\_exception_handler.py", line 53, in wrapped_app
+    raise exc
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\starlette\_exception_handler.py", line 42, in wrapped_app
+    await app(scope, receive, sender)
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\starlette\routing.py", line 75, in app
+    response = await f(request)
+               ^^^^^^^^^^^^^^^^
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\fastapi\routing.py", line 299, in app
+    raise e
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\fastapi\routing.py", line 294, in app
+    raw_response = await run_endpoint_function(
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        dependant=dependant, values=values, is_coroutine=is_coroutine
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\fastapi\routing.py", line 191, in run_endpoint_function
+    return await dependant.call(**values)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "E:\GOO\backend\app\routes\leaderboard_routes.py", line 35, in get_my_rank
+    result = await leaderboard_controller.get_my_rank(current_user)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "E:\GOO\backend\app\controllers\leaderboard_controller.py", line 200, in get_my_rank
+    all_farms = await FarmProfile.find_all().to_list()
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\beanie\odm\queries\cursor.py", line 75, in to_list
+    parse_obj(projection, i, lazy_parse=self.lazy_parse)
+    ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\beanie\odm\utils\parsing.py", line 146, in parse_obj
+    result = parse_model(model, data)
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\beanie\odm\utils\pydantic.py", line 42, in parse_model
+    return model_type.model_validate(data)
+           ~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\pydantic\main.py", line 716, in model_validate
+    return cls.__pydantic_validator__.validate_python(
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^
+        obj,
+        ^^^^
+    ...<5 lines>...
+        by_name=by_name,
+        ^^^^^^^^^^^^^^^^
+    )
+    ^
+pydantic_core._pydantic_core.ValidationError: 1 validation error for FarmProfile
+farming_practices
+  Input should be 'organic', 'conventional', 'mixed', 'sustainable' or 'integrated' [type=enum, input_value='permaculture', input_type=str]
+    For further information visit https://errors.pydantic.dev/2.12/v/enum
+
+
+================================================================================
+ERROR ON http://localhost:8000/api/v1/leaderboard/national?timeframe=all-time
+Traceback (most recent call last):
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\starlette\middleware\errors.py", line 164, in __call__
+    await self.app(scope, receive, _send)
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\starlette\middleware\cors.py", line 93, in __call__
+    await self.simple_response(scope, receive, send, request_headers=headers)
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\starlette\middleware\cors.py", line 144, in simple_response
+    await self.app(scope, receive, send)
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\starlette\middleware\exceptions.py", line 63, in __call__
+    await wrap_app_handling_exceptions(self.app, conn)(scope, receive, send)
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\starlette\_exception_handler.py", line 53, in wrapped_app
+    raise exc
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\starlette\_exception_handler.py", line 42, in wrapped_app
+    await app(scope, receive, sender)
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\starlette\routing.py", line 716, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\starlette\routing.py", line 736, in app
+    await route.handle(scope, receive, send)
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\starlette\routing.py", line 290, in handle
+    await self.app(scope, receive, send)
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\starlette\routing.py", line 78, in app
+    await wrap_app_handling_exceptions(app, request)(scope, receive, send)
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\starlette\_exception_handler.py", line 53, in wrapped_app
+    raise exc
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\starlette\_exception_handler.py", line 42, in wrapped_app
+    await app(scope, receive, sender)
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\starlette\routing.py", line 75, in app
+    response = await f(request)
+               ^^^^^^^^^^^^^^^^
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\fastapi\routing.py", line 299, in app
+    raise e
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\fastapi\routing.py", line 294, in app
+    raw_response = await run_endpoint_function(
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        dependant=dependant, values=values, is_coroutine=is_coroutine
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\fastapi\routing.py", line 191, in run_endpoint_function
+    return await dependant.call(**values)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "E:\GOO\backend\app\routes\leaderboard_routes.py", line 22, in get_leaderboard
+    result = await leaderboard_controller.get_leaderboard(
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    ...<6 lines>...
+    )
+    ^
+  File "E:\GOO\backend\app\controllers\leaderboard_controller.py", line 45, in get_leaderboard
+    return await _live_leaderboard(board_type, timeframe, region, page, limit, current_user)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "E:\GOO\backend\app\controllers\leaderboard_controller.py", line 53, in _live_leaderboard
+    all_farms = await FarmProfile.find_all().to_list()
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\beanie\odm\queries\cursor.py", line 75, in to_list
+    parse_obj(projection, i, lazy_parse=self.lazy_parse)
+    ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\beanie\odm\utils\parsing.py", line 146, in parse_obj
+    result = parse_model(model, data)
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\beanie\odm\utils\pydantic.py", line 42, in parse_model
+    return model_type.model_validate(data)
+           ~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\pydantic\main.py", line 716, in model_validate
+    return cls.__pydantic_validator__.validate_python(
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^
+        obj,
+        ^^^^
+    ...<5 lines>...
+        by_name=by_name,
+        ^^^^^^^^^^^^^^^^
+    )
+    ^
+pydantic_core._pydantic_core.ValidationError: 1 validation error for FarmProfile
+farming_practices
+  Input should be 'organic', 'conventional', 'mixed', 'sustainable' or 'integrated' [type=enum, input_value='permaculture', input_type=str]
+    For further information visit https://errors.pydantic.dev/2.12/v/enum
+
+
+================================================================================
+ERROR ON http://localhost:8000/api/v1/leaderboard/me/rank
+Traceback (most recent call last):
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\starlette\middleware\errors.py", line 164, in __call__
+    await self.app(scope, receive, _send)
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\starlette\middleware\cors.py", line 93, in __call__
+    await self.simple_response(scope, receive, send, request_headers=headers)
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\starlette\middleware\cors.py", line 144, in simple_response
+    await self.app(scope, receive, send)
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\starlette\middleware\exceptions.py", line 63, in __call__
+    await wrap_app_handling_exceptions(self.app, conn)(scope, receive, send)
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\starlette\_exception_handler.py", line 53, in wrapped_app
+    raise exc
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\starlette\_exception_handler.py", line 42, in wrapped_app
+    await app(scope, receive, sender)
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\starlette\routing.py", line 716, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\starlette\routing.py", line 736, in app
+    await route.handle(scope, receive, send)
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\starlette\routing.py", line 290, in handle
+    await self.app(scope, receive, send)
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\starlette\routing.py", line 78, in app
+    await wrap_app_handling_exceptions(app, request)(scope, receive, send)
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\starlette\_exception_handler.py", line 53, in wrapped_app
+    raise exc
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\starlette\_exception_handler.py", line 42, in wrapped_app
+    await app(scope, receive, sender)
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\starlette\routing.py", line 75, in app
+    response = await f(request)
+               ^^^^^^^^^^^^^^^^
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\fastapi\routing.py", line 299, in app
+    raise e
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\fastapi\routing.py", line 294, in app
+    raw_response = await run_endpoint_function(
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        dependant=dependant, values=values, is_coroutine=is_coroutine
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\fastapi\routing.py", line 191, in run_endpoint_function
+    return await dependant.call(**values)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "E:\GOO\backend\app\routes\leaderboard_routes.py", line 35, in get_my_rank
+    result = await leaderboard_controller.get_my_rank(current_user)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "E:\GOO\backend\app\controllers\leaderboard_controller.py", line 200, in get_my_rank
+    all_farms = await FarmProfile.find_all().to_list()
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\beanie\odm\queries\cursor.py", line 75, in to_list
+    parse_obj(projection, i, lazy_parse=self.lazy_parse)
+    ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\beanie\odm\utils\parsing.py", line 146, in parse_obj
+    result = parse_model(model, data)
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\beanie\odm\utils\pydantic.py", line 42, in parse_model
+    return model_type.model_validate(data)
+           ~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\pydantic\main.py", line 716, in model_validate
+    return cls.__pydantic_validator__.validate_python(
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^
+        obj,
+        ^^^^
+    ...<5 lines>...
+        by_name=by_name,
+        ^^^^^^^^^^^^^^^^
+    )
+    ^
+pydantic_core._pydantic_core.ValidationError: 1 validation error for FarmProfile
+farming_practices
+  Input should be 'organic', 'conventional', 'mixed', 'sustainable' or 'integrated' [type=enum, input_value='permaculture', input_type=str]
+    For further information visit https://errors.pydantic.dev/2.12/v/enum
+
+
+================================================================================
+ERROR ON http://localhost:8000/api/v1/leaderboard/national?timeframe=all-time
+Traceback (most recent call last):
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\starlette\middleware\errors.py", line 164, in __call__
+    await self.app(scope, receive, _send)
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\starlette\middleware\cors.py", line 93, in __call__
+    await self.simple_response(scope, receive, send, request_headers=headers)
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\starlette\middleware\cors.py", line 144, in simple_response
+    await self.app(scope, receive, send)
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\starlette\middleware\exceptions.py", line 63, in __call__
+    await wrap_app_handling_exceptions(self.app, conn)(scope, receive, send)
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\starlette\_exception_handler.py", line 53, in wrapped_app
+    raise exc
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\starlette\_exception_handler.py", line 42, in wrapped_app
+    await app(scope, receive, sender)
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\starlette\routing.py", line 716, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\starlette\routing.py", line 736, in app
+    await route.handle(scope, receive, send)
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\starlette\routing.py", line 290, in handle
+    await self.app(scope, receive, send)
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\starlette\routing.py", line 78, in app
+    await wrap_app_handling_exceptions(app, request)(scope, receive, send)
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\starlette\_exception_handler.py", line 53, in wrapped_app
+    raise exc
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\starlette\_exception_handler.py", line 42, in wrapped_app
+    await app(scope, receive, sender)
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\starlette\routing.py", line 75, in app
+    response = await f(request)
+               ^^^^^^^^^^^^^^^^
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\fastapi\routing.py", line 299, in app
+    raise e
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\fastapi\routing.py", line 294, in app
+    raw_response = await run_endpoint_function(
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        dependant=dependant, values=values, is_coroutine=is_coroutine
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\fastapi\routing.py", line 191, in run_endpoint_function
+    return await dependant.call(**values)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "E:\GOO\backend\app\routes\leaderboard_routes.py", line 22, in get_leaderboard
+    result = await leaderboard_controller.get_leaderboard(
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    ...<6 lines>...
+    )
+    ^
+  File "E:\GOO\backend\app\controllers\leaderboard_controller.py", line 45, in get_leaderboard
+    return await _live_leaderboard(board_type, timeframe, region, page, limit, current_user)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "E:\GOO\backend\app\controllers\leaderboard_controller.py", line 53, in _live_leaderboard
+    all_farms = await FarmProfile.find_all().to_list()
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\beanie\odm\queries\cursor.py", line 75, in to_list
+    parse_obj(projection, i, lazy_parse=self.lazy_parse)
+    ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\beanie\odm\utils\parsing.py", line 146, in parse_obj
+    result = parse_model(model, data)
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\beanie\odm\utils\pydantic.py", line 42, in parse_model
+    return model_type.model_validate(data)
+           ~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\pydantic\main.py", line 716, in model_validate
+    return cls.__pydantic_validator__.validate_python(
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^
+        obj,
+        ^^^^
+    ...<5 lines>...
+        by_name=by_name,
+        ^^^^^^^^^^^^^^^^
+    )
+    ^
+pydantic_core._pydantic_core.ValidationError: 1 validation error for FarmProfile
+farming_practices
+  Input should be 'organic', 'conventional', 'mixed', 'sustainable' or 'integrated' [type=enum, input_value='permaculture', input_type=str]
+    For further information visit https://errors.pydantic.dev/2.12/v/enum
+
+
+================================================================================
+ERROR ON http://localhost:8000/api/v1/leaderboard/me/rank
+Traceback (most recent call last):
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\starlette\middleware\errors.py", line 164, in __call__
+    await self.app(scope, receive, _send)
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\starlette\middleware\cors.py", line 93, in __call__
+    await self.simple_response(scope, receive, send, request_headers=headers)
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\starlette\middleware\cors.py", line 144, in simple_response
+    await self.app(scope, receive, send)
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\starlette\middleware\exceptions.py", line 63, in __call__
+    await wrap_app_handling_exceptions(self.app, conn)(scope, receive, send)
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\starlette\_exception_handler.py", line 53, in wrapped_app
+    raise exc
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\starlette\_exception_handler.py", line 42, in wrapped_app
+    await app(scope, receive, sender)
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\starlette\routing.py", line 716, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\starlette\routing.py", line 736, in app
+    await route.handle(scope, receive, send)
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\starlette\routing.py", line 290, in handle
+    await self.app(scope, receive, send)
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\starlette\routing.py", line 78, in app
+    await wrap_app_handling_exceptions(app, request)(scope, receive, send)
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\starlette\_exception_handler.py", line 53, in wrapped_app
+    raise exc
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\starlette\_exception_handler.py", line 42, in wrapped_app
+    await app(scope, receive, sender)
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\starlette\routing.py", line 75, in app
+    response = await f(request)
+               ^^^^^^^^^^^^^^^^
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\fastapi\routing.py", line 299, in app
+    raise e
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\fastapi\routing.py", line 294, in app
+    raw_response = await run_endpoint_function(
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        dependant=dependant, values=values, is_coroutine=is_coroutine
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\fastapi\routing.py", line 191, in run_endpoint_function
+    return await dependant.call(**values)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "E:\GOO\backend\app\routes\leaderboard_routes.py", line 35, in get_my_rank
+    result = await leaderboard_controller.get_my_rank(current_user)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "E:\GOO\backend\app\controllers\leaderboard_controller.py", line 200, in get_my_rank
+    all_farms = await FarmProfile.find_all().to_list()
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\beanie\odm\queries\cursor.py", line 75, in to_list
+    parse_obj(projection, i, lazy_parse=self.lazy_parse)
+    ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\beanie\odm\utils\parsing.py", line 146, in parse_obj
+    result = parse_model(model, data)
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\beanie\odm\utils\pydantic.py", line 42, in parse_model
+    return model_type.model_validate(data)
+           ~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^
+  File "C:\Users\VASANTH M\AppData\Local\Programs\Python\Python313\Lib\site-packages\pydantic\main.py", line 716, in model_validate
+    return cls.__pydantic_validator__.validate_python(
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^
+        obj,
+        ^^^^
+    ...<5 lines>...
+        by_name=by_name,
+        ^^^^^^^^^^^^^^^^
+    )
+    ^
+pydantic_core._pydantic_core.ValidationError: 1 validation error for FarmProfile
+farming_practices
+  Input should be 'organic', 'conventional', 'mixed', 'sustainable' or 'integrated' [type=enum, input_value='permaculture', input_type=str]
+    For further information visit https://errors.pydantic.dev/2.12/v/enum
+
