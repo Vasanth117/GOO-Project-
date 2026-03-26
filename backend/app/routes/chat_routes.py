@@ -15,7 +15,9 @@ async def get_inbox(current_user: User = Depends(get_current_user)):
         result = await chat_controller.get_inbox(current_user)
         return success_response(result)
     except Exception as e:
-        return error_response(str(e))
+        import traceback
+        traceback.print_exc()
+        return error_response(f"INBOX_ERR: {type(e).__name__}: {str(e)}")
 
 @router.get("/chat/{receiver_id}", summary="Get message history with a specific user")
 async def get_history(receiver_id: str, current_user: User = Depends(get_current_user)):

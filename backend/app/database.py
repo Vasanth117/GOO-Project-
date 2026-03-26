@@ -31,7 +31,11 @@ async def connect_db():
     from app.models.grc_member import GRCMember
     from app.models.community_mission import CommunityMission
     from app.models.periodic_report import PeriodicReport
+    from app.models.chat import ChatMessage
     from app.models.refresh_token import RefreshToken
+    from app.models.review import ProductReview
+    from app.models.organic_report import OrganicReport
+    from app.models.follow_request import FollowRequest
 
     client = AsyncIOMotorClient(settings.MONGODB_URL)
     db = client[settings.DB_NAME]
@@ -62,7 +66,11 @@ async def connect_db():
             GRCMember,
             CommunityMission,
             PeriodicReport,
+            ChatMessage,
             RefreshToken,
+            ProductReview,
+            OrganicReport,
+            FollowRequest,
         ],
     )
     logger.info(f"✅ Connected to MongoDB: {settings.DB_NAME}")

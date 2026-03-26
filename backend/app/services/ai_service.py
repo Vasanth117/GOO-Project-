@@ -23,14 +23,27 @@ ELEVENLABS_URL = "https://api.elevenlabs.io/v1/text-to-speech"
 DEFAULT_VOICE_ID = "21m00Tcm4TlvDq8ikWAM"
  
 def _clean_json_response(content: str) -> str:
-    """Extracts JSON block from the LLM output, heavily guarding against conversational artifacts."""
+    """Extracts exactly the FIRST complete JSON object from the LLM output, ignoring anything else."""
     content = content.strip()
     
-    # Aggressive JSON extraction: finds the first '{' and the last '}'
+    # Locate the first '{'
     start_idx = content.find('{')
-    end_idx = content.rfind('}')
-    
-    if start_idx != -1 and end_idx != -1 and end_idx >= start_idx:
+    if start_idx == -1:
+        return content
+        
+    # Standard brace-counting to find the matching '}' for the FIRST object
+    depth = 0
+    end_idx = -1
+    for i in range(start_idx, len(content)):
+        if content[i] == '{':
+            depth += 1
+        elif content[i] == '}':
+            depth -= 1
+            if depth == 0:
+                end_idx = i
+                break
+                
+    if start_idx != -1 and end_idx != -1:
         return content[start_idx:end_idx+1]
         
     return content
@@ -90,11 +103,11 @@ async def get_farming_advice(user_query: str, context: dict) -> dict:
         "\n- BE TECHNICAL BUT ACCESSIBLE: Mention specific organic fertilizers (e.g., Neem cake, Vermicompost) and techniques (e.g., mulching, crop rotation)."
         "\n- BE SUPPORTIVE: If they haven't planted yet, push them to try profitable, sustainable crops based on their soil."
         "\n\nSTRICT JSON SCHEMA:"
-        "\n- 'response': A well-formatted, detailed answer (Markdown supported). MUST be in the user's Primary Language."
+        "\n- 'response': A SINGLE FLAT STRING containing the well-formatted, detailed answer (Markdown supported). DO NOT use nested objects or multiple keys for translations. MUST be in the user's Primary Language."
         "\n- 'suggestions': Exactly 3 helpful follow-up questions (strings only). MUST be in the user's Primary Language."
         "\n- 'detected_intent': One of 'onboarding', 'advice', 'weather', 'disease'."
         "\n- 'audio_trigger': boolean (true to read the response out loud)."
-        "\n\nCRITICAL: You MUST respond with PURE JSON only. DO NOT wrap the JSON in markdown code blocks (e.g. ```json). Your response must begin with '{' and end with '}'."
+        "\n\nCRITICAL: The 'response' field MUST ALWAYS be a single string, even when translating to specialized languages like Tamil, Telugu, or Hindi. Do not use an object for the response. You MUST respond with PURE JSON only. DO NOT wrap the JSON in markdown code blocks (e.g. ```json). Your response must begin with '{' and end with '}'."
     )
 
     clean_context = {

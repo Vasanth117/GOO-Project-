@@ -8,11 +8,15 @@ from datetime import datetime
 class CreateProductRequest(BaseModel):
     name: str = Field(..., min_length=3, max_length=100)
     description: str = Field(..., min_length=10)
-    category: str = Field(..., pattern="^(seeds|fertilizer|tools|consultation|other)$")
+    category: str = Field(..., pattern="^(seeds|fertilizer|tools|consultation|crop|irrigation|other)$")
     price: float = Field(..., ge=0)
     stock: int = Field(..., ge=0)
     image_url: Optional[str] = None
+    proof_images: List[str] = []
     is_goo_verified: bool = False
+    is_eco_certified: bool = False
+    is_featured: bool = False
+    discount_percent: float = 0.0
 
     class Config:
         json_schema_extra = {
@@ -22,7 +26,8 @@ class CreateProductRequest(BaseModel):
                 "category": "fertilizer",
                 "price": 25.50,
                 "stock": 100,
-                "is_goo_verified": True
+                "is_goo_verified": True,
+                "discount_percent": 10.0
             }
         }
 
@@ -34,7 +39,12 @@ class UpdateProductRequest(BaseModel):
     price: Optional[float] = None
     stock: Optional[int] = None
     image_url: Optional[str] = None
+    proof_images: Optional[List[str]] = None
     is_goo_verified: Optional[bool] = None
+    is_eco_certified: Optional[bool] = None
+    is_featured: Optional[bool] = None
+    discount_percent: Optional[float] = None
+    is_active: Optional[bool] = None
 
 
 # ─── ORDER SCHEMAS ───────────────────────────────────────────
@@ -43,13 +53,17 @@ class CreateOrderRequest(BaseModel):
     product_id: str
     quantity: int = Field(default=1, ge=1)
     use_points: bool = False  # If true, try to pay with points (100 pts = $1)
+    shipping_address: Optional[str] = "No address provided"
+    phone: Optional[str] = ""
 
     class Config:
         json_schema_extra = {
             "example": {
                 "product_id": "product_id_here",
                 "quantity": 2,
-                "use_points": True
+                "use_points": True,
+                "shipping_address": "123 Green Farm, Punjab, India",
+                "phone": "+91 9876543210"
             }
         }
 

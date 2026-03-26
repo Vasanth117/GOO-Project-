@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, File, UploadFile, Form
+from fastapi import APIRouter, Depends, File, UploadFile, Form, Query
 from pydantic import BaseModel
 from app.controllers import user_controller
 from app.middleware.auth_middleware import get_current_user
@@ -22,6 +22,17 @@ class UpdatePreferencesRequest(BaseModel):
     ai_smart_suggestions: Optional[bool] = None
 
 router = APIRouter(prefix="/user", tags=["User Profile"])
+
+
+@router.get("/search", summary="Search for users by name")
+async def search_users(
+    q: str = Query(..., min_length=1),
+    page: int = Query(default=1, ge=1),
+    limit: int = Query(default=10, ge=1, le=50),
+    current_user: User = Depends(get_current_user),
+):
+    result = await user_controller.search_users(q, page, limit)
+    return success_response(result)
 
 
 @router.get("/me", summary="Get full profile (user + farm stats)")

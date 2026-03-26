@@ -141,6 +141,8 @@ export const apiService = {
     getFollowStatus: (userId) => apiRequest(`/follow/status/${userId}`),
     getPendingFollowRequests: () => apiRequest('/follow/requests'),
     respondToFollowRequest: (requestId, accept) => apiRequest(`/follow/request/${requestId}/respond?accept=${accept}`, { method: 'POST' }),
+    getFollowers: (userId) => apiRequest(`/social/profile/${userId}/followers`),
+    getFollowing: (userId) => apiRequest(`/social/profile/${userId}/following`),
 
 
     // AI 
@@ -213,4 +215,37 @@ export const apiService = {
     }),
 
     getMyRank: () => apiRequest('/score/stats'),
+    searchUsers: (q, page = 1, limit = 10) => apiRequest(`/user/search?q=${encodeURIComponent(q)}&page=${page}&limit=${limit}`),
+
+    // ── Marketplace ─────────────────────────────────────────────
+    getProducts: (params = {}) => {
+        const query = new URLSearchParams(params).toString();
+        return apiRequest(`/marketplace/products?${query}`);
+    },
+    getProductDetail: (id) => apiRequest(`/marketplace/products/${id}`),
+    placeOrder: (data) => apiRequest('/marketplace/orders', { method: 'POST', body: JSON.stringify(data) }),
+    getSellerDashboard: () => apiRequest('/marketplace/seller/dashboard'),
+    createProduct: (data) => apiRequest('/marketplace/products', { method: 'POST', body: JSON.stringify(data) }),
+    updateProduct: (id, data) => apiRequest(`/marketplace/products/${id}`, { method: 'PATCH', body: JSON.stringify(data) }),
+    deleteProduct: (id) => apiRequest(`/marketplace/products/${id}`, { method: 'DELETE' }),
+    updateOrderStatus: (id, status) => apiRequest(`/marketplace/orders/${id}/status?status=${status}`, { method: 'PATCH' }),
+    getReviews: (productId) => apiRequest(`/marketplace/products/${productId}/reviews`),
+    replyToReview: (reviewId, reply) => apiRequest(`/marketplace/reviews/${reviewId}/reply`, { method: 'POST', body: JSON.stringify({ reply }) }),
+    // Notifications
+    getNotifications: () => apiRequest('/notifications/'),
+    markNotificationRead: (id) => apiRequest(`/notifications/${id}/read`, { method: 'PATCH' }),
+    markAllNotificationsRead: () => apiRequest('/notifications/read-all', { method: 'PATCH' }),
+    uploadProductImage: async (file) => {
+        const formData = new FormData();
+        formData.append('file', file);
+        const token = localStorage.getItem('access_token');
+        const res = await fetch(`${BASE_URL}/marketplace/products/upload`, {
+            method: 'POST',
+            headers: { 'Authorization': `Bearer ${token}` },
+            body: formData
+        });
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.message || data.detail || 'Upload failed');
+        return data.data; // { url: '...' }
+    }
 };

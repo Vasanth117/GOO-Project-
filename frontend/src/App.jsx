@@ -11,6 +11,7 @@ import RewardsPage from './pages/RewardsPage'
 import ProfilePage from './pages/ProfilePage'
 import SettingsPage from './pages/SettingsPage'
 import MarketplacePage from './pages/MarketplacePage'
+import SellerDashboard from './pages/marketplace/SellerDashboard'
 import MessagesPage from './pages/MessagesPage'
 import CameraPage from './pages/CameraPage'
 import FieldMapPage from './pages/FieldMapPage'
@@ -33,7 +34,8 @@ function App() {
         <Route path="/ai"          element={<AIPage />} />
         <Route path="/map"         element={<FieldMapPage />} />
         <Route path="/community"   element={<CommunityPage />} />
-        <Route path="/marketplace" element={<MarketplacePage />} />
+        <Route path="/marketplace"           element={<MarketplacePage />} />
+        <Route path="/marketplace/dashboard" element={<SellerDashboard />} />
         <Route path="/messages"    element={<MessagesPage />} />
         <Route path="/settings"    element={<SettingsPage />} />
         <Route path="/profile/:userId?" element={<ProfilePage />} />

@@ -1,5 +1,5 @@
 from beanie import Document
-from pydantic import BaseModel, Field
+from pydantic import Field
 from typing import Optional
 from datetime import datetime
 from enum import Enum
@@ -11,6 +11,7 @@ class OrderStatus(str, Enum):
     SHIPPED = "shipped"
     DELIVERED = "delivered"
     CANCELLED = "cancelled"
+    REFUNDED = "refunded"
 
 
 class Order(Document):
@@ -22,6 +23,12 @@ class Order(Document):
     paid_with_points: int = 0
     final_cash_price: float
     status: OrderStatus = OrderStatus.PENDING
+    
+    # Shipping info
+    buyer_name: Optional[str] = None
+    shipping_address: Optional[str] = None
+    phone: Optional[str] = None
+    
     placed_at: datetime = Field(default_factory=datetime.utcnow)
     updated_at: datetime = Field(default_factory=datetime.utcnow)
 

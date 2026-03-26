@@ -23,10 +23,19 @@ class Product(Document):
     price: float
     category: ProductCategory
     image_url: Optional[str] = None
+    proof_images: List[str] = []    # Photos of farming process, growth stages
     stock: int = 0
     is_goo_verified: bool = False   # True if seller has score > 500
     is_eco_certified: bool = False
     is_active: bool = True
+    is_featured: bool = False
+    discount_percent: float = 0.0
+    
+    # Analytics
+    views_count: int = 0
+    clicks_count: int = 0
+    sales_count: int = 0
+    
     created_at: datetime = Field(default_factory=datetime.utcnow)
     updated_at: datetime = Field(default_factory=datetime.utcnow)
 

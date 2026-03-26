@@ -13,8 +13,17 @@ import {
 // ─────────────────────────────────────────
 const formatAIResponse = (text) => {
     if (!text) return "";
+    // Force conversion to string to prevent ".replace is not a function" errors
+    // If it's an object, try to join its values (to handle accidental nested translation objects)
+    const str = typeof text === 'string' 
+        ? text 
+        : (typeof text === 'object' && text !== null 
+            ? Object.values(text).filter(v => typeof v === 'string').join('\n\n') 
+            
+            : JSON.stringify(text));
+    
     // Extremely basic markdown-like formatter
-    let formatted = text
+    let formatted = str
         .replace(/### (.*?)\n/g, '<h4 class="ai-msg-h3">$1</h4>')
         .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
         .replace(/\n\n/g, '<div class="ai-msg-gap"></div>')
@@ -218,7 +227,13 @@ const AIPage = () => {
                             >
                                 <div className="bubble-avatar">
                                     {m.role === 'ai' ? <Bot size={18} /> : (
-                                        user?.profile_picture ? <img src={user.profile_picture} alt="" style={{ width: '100%', height: '100%', borderRadius: '50%', objectFit: 'cover' }} /> : <User size={18} />
+                                        user?.profile_picture ? (
+                                            <img 
+                                                src={user.profile_picture.startsWith('http') ? user.profile_picture : `http://localhost:8000${user.profile_picture}`} 
+                                                alt="" 
+                                                style={{ width: '100%', height: '100%', borderRadius: '50%', objectFit: 'cover' }} 
+                                            />
+                                        ) : <User size={18} />
                                     )}
                                 </div>
                                 <div className="bubble-body">

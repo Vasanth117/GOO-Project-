@@ -136,3 +136,36 @@ async def update_preferences(user: User, prefs: dict) -> dict:
     user.updated_at = datetime.utcnow()
     await user.save()
     return {"preferences": user.preferences}
+
+
+async def search_users(q: str, page: int = 1, limit: int = 10) -> dict:
+    """Searches for users by name or email with case-insensitive regex."""
+    skip = (page - 1) * limit
+    # Search by name or email (case-insensitive)
+    query = {
+        "$or": [
+            {"name": {"$regex": q, "$options": "i"}},
+            {"email": {"$regex": q, "$options": "i"}}
+        ]
+    }
+    
+    users = await User.find(query).skip(skip).limit(limit).to_list()
+    total = await User.find(query).count()
+    
+    return {
+        "users": [
+            {
+                "id": str(u.id),
+                "name": u.name,
+                "profile_picture": u.profile_picture,
+                "role": u.role,
+                "bio": u.bio or ""
+            } for u in users
+        ],
+        "pagination": {
+            "total": total,
+            "page": page,
+            "limit": limit,
+            "pages": (total + limit - 1) // limit
+        }
+    }

@@ -19,3 +19,4 @@ from .fraud_flag import FraudFlag, FraudSeverity, FraudStatus
 from .verification import Verification, VerificationStatus
 from .grc_member import GRCMember
 from .refresh_token import RefreshToken
+from .chat import ChatMessage

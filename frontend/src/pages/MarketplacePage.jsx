@@ -9,9 +9,10 @@ import {
     Box, Truck, CreditCard, StarHalf, MessageCircle,
     ArrowLeft, Trash2, LayoutDashboard, Store,
     ThumbsUp, Share2, Award, Clock, ClipboardList,
-    PieChart, Activity, AlertCircle, HardDrive, Gift
+    PieChart, Activity, AlertCircle, HardDrive, Gift,
+    Leaf as SproutIcon, Wind, Droplets
 } from 'lucide-react';
-
+import { useNavigate } from 'react-router-dom';
 import { apiService } from '../services/apiService';
 
 const img1 = 'https://images.unsplash.com/photo-1592484050893-b0fcba0aae73?auto=format&fit=crop&q=80&w=200';
@@ -20,10 +21,11 @@ const img3 = 'https://images.unsplash.com/photo-1574315042733-149b2513f56e?auto=
 const avatar2 = 'https://images.unsplash.com/photo-1531649666632-132d7ab266a2?auto=format&fit=crop&q=80&w=150';
 
 const MarketplacePage = () => {
+    const navigate = useNavigate();
     const [products, setProducts] = useState([]);
     const [loading, setLoading] = useState(true);
     const [myOrders, setMyOrders] = useState([]);
-    const [sellerDash, setSellerDash] = useState(null);
+    const [selectedSellerData, setSelectedSellerData] = useState(null);
     const [pointsBal, setPointsBal] = useState(0);
     const [isBuying, setIsBuying] = useState(false);
     
@@ -140,7 +142,7 @@ const MarketplacePage = () => {
                             <button className="btn-luxe-blue">Login as Buyer <ArrowRight size={18} /></button>
                         </motion.div>
 
-                        <motion.div className="gate-cta seller-bg" whileHover={{ scale: 1.02 }} onClick={() => setPhase('seller')}>
+                        <motion.div className="gate-cta seller-bg" whileHover={{ scale: 1.02 }} onClick={() => navigate('/marketplace/dashboard')}>
                             <div className="cta-icon"><Store size={40} /></div>
                             <h2>Seller Login</h2>
                             <p>List your produce, manage inventory, and provide proof of your organic farming journey.</p>
@@ -227,15 +229,15 @@ const MarketplacePage = () => {
                                                 <div className="badge-verify">Verified Organic</div>
                                             </div>
                                             <div className="p-card-content">
-                                                <div className="pc-seller" onClick={(e) => {e.stopPropagation(); setShowSellerProfile(p.seller_id || p.seller);}}>
+                                                <button className="btn-text" style={{ fontSize: '0.75rem', padding: '4px 8px', marginBottom: '8px' }} onClick={(e) => {e.stopPropagation(); setShowSellerProfile(p.seller_id || p.seller);}}>
                                                     <MapPin size={12} /> Farm Vendor
-                                                </div>
+                                                </button>
                                                 <h4>{p.name}</h4>
                                                 <div className="pc-price-bar">
                                                     <div className="price-main">₹{p.price}</div>
                                                     <div className="price-reward">Use Points</div>
                                                 </div>
-                                                <button className="btn-add-luxe">View Journey <ArrowRight size={14} /></button>
+                                                <button className="btn-primary" style={{ height: '40px', width: '100%', fontSize: '0.85rem' }}>View Journey <ArrowRight size={14} /></button>
                                             </div>
                                         </motion.div>
                                     ))}
@@ -422,8 +424,8 @@ const MarketplacePage = () => {
                                 <h1 className="pd-name">{selectedProduct.name}</h1>
                                 <div className="pd-price-main">₹{selectedProduct.price}</div>
                                 <p className="pd-desc">{selectedProduct.desc}</p>
-                                <button className="btn-luxe-green" style={{width: '100%', marginTop: '40px', opacity: isBuying ? 0.5 : 1}} disabled={isBuying} onClick={() => handleBuy(true)}>{isBuying ? 'Processing...' : 'Buy with Points Discount 💰'}</button>
-                                <button className="btn-add-luxe" style={{width: '100%', marginTop: '10px', height: '45px'}} disabled={isBuying} onClick={() => handleBuy(false)}>Buy Normally (₹{selectedProduct?.price})</button>
+                                <button className="btn-primary" style={{ width: '100%', marginTop: '40px', padding: '16px' }} disabled={isBuying} onClick={() => handleBuy(true)}>{isBuying ? 'Processing...' : 'Buy with Points Discount 💰'}</button>
+                                <button className="btn-secondary" style={{ width: '100%', marginTop: '10px' }} disabled={isBuying} onClick={() => handleBuy(false)}>Buy Normally (₹{selectedProduct?.price})</button>
                             </div>
                         </motion.div>
                     </div>
@@ -433,18 +435,80 @@ const MarketplacePage = () => {
             <AnimatePresence>
                 {showSellerProfile && (
                     <div className="modal-luxe-overlay" onClick={() => setShowSellerProfile(null)}>
-                        <motion.div className="insta-profile-modal" initial={{ scale: 0.9 }} animate={{ scale: 1 }} onClick={e => e.stopPropagation()} style={{position: 'relative'}}>
+                        <motion.div className="insta-profile-modal" initial={{ scale: 0.9 }} animate={{ scale: 1 }} onClick={e => e.stopPropagation()} style={{position: 'relative', maxWidth: '900px'}}>
                             <button className="btn-close-pd" onClick={() => setShowSellerProfile(null)} style={{top: '30px', right: '30px'}}><X /></button>
-                            <div className="insta-header">
-                                <img src={avatar2} alt="f" className="sh-avatar" />
-                                <div className="sh-meta">
-                                    <h2>{showSellerProfile} <ShieldCheck size={20} color="#2d5a27" /></h2>
-                                    <p>Organic Rice Farmer • 15 Years Experience</p>
-                                    <button className="btn-luxe-green" style={{marginTop: '20px', padding: '12px 25px'}}>Follow Farmer Feed</button>
+                            
+                            <div style={{ display: 'grid', gridTemplateColumns: '1fr 2fr', gap: 40 }}>
+                                {/* Left Side: Farm Identity */}
+                                <div style={{ borderRight: '1.5px solid #eeedeb', paddingRight: 40 }}>
+                                    <div style={{ position: 'relative', width: 120, height: 120, marginBottom: 24 }}>
+                                        <img src={avatar2} alt="f" style={{ width: '100%', height: '100%', borderRadius: '40px', objectFit: 'cover' }} />
+                                        <div style={{ position: 'absolute', bottom: -5, right: -5, background: '#2d5a27', color: 'white', padding: 8, borderRadius: '50%', border: '4px solid white', display: 'flex' }}>
+                                            <ShieldCheck size={20} />
+                                        </div>
+                                    </div>
+                                    <h2 style={{ fontSize: '1.75rem', fontWeight: 950, marginBottom: 4 }}>Green Oak Farm</h2>
+                                    <p style={{ color: '#888', fontWeight: 700, fontSize: '0.9rem', marginBottom: 20 }}>Certified Organic since 2012</p>
+                                    
+                                    <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+                                        <div style={{ padding: '16px', background: 'linear-gradient(135deg, #2d5a27, #1e3d1a)', borderRadius: '16px', color: 'white' }}>
+                                            <div style={{ fontSize: '0.7rem', textTransform: 'uppercase', opacity: 0.8, fontWeight: 800 }}>Eco-Trust Score</div>
+                                            <div style={{ fontSize: '1.75rem', fontWeight: 950, display: 'flex', alignItems: 'baseline', gap: 4 }}>
+                                                842 <span style={{ fontSize: '0.8rem', opacity: 0.7 }}>PTS</span>
+                                            </div>
+                                            <div style={{ height: 4, background: 'rgba(255,255,255,0.2)', borderRadius: 2, marginTop: 8 }}>
+                                                <div style={{ width: '84%', height: '100%', background: '#4ade80', borderRadius: 2 }} />
+                                            </div>
+                                        </div>
+
+                                        <div className="card" style={{ padding: 16, border: '1px solid #eeedeb' }}>
+                                            <div style={{ fontSize: '0.75rem', fontWeight: 900, marginBottom: 12, display: 'flex', alignItems: 'center', gap: 6 }}>
+                                                <Activity size={14} color="#2d5a27" /> Farm Practice Log
+                                            </div>
+                                            <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+                                                <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.8rem', fontWeight: 700 }}>
+                                                    <span style={{ color: '#888' }}>Soil Type</span>
+                                                    <span>Clay Loam</span>
+                                                </div>
+                                                <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.8rem', fontWeight: 700 }}>
+                                                    <span style={{ color: '#888' }}>Irrigation</span>
+                                                    <span style={{ display: 'flex', alignItems: 'center', gap: 4 }}><Droplets size={12} color="#3b82f6" /> Drip</span>
+                                                </div>
+                                                <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.8rem', fontWeight: 700 }}>
+                                                    <span style={{ color: '#888' }}>Fertilizer</span>
+                                                    <span style={{ color: '#10b981' }}>100% Organic</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
                                 </div>
-                            </div>
-                            <div className="insta-grid">
-                                {[img1, img2, img3, img1, img2, img3].map((m, i) => <div key={i} className="insta-item"><img src={m} alt="p" /></div>)}
+
+                                {/* Right Side: Feed & Proofs */}
+                                <div>
+                                    <div style={{ display: 'flex', gap: 32, borderBottom: '1.5px solid #eeedeb', marginBottom: 24 }}>
+                                        <button style={{ padding: '12px 4px', background: 'transparent', border: 'none', borderBottom: '3px solid #2d5a27', fontSize: '1rem', fontWeight: 950, color: '#1a1c19' }}>Organic Journey</button>
+                                        <button style={{ padding: '12px 4px', background: 'transparent', border: 'none', fontSize: '1rem', fontWeight: 800, color: '#888' }}>Other Products</button>
+                                    </div>
+
+                                    <div className="insta-grid" style={{ gridTemplateColumns: 'repeat(3, 1fr)', gap: 12 }}>
+                                        {[img1, img2, img3, img1, img2, img3].map((m, i) => (
+                                            <motion.div key={i} className="insta-item" whileHover={{ scale: 1.05 }} style={{ borderRadius: 16, overflow: 'hidden', height: 160 }}>
+                                                <img src={m} alt="p" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                                                <div style={{ position: 'absolute', top: 8, left: 8, background: 'rgba(0,0,0,0.5)', padding: '4px 8px', borderRadius: 8, color: 'white', fontSize: '0.6rem', fontWeight: 800 }}>POST #{i+1}</div>
+                                            </motion.div>
+                                        ))}
+                                    </div>
+
+                                    <div style={{ marginTop: 32, padding: 24, background: '#f4f4f2', borderRadius: 24, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                                        <div>
+                                            <div style={{ fontSize: '1rem', fontWeight: 950 }}>Want live updates?</div>
+                                            <p style={{ margin: 0, color: '#666', fontSize: '0.85rem', fontWeight: 600 }}>Follow this farm to see daily task completions.</p>
+                                        </div>
+                                        <button className="btn-primary" style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                                            <UserCheck size={18} /> Follow Farm
+                                        </button>
+                                    </div>
+                                </div>
                             </div>
                         </motion.div>
                     </div>
